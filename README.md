@@ -536,10 +536,6 @@ For issues or questions:
 3. Check service status: `pm2 status`
 4. Verify environment variables in `.env`
 
-## 📄 License
-
-MIT License - See LICENSE file for details
-
 ## 👥 Contributing
 
 1. Fork the repository
