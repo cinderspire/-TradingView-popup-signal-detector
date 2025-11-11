@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Funds - Copy Professional Portfolios | AutomatedTradeBot</title>
+    <meta name="description" content="AutomatedTradeBot - Advanced cryptocurrency and forex trading platform. Automated strategies, professional signals, portfolio mirroring. AI-powered trading with verified performance metrics. Join professional traders worldwide.">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #00d4ff;
+            --secondary: #ff00ff;
+            --success: #00ff88;
+            --danger: #ff3366;
+            --warning: #ffaa00;
+            --dark: #0a0e1a;
+            --darker: #060914;
+            --light: #ffffff;
+            --gray: #8892b0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--darker);
+            color: var(--light);
+            min-height: 100vh;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1rem 5%;
+            background: rgba(10, 14, 26, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0, 212, 255, 0.1);
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            cursor: pointer;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: var(--gray);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--primary);
+            background: rgba(0, 212, 255, 0.1);
+        }
+
+        .btn {
+            padding: 0.6rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            border: none;
+        }
+
+        .btn-login {
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-register {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1400px;
+            margin: 100px auto 50px;
+            padding: 0 5%;
+        }
+
+        /* Header */
+        .page-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .page-title {
+            font-size: 3rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--light), var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .page-subtitle {
+            color: var(--gray);
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Stats */
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-box {
+            background: rgba(0, 212, 255, 0.05);
+            border: 1px solid rgba(0, 212, 255, 0.1);
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--gray);
+        }
+
+        /* Controls */
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .sort-filter {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        select {
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            color: var(--light);
+            padding: 0.7rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        /* Fund Manager Grid */
+        .managers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .manager-card {
+            background: rgba(0, 212, 255, 0.05);
+            border: 1px solid rgba(0, 212, 255, 0.1);
+            border-radius: 20px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .manager-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.2);
+        }
+
+        .manager-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: linear-gradient(135deg, var(--warning), var(--secondary));
+            color: white;
+            padding: 0.4rem 1rem;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .manager-header {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .manager-avatar {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 900;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .manager-info {
+            flex: 1;
+        }
+
+        .manager-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--light);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .verified-icon {
+            color: var(--success);
+            font-size: 1.2rem;
+        }
+
+        .manager-meta {
+            color: var(--gray);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .manager-rating {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .stars {
+            color: var(--warning);
+        }
+
+        /* Performance Stats */
+        .performance-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .perf-stat {
+            text-align: center;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+        }
+
+        .perf-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .perf-value.positive {
+            color: var(--success);
+        }
+
+        .perf-value.neutral {
+            color: var(--primary);
+        }
+
+        .perf-label {
+            color: var(--gray);
+            font-size: 0.85rem;
+        }
+
+        /* Portfolio Allocation */
+        .portfolio-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title-small {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--gray);
+            margin-bottom: 1rem;
+        }
+
+        .portfolio-items {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .portfolio-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem;
+            background: rgba(0, 212, 255, 0.05);
+            border-radius: 8px;
+        }
+
+        .item-name {
+            color: var(--light);
+            font-size: 0.95rem;
+        }
+
+        .item-allocation {
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        /* Chart */
+        .mini-performance-chart {
+            height: 80px;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Footer */
+        .manager-footer {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn-view {
+            flex: 1;
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            padding: 0.8rem;
+            text-align: center;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-view:hover {
+            background: rgba(0, 212, 255, 0.1);
+        }
+
+        .btn-copy {
+            flex: 1;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 0.8rem;
+            text-align: center;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .btn-copy:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0, 212, 255, 0.3);
+        }
+
+        .pricing-tag {
+            text-align: center;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(0, 212, 255, 0.1);
+            color: var(--gray);
+        }
+
+        .price {
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .managers-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .page-title {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <a href="/" class="logo">
+                <i class="fas fa-chart-line"></i>
+                AutomatedTradeBot
+            </a>
+
+            <div class="nav-menu">
+                <a href="/" class="nav-link">Home</a>
+                <a href="/marketplace" class="nav-link">Marketplace</a>
+                <a href="/signals" class="nav-link">Signals</a>
+                <a href="/fund-managers" class="nav-link active">Fund</a>
+                <a href="/pricing" class="nav-link">Pricing</a>
+            </div>
+
+            <div style="display: flex; gap: 1rem;">
+                <a href="/login" class="btn btn-login">Login</a>
+                <a href="/register" class="btn btn-register">Get Started</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Header -->
+        <div class="page-header">
+            <h1 class="page-title">Fund</h1>
+            <p class="page-subtitle">
+                Copy entire portfolios of successful traders. Follow their complete strategy allocation with automatic sync.
+            </p>
+        </div>
+
+        <!-- Stats Bar -->
+        <div class="stats-bar">
+            <div class="stat-box">
+                <div class="stat-value">47</div>
+                <div class="stat-label">Active Fund</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value">$12.4M</div>
+                <div class="stat-label">Total AUM</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value">142%</div>
+                <div class="stat-label">Avg Portfolio ROI</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value">3,500+</div>
+                <div class="stat-label">Active Copiers</div>
+            </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="controls">
+            <div class="sort-filter">
+                <label for="sort">Sort by:</label>
+                <select id="sort">
+                    <option value="aum_desc">💰 Highest AUM</option>
+                    <option value="roi_desc">🔥 Highest ROI</option>
+                    <option value="sharpe_desc">⭐ Best Sharpe Ratio</option>
+                    <option value="copiers_desc">👥 Most Copiers</option>
+                    <option value="dd_asc">📉 Lowest Drawdown</option>
+                    <option value="rating_desc">⭐ Highest Rated</option>
+                </select>
+            </div>
+
+            <div style="color: var(--gray);">
+                Showing <strong id="result-count">6</strong> fund managers
+            </div>
+        </div>
+
+        <!-- Fund Grid -->
+        <div class="managers-grid" id="managers-grid">
+            <!-- Generated by JavaScript -->
+        </div>
+    </div>
+
+    <script>
+        // Sample fund manager data
+        const fundManagers = [
+            {
+                id: 1,
+                name: "Crypto Master Pro",
+                avatar: "CMP",
+                verified: true,
+                badge: "TOP RATED",
+                rating: 4.9,
+                reviews: 156,
+                aum: "$245,000",
+                copiers: 47,
+                portfolioROI: 142.3,
+                monthlyAvg: 8.3,
+                sharpe: 2.9,
+                maxDD: -12.4,
+                portfolio: [
+                    { name: "7RSI DCA Strategy", allocation: 30 },
+                    { name: "MACD Grid Bot", allocation: 25 },
+                    { name: "AI Strategy Engine", allocation: 20 },
+                    { name: "CryptoTrader Pro", allocation: 15 },
+                    { name: "Cash Reserve", allocation: 10 }
+                ],
+                monthlyFee: 15,
+                performanceFee: 15
+            },
+            {
+                id: 2,
+                name: "Swing Trade Elite",
+                avatar: "STE",
+                verified: true,
+                badge: "VERIFIED",
+                rating: 4.8,
+                reviews: 98,
+                aum: "$180,000",
+                copiers: 34,
+                portfolioROI: 98.7,
+                monthlyAvg: 6.5,
+                sharpe: 2.5,
+                maxDD: -9.8,
+                portfolio: [
+                    { name: "Swing Setup Pro", allocation: 40 },
+                    { name: "Support/Resistance", allocation: 30 },
+                    { name: "Pattern Scanner", allocation: 20 },
+                    { name: "Cash", allocation: 10 }
+                ],
+                monthlyFee: 15,
+                performanceFee: 12
+            },
+            {
+                id: 3,
+                name: "DCA Specialist",
+                avatar: "DCA",
+                verified: true,
+                rating: 4.7,
+                reviews: 73,
+                aum: "$156,000",
+                copiers: 29,
+                portfolioROI: 87.5,
+                monthlyAvg: 5.8,
+                sharpe: 2.7,
+                maxDD: -7.2,
+                portfolio: [
+                    { name: "BTC DCA Long", allocation: 35 },
+                    { name: "ETH DCA Long", allocation: 30 },
+                    { name: "Altcoin DCA", allocation: 25 },
+                    { name: "Cash", allocation: 10 }
+                ],
+                monthlyFee: 15,
+                performanceFee: 10
+            },
+            {
+                id: 4,
+                name: "Grid Master",
+                avatar: "GM",
+                verified: true,
+                rating: 4.6,
+                reviews: 62,
+                aum: "$132,000",
+                copiers: 25,
+                portfolioROI: 76.3,
+                monthlyAvg: 5.2,
+                sharpe: 2.4,
+                maxDD: -8.9,
+                portfolio: [
+                    { name: "BTC/USDT Grid", allocation: 35 },
+                    { name: "ETH/USDT Grid", allocation: 30 },
+                    { name: "SOL/USDT Grid", allocation: 25 },
+                    { name: "Cash", allocation: 10 }
+                ],
+                monthlyFee: 15,
+                performanceFee: 12
+            },
+            {
+                id: 5,
+                name: "AI Trader Bot",
+                avatar: "ATB",
+                verified: true,
+                badge: "AI POWERED",
+                rating: 4.8,
+                reviews: 89,
+                aum: "$198,000",
+                copiers: 38,
+                portfolioROI: 115.2,
+                monthlyAvg: 7.1,
+                sharpe: 2.6,
+                maxDD: -10.3,
+                portfolio: [
+                    { name: "AI Momentum Strategy", allocation: 40 },
+                    { name: "ML Predictor", allocation: 30 },
+                    { name: "Sentiment Analyzer", allocation: 20 },
+                    { name: "Cash", allocation: 10 }
+                ],
+                monthlyFee: 15,
+                performanceFee: 15
+            },
+            {
+                id: 6,
+                name: "Scalping King",
+                avatar: "SK",
+                verified: true,
+                rating: 4.5,
+                reviews: 54,
+                aum: "$118,000",
+                copiers: 22,
+                portfolioROI: 65.8,
+                monthlyAvg: 4.8,
+                sharpe: 2.1,
+                maxDD: -11.2,
+                portfolio: [
+                    { name: "1-Min Scalper", allocation: 35 },
+                    { name: "5-Min Scalper", allocation: 30 },
+                    { name: "Quick Profits", allocation: 25 },
+                    { name: "Cash", allocation: 10 }
+                ],
+                monthlyFee: 15,
+                performanceFee: 10
+            }
+        ];
+
+        function generateSparkline() {
+            const points = [];
+            let y = 40;
+            for (let x = 0; x <= 200; x += 10) {
+                y += (Math.random() - 0.3) * 8;
+                y = Math.max(10, Math.min(70, y));
+                points.push(`${x},${y}`);
+            }
+            return points.join(' ');
+        }
+
+        function renderManagers(data) {
+            const grid = document.getElementById('managers-grid');
+            grid.innerHTML = '';
+
+            data.forEach(manager => {
+                const card = document.createElement('div');
+                card.className = 'manager-card';
+
+                card.innerHTML = `
+                    ${manager.badge ? `<span class="manager-badge">${manager.badge}</span>` : ''}
+
+                    <div class="manager-header">
+                        <div class="manager-avatar">${manager.avatar}</div>
+                        <div class="manager-info">
+                            <div class="manager-name">
+                                ${manager.name}
+                                ${manager.verified ? '<i class="fas fa-check-circle verified-icon"></i>' : ''}
+                            </div>
+                            <div class="manager-meta">
+                                <i class="fas fa-dollar-sign"></i> ${manager.aum} AUM •
+                                <i class="fas fa-users"></i> ${manager.copiers} copiers
+                            </div>
+                            <div class="manager-rating">
+                                <div class="stars">${'⭐'.repeat(Math.floor(manager.rating))}</div>
+                                <span>${manager.rating} (${manager.reviews} reviews)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mini-performance-chart">
+                        <svg width="100%" height="80" viewBox="0 0 200 80">
+                            <polyline
+                                fill="none"
+                                stroke="url(#gradient-${manager.id})"
+                                stroke-width="2"
+                                points="${generateSparkline()}"
+                            />
+                            <defs>
+                                <linearGradient id="gradient-${manager.id}" x1="0%" y1="0%" x2="0%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#00d4ff;stop-opacity:1" />
+                                    <stop offset="100%" style="stop-color:#ff00ff;stop-opacity:1" />
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                    </div>
+
+                    <div class="performance-stats">
+                        <div class="perf-stat">
+                            <div class="perf-value positive">+${manager.portfolioROI}%</div>
+                            <div class="perf-label">Portfolio ROI</div>
+                        </div>
+                        <div class="perf-stat">
+                            <div class="perf-value neutral">${manager.sharpe}</div>
+                            <div class="perf-label">Sharpe Ratio</div>
+                        </div>
+                        <div class="perf-stat">
+                            <div class="perf-value" style="color: var(--danger);">${manager.maxDD}%</div>
+                            <div class="perf-label">Max DD</div>
+                        </div>
+                    </div>
+
+                    <div class="portfolio-section">
+                        <div class="section-title-small">
+                            <i class="fas fa-chart-pie"></i> Portfolio Allocation
+                        </div>
+                        <div class="portfolio-items">
+                            ${manager.portfolio.slice(0, 3).map(item => `
+                                <div class="portfolio-item">
+                                    <span class="item-name">${item.name}</span>
+                                    <span class="item-allocation">${item.allocation}%</span>
+                                </div>
+                            `).join('')}
+                            ${manager.portfolio.length > 3 ? `
+                                <div style="text-align: center; color: var(--gray); font-size: 0.9rem;">
+                                    +${manager.portfolio.length - 3} more
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+
+                    <div class="manager-footer">
+                        <button class="btn-view" onclick="window.location.href='/fund-manager/${manager.id}'">
+                            <i class="fas fa-eye"></i> View Profile
+                        </button>
+                        <button class="btn-copy" onclick="copyPortfolio(${manager.id})">
+                            <i class="fas fa-copy"></i> Copy Portfolio
+                        </button>
+                    </div>
+
+                    <div class="pricing-tag">
+                        <span class="price">$${manager.monthlyFee}/mo</span> + ${manager.performanceFee}% performance fee
+                    </div>
+                `;
+
+                grid.appendChild(card);
+            });
+
+            document.getElementById('result-count').textContent = data.length;
+        }
+
+        function copyPortfolio(managerId) {
+            alert(`Portfolio copy feature will be implemented. Manager ID: ${managerId}`);
+            // Will show modal with configuration options
+        }
+
+        // Sort functionality
+        document.getElementById('sort').addEventListener('change', (e) => {
+            const sortBy = e.target.value;
+            let sorted = [...fundManagers];
+
+            switch (sortBy) {
+                case 'aum_desc':
+                    sorted.sort((a, b) => parseFloat(b.aum.replace(/[$,]/g, '')) - parseFloat(a.aum.replace(/[$,]/g, '')));
+                    break;
+                case 'roi_desc':
+                    sorted.sort((a, b) => b.portfolioROI - a.portfolioROI);
+                    break;
+                case 'sharpe_desc':
+                    sorted.sort((a, b) => b.sharpe - a.sharpe);
+                    break;
+                case 'copiers_desc':
+                    sorted.sort((a, b) => b.copiers - a.copiers);
+                    break;
+                case 'dd_asc':
+                    sorted.sort((a, b) => a.maxDD - b.maxDD);
+                    break;
+                case 'rating_desc':
+                    sorted.sort((a, b) => b.rating - a.rating);
+                    break;
+            }
+
+            renderManagers(sorted);
+        });
+
+        // Initial render
+        renderManagers(fundManagers);
+    </script>
+
+</body>
+</html>

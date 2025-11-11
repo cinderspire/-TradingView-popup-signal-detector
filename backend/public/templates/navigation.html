@@ -1,0 +1,197 @@
+<!-- Standard Navigation for Authenticated Pages -->
+<nav id="navbar">
+    <div class="nav-container">
+        <a href="/" class="logo">
+            <i class="fas fa-chart-line"></i>
+            AutomatedTradeBot
+        </a>
+        <ul class="nav-links">
+            <li><a href="/" data-page="home">Home</a></li>
+            <li><a href="/dashboard" data-page="dashboard">Dashboard</a></li>
+            <li><a href="/marketplace" data-page="marketplace">Marketplace</a></li>
+            <li><a href="/subscriptions" data-page="subscriptions">My Subscriptions</a></li>
+            <li><a href="/signals" data-page="signals">Signals</a></li>
+            <li><a href="/completed-trades" data-page="trades">Trades</a></li>
+            <li><a href="/active-positions" data-page="active">Active</a></li>
+        </ul>
+        <div class="nav-cta">
+            <a href="/profile" class="btn-nav profile">
+                <i class="fas fa-user-circle"></i> Profile
+            </a>
+            <a href="#" class="btn-nav logout" onclick="logout(); return false;">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+        </div>
+    </div>
+</nav>
+
+<style>
+/* Navigation Styles */
+#navbar {
+    background: rgba(10, 14, 38, 0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(94, 114, 228, 0.2);
+    padding: 1rem 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.nav-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #5e72e4;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: color 0.3s;
+}
+
+.logo:hover {
+    color: #825ee4;
+}
+
+.nav-links {
+    display: flex;
+    list-style: none;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0;
+}
+
+.nav-links li {
+    margin: 0;
+}
+
+.nav-links a {
+    color: #e8eaf6;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    transition: all 0.3s;
+    font-weight: 500;
+}
+
+.nav-links a:hover {
+    background: rgba(94, 114, 228, 0.1);
+    color: #fff;
+}
+
+.nav-links a.active {
+    background: rgba(94, 114, 228, 0.2);
+    color: #fff;
+    border: 1px solid rgba(94, 114, 228, 0.3);
+}
+
+.nav-cta {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.btn-nav {
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-nav.profile {
+    background: rgba(94, 114, 228, 0.1);
+    border: 1px solid rgba(94, 114, 228, 0.3);
+    color: #e8eaf6;
+}
+
+.btn-nav.profile:hover {
+    background: rgba(94, 114, 228, 0.2);
+    color: #fff;
+}
+
+.btn-nav.logout {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #ef4444;
+}
+
+.btn-nav.logout:hover {
+    background: rgba(239, 68, 68, 0.2);
+    color: #fff;
+}
+
+/* Active page highlighting */
+[data-page="home"] .nav-links a[data-page="home"],
+[data-page="dashboard"] .nav-links a[data-page="dashboard"],
+[data-page="marketplace"] .nav-links a[data-page="marketplace"],
+[data-page="subscriptions"] .nav-links a[data-page="subscriptions"],
+[data-page="signals"] .nav-links a[data-page="signals"],
+[data-page="trades"] .nav-links a[data-page="trades"],
+[data-page="active"] .nav-links a[data-page="active"] {
+    background: rgba(94, 114, 228, 0.2);
+    color: #fff;
+    border: 1px solid rgba(94, 114, 228, 0.3);
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .nav-links {
+        gap: 0.25rem;
+    }
+
+    .nav-links a {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .nav-container {
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .nav-links {
+        order: 3;
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .nav-cta {
+        order: 2;
+    }
+}
+</style>
+
+<script>
+// Logout function
+function logout() {
+    localStorage.removeItem('auth_token');
+    sessionStorage.clear();
+    window.location.href = '/login';
+}
+
+// Set active nav link based on current page
+document.addEventListener('DOMContentLoaded', function() {
+    const currentPage = document.body.dataset.page;
+    if (currentPage) {
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            if (link.dataset.page === currentPage) {
+                link.classList.add('active');
+            }
+        });
+    }
+});
+</script>

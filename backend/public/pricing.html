@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pricing & Features - AutomatedTradeBot</title>
+    <meta name="description" content="AutomatedTradeBot pricing plans for professional traders. Compare features, choose your subscription level. Access verified strategies, real-time signals, portfolio mirroring. Transparent pricing with no hidden fees. Free trial available.">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #00d4ff;
+            --secondary: #ff00ff;
+            --success: #00ff88;
+            --danger: #ff3366;
+            --warning: #ffaa00;
+            --dark: #0a0e1a;
+            --darker: #060914;
+            --light: #ffffff;
+            --gray: #8892b0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--darker);
+            color: var(--light);
+            min-height: 100vh;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1rem 5%;
+            background: rgba(10, 14, 26, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0, 212, 255, 0.1);
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            cursor: pointer;
+        }
+
+        .btn {
+            padding: 0.7rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            border: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+        }
+
+        /* Container */
+        .container {
+            max-width: 1400px;
+            margin: 100px auto 50px;
+            padding: 0 5%;
+        }
+
+        /* Header */
+        .page-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .page-title {
+            font-size: 3.5rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--light), var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .page-subtitle {
+            color: var(--gray);
+            font-size: 1.3rem;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* Pricing Grid */
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2.5rem;
+            margin-bottom: 5rem;
+        }
+
+        .pricing-card {
+            background: rgba(0, 212, 255, 0.05);
+            border: 1px solid rgba(0, 212, 255, 0.1);
+            border-radius: 20px;
+            padding: 3rem 2.5rem;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+            box-shadow: 0 10px 40px rgba(0, 212, 255, 0.2);
+        }
+
+        .pricing-card.featured {
+            border-color: var(--primary);
+            box-shadow: 0 0 40px rgba(0, 212, 255, 0.3);
+        }
+
+        .popular-badge {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+
+        .plan-name {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--light);
+        }
+
+        .plan-price {
+            font-size: 4rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .plan-period {
+            color: var(--gray);
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+        }
+
+        .plan-description {
+            color: var(--gray);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .plan-features {
+            list-style: none;
+            margin-bottom: 2.5rem;
+        }
+
+        .plan-features li {
+            padding: 0.8rem 0;
+            color: var(--light);
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+
+        .plan-features li i {
+            color: var(--success);
+            margin-top: 0.25rem;
+        }
+
+        .plan-cta {
+            width: 100%;
+            padding: 1.2rem;
+            font-size: 1.1rem;
+            text-align: center;
+        }
+
+        /* Features Table */
+        .features-section {
+            margin-bottom: 5rem;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 3rem;
+            color: var(--light);
+        }
+
+        .features-table {
+            background: rgba(0, 212, 255, 0.05);
+            border: 1px solid rgba(0, 212, 255, 0.1);
+            border-radius: 20px;
+            padding: 2.5rem;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead th {
+            padding: 1.5rem;
+            text-align: left;
+            border-bottom: 2px solid rgba(0, 212, 255, 0.2);
+            color: var(--light);
+            font-weight: 700;
+        }
+
+        tbody td {
+            padding: 1.2rem 1.5rem;
+            border-bottom: 1px solid rgba(0, 212, 255, 0.1);
+            color: var(--gray);
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .check-icon {
+            color: var(--success);
+            font-size: 1.2rem;
+        }
+
+        .cross-icon {
+            color: var(--gray);
+            opacity: 0.3;
+        }
+
+        /* FAQ */
+        .faq-section {
+            max-width: 800px;
+            margin: 0 auto 5rem;
+        }
+
+        .faq-item {
+            background: rgba(0, 212, 255, 0.05);
+            border: 1px solid rgba(0, 212, 255, 0.1);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .faq-question {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--light);
+            margin-bottom: 1rem;
+        }
+
+        .faq-answer {
+            color: var(--gray);
+            line-height: 1.8;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(255, 0, 255, 0.1));
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            border-radius: 20px;
+            padding: 4rem 3rem;
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .cta-title {
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+            color: var(--light);
+        }
+
+        .cta-text {
+            color: var(--gray);
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .page-title {
+                font-size: 2.5rem;
+            }
+
+            .pricing-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <a href="/" class="logo">
+                <i class="fas fa-chart-line"></i>
+                AutomatedTradeBot
+            </a>
+
+            <div style="display: flex; gap: 1rem;">
+                <a href="/" class="btn btn-secondary">← Back to Home</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Header -->
+        <div class="page-header">
+            <h1 class="page-title">Simple, Transparent Pricing</h1>
+            <p class="page-subtitle">
+                Choose the plan that fits your trading style. Upgrade, downgrade, or cancel anytime.
+            </p>
+        </div>
+
+        <!-- Pricing Grid -->
+        <div class="pricing-grid">
+            <!-- Free Plan -->
+            <div class="pricing-card">
+                <div class="plan-name">Free</div>
+                <div class="plan-price">$0</div>
+                <div class="plan-period">Forever free</div>
+                <div class="plan-description">
+                    Perfect for exploring the platform and testing strategies.
+                </div>
+                <ul class="plan-features">
+                    <li><i class="fas fa-check"></i> Browse all strategies</li>
+                    <li><i class="fas fa-check"></i> View signal providers</li>
+                    <li><i class="fas fa-check"></i> Basic analytics</li>
+                    <li><i class="fas fa-check"></i> Community access</li>
+                    <li><i class="fas fa-check"></i> Educational resources</li>
+                </ul>
+                <a href="/register" class="btn btn-secondary plan-cta">Get Started Free</a>
+            </div>
+
+            <!-- Full Package (Most Popular) -->
+            <div class="pricing-card featured">
+                <span class="popular-badge">MOST POPULAR</span>
+                <div class="plan-name">Full Package</div>
+                <div class="plan-price">$40</div>
+                <div class="plan-period">per month (save 20%)</div>
+                <div class="plan-description">
+                    Everything you need for professional trading with AI-powered tools.
+                </div>
+                <ul class="plan-features">
+                    <li><i class="fas fa-check"></i> <strong>All Free features</strong></li>
+                    <li><i class="fas fa-check"></i> <strong>AI Risk Manager</strong> ($10 value)</li>
+                    <li><i class="fas fa-check"></i> <strong>24/7 Server Account</strong> ($25 value)</li>
+                    <li><i class="fas fa-check"></i> <strong>News Sentiment Monitor</strong> ($5 value)</li>
+                    <li><i class="fas fa-check"></i> <strong>Adaptive TP/SL</strong> ($5 value)</li>
+                    <li><i class="fas fa-check"></i> Unlimited strategies</li>
+                    <li><i class="fas fa-check"></i> Priority support</li>
+                    <li><i class="fas fa-check"></i> Advanced analytics</li>
+                </ul>
+                <a href="/register?plan=full" class="btn btn-primary plan-cta">Start 7-Day Trial</a>
+            </div>
+
+            <!-- À La Carte -->
+            <div class="pricing-card">
+                <div class="plan-name">À La Carte</div>
+                <div class="plan-price">$5-25</div>
+                <div class="plan-period">per feature/month</div>
+                <div class="plan-description">
+                    Mix and match the features you need. Pay only for what you use.
+                </div>
+                <ul class="plan-features">
+                    <li><i class="fas fa-check"></i> AI Risk Manager - <strong>$10/mo</strong></li>
+                    <li><i class="fas fa-check"></i> Server Account - <strong>$25/mo</strong></li>
+                    <li><i class="fas fa-check"></i> News Sentiment - <strong>$5/mo</strong></li>
+                    <li><i class="fas fa-check"></i> Adaptive TP/SL - <strong>$5/mo</strong></li>
+                    <li><i class="fas fa-check"></i> Flexible billing</li>
+                    <li><i class="fas fa-check"></i> No commitment</li>
+                </ul>
+                <a href="/features" class="btn btn-secondary plan-cta">Explore Features</a>
+            </div>
+        </div>
+
+        <!-- Features Comparison Table -->
+        <div class="features-section">
+            <h2 class="section-title">Full Feature Comparison</h2>
+            <div class="features-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Feature</th>
+                            <th>Free</th>
+                            <th>Full Package</th>
+                            <th>À La Carte</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Strategy Marketplace Access</strong></td>
+                            <td><i class="fas fa-check check-icon"></i></td>
+                            <td><i class="fas fa-check check-icon"></i></td>
+                            <td><i class="fas fa-check check-icon"></i></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Signal Providers Access</strong></td>
+                            <td><i class="fas fa-check check-icon"></i></td>
+                            <td><i class="fas fa-check check-icon"></i></td>
+                            <td><i class="fas fa-check check-icon"></i></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Funds Access</strong></td>
+                            <td><i class="fas fa-check check-icon"></i></td>
+                            <td><i class="fas fa-check check-icon"></i></td>
+                            <td><i class="fas fa-check check-icon"></i></td>
+                        </tr>
+                        <tr>
+                            <td><strong>AI Risk Manager</strong></td>
+                            <td><i class="fas fa-times cross-icon"></i></td>
+                            <td><i class="fas fa-check check-icon"></i></td>
+                            <td>$10/mo</td>
+                        </tr>
+                        <tr>
+                            <td><strong>24/7 Server Account</strong></td>
+                            <td><i class="fas fa-times cross-icon"></i></td>
+                            <td><i class="fas fa-check check-icon"></i></td>
+                            <td>$25/mo</td>
+                        </tr>
+                        <tr>
+                            <td><strong>News Sentiment Monitor</strong></td>
+                            <td><i class="fas fa-times cross-icon"></i></td>
+                            <td><i class="fas fa-check check-icon"></i></td>
+                            <td>$5/mo</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Adaptive TP/SL</strong></td>
+                            <td><i class="fas fa-times cross-icon"></i></td>
+                            <td><i class="fas fa-check check-icon"></i></td>
+                            <td>$5/mo</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Advanced Analytics</strong></td>
+                            <td><i class="fas fa-times cross-icon"></i></td>
+                            <td><i class="fas fa-check check-icon"></i></td>
+                            <td><i class="fas fa-check check-icon"></i></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Priority Support</strong></td>
+                            <td><i class="fas fa-times cross-icon"></i></td>
+                            <td><i class="fas fa-check check-icon"></i></td>
+                            <td><i class="fas fa-times cross-icon"></i></td>
+                        </tr>
+                        <tr>
+                            <td><strong>API Access</strong></td>
+                            <td><i class="fas fa-times cross-icon"></i></td>
+                            <td><i class="fas fa-check check-icon"></i></td>
+                            <td><i class="fas fa-check check-icon"></i></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- FAQ -->
+        <div class="faq-section">
+            <h2 class="section-title">Frequently Asked Questions</h2>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    <i class="fas fa-question-circle" style="color: var(--primary);"></i>
+                    Can I change my plan later?
+                </div>
+                <div class="faq-answer">
+                    Yes! You can upgrade, downgrade, or cancel anytime. Changes take effect immediately,
+                    and we'll prorate the charges accordingly.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    <i class="fas fa-question-circle" style="color: var(--primary);"></i>
+                    Do I need to pay for strategies separately?
+                </div>
+                <div class="faq-answer">
+                    Yes. Strategies are one-time purchases ($50-$500) or monthly subscriptions ($3-$50/mo).
+                    Signal providers and fund managers also charge separate subscription fees.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    <i class="fas fa-question-circle" style="color: var(--primary);"></i>
+                    Is there a free trial?
+                </div>
+                <div class="faq-answer">
+                    Yes! The Full Package includes a 7-day free trial. No credit card required.
+                    Individual features also offer trial periods.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    <i class="fas fa-question-circle" style="color: var(--primary);"></i>
+                    What payment methods do you accept?
+                </div>
+                <div class="faq-answer">
+                    We accept all major credit cards (Visa, MasterCard, American Express),
+                    PayPal, and cryptocurrency payments.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    <i class="fas fa-question-circle" style="color: var(--primary);"></i>
+                    Can I get a refund?
+                </div>
+                <div class="faq-answer">
+                    Yes. We offer a 30-day money-back guarantee on all paid plans and features.
+                    No questions asked.
+                </div>
+            </div>
+        </div>
+
+        <!-- CTA Section -->
+        <div class="cta-section">
+            <h2 class="cta-title">Ready to Start Trading Smarter?</h2>
+            <p class="cta-text">
+                Join thousands of traders already using AutomatedTradeBot
+            </p>
+            <div style="display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap; margin-top: 2rem;">
+                <a href="/register" class="btn btn-primary" style="padding: 1.2rem 2.5rem; font-size: 1.2rem;">
+                    <i class="fas fa-rocket"></i> Start Free Trial
+                </a>
+                <a href="/marketplace" class="btn btn-secondary" style="padding: 1.2rem 2.5rem; font-size: 1.2rem;">
+                    <i class="fas fa-eye"></i> View Marketplace
+                </a>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

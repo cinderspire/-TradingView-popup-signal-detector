@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio Dashboard - AutomatedTradeBot</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/dark-mode.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .portfolio-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .portfolio-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 30px;
+            border-radius: 15px;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .portfolio-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .stat-change {
+            font-size: 0.85rem;
+            margin-top: 5px;
+        }
+
+        .stat-change.positive { color: #10b981; }
+        .stat-change.negative { color: #ef4444; }
+
+        .positions-table {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table th {
+            background: #f8f9fa;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .table td {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .table tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        .badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .badge-success { background: #d1fae5; color: #065f46; }
+        .badge-danger { background: #fee2e2; color: #991b1b; }
+        .badge-warning { background: #fef3c7; color: #92400e; }
+
+        .equity-chart {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .risk-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .risk-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: #e5e7eb;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981, #059669);
+            transition: width 0.3s ease;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #9ca3af;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="portfolio-container">
+        <!-- Header -->
+        <div class="portfolio-header">
+            <h1><i class="fas fa-chart-line"></i> Portfolio Dashboard</h1>
+            <p>Real-time overview of your trading portfolio</p>
+        </div>
+
+        <!-- Portfolio Stats -->
+        <div class="portfolio-stats">
+            <div class="stat-card">
+                <div class="stat-label">Total Equity</div>
+                <div class="stat-value" id="total-equity">$0.00</div>
+                <div class="stat-change positive" id="equity-change">+0.00%</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Total PnL</div>
+                <div class="stat-value" id="total-pnl">$0.00</div>
+                <div class="stat-change positive" id="pnl-change">+0.00%</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Open Positions</div>
+                <div class="stat-value" id="open-positions">0</div>
+                <div class="stat-change" id="positions-change">0 active</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Win Rate</div>
+                <div class="stat-value" id="win-rate">0%</div>
+                <div class="stat-change" id="win-rate-trades">0/0 trades</div>
+            </div>
+        </div>
+
+        <!-- Equity Curve Chart -->
+        <div class="equity-chart">
+            <h2>Equity Curve</h2>
+            <canvas id="equity-canvas" width="100%" height="300"></canvas>
+        </div>
+
+        <!-- Risk Metrics -->
+        <div class="risk-metrics">
+            <div class="risk-card">
+                <h3>Daily Risk Exposure</h3>
+                <div class="stat-value">2.5%</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 50%"></div>
+                </div>
+                <small>Max: 5%</small>
+            </div>
+            <div class="risk-card">
+                <h3>Current Drawdown</h3>
+                <div class="stat-value">-3.2%</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 16%; background: #ef4444"></div>
+                </div>
+                <small>Max: -20%</small>
+            </div>
+            <div class="risk-card">
+                <h3>Position Utilization</h3>
+                <div class="stat-value">12/20</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 60%"></div>
+                </div>
+                <small>60% utilized</small>
+            </div>
+        </div>
+
+        <!-- Open Positions Table -->
+        <div class="positions-table">
+            <h2 style="padding: 20px; border-bottom: 1px solid #eee; margin: 0;">Open Positions</h2>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Symbol</th>
+                        <th>Strategy</th>
+                        <th>Side</th>
+                        <th>Entry</th>
+                        <th>Current</th>
+                        <th>PnL</th>
+                        <th>PnL %</th>
+                        <th>Duration</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="positions-tbody">
+                    <tr>
+                        <td colspan="9">
+                            <div class="empty-state">
+                                <i class="fas fa-inbox"></i>
+                                <p>No open positions</p>
+                                <small>Subscribe to strategies to start trading</small>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="/js/dark-mode.js"></script>
+    <script>
+        // Load portfolio data
+        async function loadPortfolio() {
+            try {
+                // TODO: Replace with real API call
+                const mockData = {
+                    equity: 10500,
+                    equityChange: 5.2,
+                    totalPnL: 500,
+                    pnlPercent: 5.0,
+                    openPositions: 3,
+                    winRate: 65.5,
+                    totalTrades: 47,
+                    winningTrades: 31,
+                    positions: []
+                };
+
+                // Update stats
+                document.getElementById('total-equity').textContent = `$${mockData.equity.toLocaleString()}`;
+                document.getElementById('equity-change').textContent = `+${mockData.equityChange}%`;
+                document.getElementById('equity-change').className = mockData.equityChange >= 0 ? 'stat-change positive' : 'stat-change negative';
+
+                document.getElementById('total-pnl').textContent = `$${mockData.totalPnL.toLocaleString()}`;
+                document.getElementById('pnl-change').textContent = `+${mockData.pnlPercent}%`;
+
+                document.getElementById('open-positions').textContent = mockData.openPositions;
+                document.getElementById('positions-change').textContent = `${mockData.openPositions} active`;
+
+                document.getElementById('win-rate').textContent = `${mockData.winRate}%`;
+                document.getElementById('win-rate-trades').textContent = `${mockData.winningTrades}/${mockData.totalTrades} trades`;
+
+                console.log('✅ Portfolio loaded');
+            } catch (error) {
+                console.error('❌ Failed to load portfolio:', error);
+            }
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadPortfolio();
+        });
+    </script>
+</body>
+</html>

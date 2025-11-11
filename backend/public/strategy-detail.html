@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>7RSI DCA Strategy - AutomatedTradeBot</title>
+    <meta name="description" content="Browse verified trading strategies on AutomatedTradeBot. Backtested algorithms, proven performance metrics, risk-adjusted returns. Filter by asset class, timeframe, risk level. Purchase strategies with confidence.">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #00d4ff;
+            --secondary: #ff00ff;
+            --success: #00ff88;
+            --danger: #ff3366;
+            --warning: #ffaa00;
+            --dark: #0a0e1a;
+            --darker: #060914;
+            --light: #ffffff;
+            --gray: #8892b0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--darker);
+            color: var(--light);
+            min-height: 100vh;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1rem 5%;
+            background: rgba(10, 14, 26, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0, 212, 255, 0.1);
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            cursor: pointer;
+        }
+
+        .btn {
+            padding: 0.7rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            border: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0, 212, 255, 0.3);
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1400px;
+            margin: 100px auto 50px;
+            padding: 0 5%;
+        }
+
+        /* Breadcrumb */
+        .breadcrumb {
+            color: var(--gray);
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        /* Strategy Header */
+        .strategy-header {
+            background: rgba(0, 212, 255, 0.05);
+            border: 1px solid rgba(0, 212, 255, 0.1);
+            border-radius: 20px;
+            padding: 2.5rem;
+            margin-bottom: 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .strategy-main {
+            flex: 1;
+        }
+
+        .strategy-badges {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .badge {
+            padding: 0.4rem 1rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        .badge-verified {
+            background: linear-gradient(135deg, var(--success), #00cc66);
+            color: white;
+        }
+
+        .badge-top {
+            background: linear-gradient(135deg, var(--warning), var(--secondary));
+            color: white;
+        }
+
+        .strategy-title {
+            font-size: 3rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--light), var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .strategy-provider {
+            color: var(--gray);
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+        }
+
+        .strategy-provider a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .strategy-rating {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .stars {
+            color: var(--warning);
+        }
+
+        .strategy-actions {
+            text-align: center;
+        }
+
+        .price-tag {
+            font-size: 3.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+
+        .btn-purchase {
+            padding: 1.2rem 3rem;
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+
+        .downloads {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        /* Key Metrics */
+        .key-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .metric-card {
+            background: rgba(0, 212, 255, 0.05);
+            border: 1px solid rgba(0, 212, 255, 0.1);
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.2);
+        }
+
+        .metric-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-value.positive {
+            background: linear-gradient(135deg, var(--success), #00cc66);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .metric-value.negative {
+            color: var(--danger);
+        }
+
+        .metric-value.neutral {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .metric-label {
+            color: var(--gray);
+            font-size: 1rem;
+        }
+
+        .metric-tooltip {
+            margin-top: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--gray);
+            font-style: italic;
+        }
+
+        /* Charts Section */
+        .charts-section {
+            margin-bottom: 4rem;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            color: var(--light);
+        }
+
+        .chart-container {
+            background: rgba(0, 212, 255, 0.05);
+            border: 1px solid rgba(0, 212, 255, 0.1);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .chart-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--light);
+        }
+
+        .chart-timeframe {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .timeframe-btn {
+            padding: 0.5rem 1rem;
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            color: var(--gray);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .timeframe-btn:hover, .timeframe-btn.active {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border-color: transparent;
+        }
+
+        .chart-canvas {
+            height: 400px;
+        }
+
+        /* Monthly Returns Heatmap */
+        .heatmap-container {
+            display: grid;
+            grid-template-columns: repeat(13, 1fr);
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .heatmap-label {
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--gray);
+            padding: 0.5rem;
+        }
+
+        .heatmap-cell {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .heatmap-cell:hover {
+            transform: scale(1.1);
+        }
+
+        /* Metrics Table */
+        .metrics-table {
+            background: rgba(0, 212, 255, 0.05);
+            border: 1px solid rgba(0, 212, 255, 0.1);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .metric-category {
+            margin-bottom: 2rem;
+        }
+
+        .category-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        .metric-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.7rem 0;
+            border-bottom: 1px solid rgba(0, 212, 255, 0.1);
+        }
+
+        .metric-row:last-child {
+            border-bottom: none;
+        }
+
+        .metric-name {
+            color: var(--gray);
+        }
+
+        .metric-val {
+            font-weight: 600;
+            color: var(--light);
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid rgba(0, 212, 255, 0.1);
+        }
+
+        .tab {
+            padding: 1rem 2rem;
+            cursor: pointer;
+            color: var(--gray);
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .tab:hover, .tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .strategy-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .strategy-title {
+                font-size: 2rem;
+            }
+
+            .key-metrics {
+                grid-template-columns: 1fr;
+            }
+
+            .heatmap-container {
+                grid-template-columns: repeat(7, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <a href="/" class="logo">
+                <i class="fas fa-chart-line"></i>
+                AutomatedTradeBot
+            </a>
+
+            <div style="display: flex; gap: 1rem;">
+                <a href="/marketplace" class="btn btn-primary">
+                    <i class="fas fa-arrow-left"></i> Back to Marketplace
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Breadcrumb -->
+        <div class="breadcrumb">
+            <a href="/">Home</a> › <a href="/marketplace">Marketplace</a> › <span>7RSI DCA Strategy</span>
+        </div>
+
+        <!-- Strategy Header -->
+        <div class="strategy-header">
+            <div class="strategy-main">
+                <div class="strategy-badges">
+                    <span class="badge badge-verified">✓ VERIFIED</span>
+                    <span class="badge badge-top">TOP RATED</span>
+                </div>
+                <h1 class="strategy-title">7RSI DCA Strategy</h1>
+                <div class="strategy-provider">
+                    by <a href="/provider/ai-strategy-engine">AI Strategy Engine</a>
+                    <i class="fas fa-check-circle" style="color: var(--success);"></i>
+                </div>
+                <div class="strategy-rating">
+                    <div class="stars">⭐⭐⭐⭐⭐</div>
+                    <span>4.9 (567 reviews)</span>
+                </div>
+            </div>
+
+            <div class="strategy-actions">
+                <div class="price-tag">$99.99</div>
+                <button class="btn btn-primary btn-purchase">
+                    <i class="fas fa-shopping-cart"></i> Purchase Strategy
+                </button>
+                <div class="downloads">
+                    <i class="fas fa-download"></i> 1,234 downloads
+                </div>
+            </div>
+        </div>
+
+        <!-- Key Metrics -->
+        <div class="key-metrics">
+            <div class="metric-card">
+                <div class="metric-icon">🚀</div>
+                <div class="metric-value positive">+582%</div>
+                <div class="metric-label">Total ROI</div>
+                <div class="metric-tooltip">Since inception (18 months)</div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-icon">⚡</div>
+                <div class="metric-value neutral">2.8</div>
+                <div class="metric-label">Sharpe Ratio</div>
+                <div class="metric-tooltip">Risk-adjusted returns (Excellent > 2.0)</div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-icon">🎯</div>
+                <div class="metric-value positive">82.3%</div>
+                <div class="metric-label">Win Rate</div>
+                <div class="metric-tooltip">1,026 of 1,247 trades profitable</div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-icon">📉</div>
+                <div class="metric-value negative">-8.2%</div>
+                <div class="metric-label">Max Drawdown</div>
+                <div class="metric-tooltip">Maximum peak-to-trough decline</div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="charts-section">
+            <h2 class="section-title">Performance Charts</h2>
+
+            <!-- Equity Curve -->
+            <div class="chart-container">
+                <div class="chart-header">
+                    <div class="chart-title">📈 Equity Curve</div>
+                    <div class="chart-timeframe">
+                        <button class="timeframe-btn">1M</button>
+                        <button class="timeframe-btn">3M</button>
+                        <button class="timeframe-btn">6M</button>
+                        <button class="timeframe-btn active">1Y</button>
+                        <button class="timeframe-btn">ALL</button>
+                    </div>
+                </div>
+                <div class="chart-canvas">
+                    <canvas id="equityChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Drawdown Chart -->
+            <div class="chart-container">
+                <div class="chart-header">
+                    <div class="chart-title">📉 Drawdown Analysis</div>
+                </div>
+                <div class="chart-canvas">
+                    <canvas id="drawdownChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Monthly Returns Heatmap -->
+            <div class="chart-container">
+                <div class="chart-header">
+                    <div class="chart-title">📅 Monthly Returns Heatmap</div>
+                </div>
+                <div class="heatmap-container" id="heatmap">
+                    <!-- Generated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Win/Loss Distribution -->
+            <div class="chart-container">
+                <div class="chart-header">
+                    <div class="chart-title">📊 Win/Loss Distribution</div>
+                </div>
+                <div class="chart-canvas">
+                    <canvas id="distributionChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('overview')">Overview</div>
+            <div class="tab" onclick="switchTab('backtest')">Backtest Results</div>
+            <div class="tab" onclick="switchTab('config')">Configuration</div>
+            <div class="tab" onclick="switchTab('reviews')">Reviews</div>
+        </div>
+
+        <!-- Tab Content: Overview -->
+        <div class="tab-content active" id="overview-tab">
+            <div class="metrics-table">
+                <h2 class="section-title">Detailed Metrics</h2>
+                <div class="metrics-grid">
+                    <!-- Return Metrics -->
+                    <div class="metric-category">
+                        <h3 class="category-title">Return Metrics</h3>
+                        <div class="metric-row">
+                            <span class="metric-name">Total ROI</span>
+                            <span class="metric-val" style="color: var(--success);">+582.3%</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-name">Avg ROI per Trade</span>
+                            <span class="metric-val">+3.2%</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-name">Best Trade</span>
+                            <span class="metric-val" style="color: var(--success);">+24.5%</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-name">Worst Trade</span>
+                            <span class="metric-val" style="color: var(--danger);">-5.1%</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-name">Profit Factor</span>
+                            <span class="metric-val">2.4</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-name">Monthly Avg Return</span>
+                            <span class="metric-val">+12.3%</span>
+                        </div>
+                    </div>
+
+                    <!-- Risk Metrics -->
+                    <div class="metric-category">
+                        <h3 class="category-title">Risk Metrics</h3>
+                        <div class="metric-row">
+                            <span class="metric-name">Sharpe Ratio</span>
+                            <span class="metric-val">2.8</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-name">Sortino Ratio</span>
+                            <span class="metric-val">3.2</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-name">Calmar Ratio</span>
+                            <span class="metric-val">7.1</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-name">Max Drawdown</span>
+                            <span class="metric-val" style="color: var(--danger);">-8.2%</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-name">Avg Drawdown</span>
+                            <span class="metric-val">-2.1%</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-name">Volatility (StdDev)</span>
+                            <span class="metric-val">4.8%</span>
+                        </div>
+                    </div>
+
+                    <!-- Trade Statistics -->
+                    <div class="metric-category">
+                        <h3 class="category-title">Trade Statistics</h3>
+                        <div class="metric-row">
+                            <span class="metric-name">Total Trades</span>
+                            <span class="metric-val">1,247</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-name">Profitable Trades</span>
+                            <span class="metric-val" style="color: var(--success);">1,026 (82.3%)</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-name">Losing Trades</span>
+                            <span class="metric-val">221 (17.7%)</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-name">Avg Trade Duration</span>
+                            <span class="metric-val">4.2 hours</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-name">Avg Win/Loss Ratio</span>
+                            <span class="metric-val">2.8</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-name">Recovery Factor</span>
+                            <span class="metric-val">71</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab Content: Backtest (placeholder) -->
+        <div class="tab-content" id="backtest-tab">
+            <div class="metrics-table">
+                <h2 class="section-title">Backtest Results</h2>
+                <p>Backtest period: January 2023 - October 2025 (22 months)</p>
+                <!-- Backtest details -->
+            </div>
+        </div>
+
+        <!-- Tab Content: Configuration (placeholder) -->
+        <div class="tab-content" id="config-tab">
+            <div class="metrics-table">
+                <h2 class="section-title">Strategy Configuration</h2>
+                <p>Default settings and customization options</p>
+                <!-- Configuration details -->
+            </div>
+        </div>
+
+        <!-- Tab Content: Reviews (placeholder) -->
+        <div class="tab-content" id="reviews-tab">
+            <div class="metrics-table">
+                <h2 class="section-title">User Reviews</h2>
+                <p>567 reviews from verified users</p>
+                <!-- Reviews list -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample data generation
+        function generateEquityData() {
+            const data = [];
+            let equity = 1000;
+            const startDate = new Date('2023-01-01');
+
+            for (let i = 0; i < 545; i++) { // 18 months of daily data
+                const date = new Date(startDate);
+                date.setDate(date.getDate() + i);
+
+                // Simulate growth with some volatility
+                equity *= (1 + (Math.random() * 0.02 - 0.005));
+
+                data.push({
+                    x: date,
+                    y: equity
+                });
+            }
+
+            return data;
+        }
+
+        function generateDrawdownData() {
+            const data = [];
+            const startDate = new Date('2023-01-01');
+            let maxEquity = 1000;
+            let currentEquity = 1000;
+
+            for (let i = 0; i < 545; i++) {
+                const date = new Date(startDate);
+                date.setDate(date.getDate() + i);
+
+                currentEquity *= (1 + (Math.random() * 0.02 - 0.005));
+                if (currentEquity > maxEquity) maxEquity = currentEquity;
+
+                const drawdown = ((currentEquity - maxEquity) / maxEquity) * 100;
+
+                data.push({
+                    x: date,
+                    y: drawdown
+                });
+            }
+
+            return data;
+        }
+
+        // Equity Curve Chart
+        const equityCtx = document.getElementById('equityChart').getContext('2d');
+        const equityGradient = equityCtx.createLinearGradient(0, 0, 0, 400);
+        equityGradient.addColorStop(0, 'rgba(0, 255, 136, 0.4)');
+        equityGradient.addColorStop(1, 'rgba(0, 255, 136, 0.05)');
+
+        new Chart(equityCtx, {
+            type: 'line',
+            data: {
+                datasets: [{
+                    label: 'Equity',
+                    data: generateEquityData(),
+                    borderColor: '#00ff88',
+                    backgroundColor: equityGradient,
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 0,
+                    pointHoverRadius: 5
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        backgroundColor: 'rgba(10, 14, 26, 0.95)',
+                        titleColor: '#00d4ff',
+                        bodyColor: '#fff',
+                        borderColor: '#00d4ff',
+                        borderWidth: 1
+                    }
+                },
+                scales: {
+                    x: {
+                        type: 'time',
+                        time: { unit: 'month' },
+                        grid: { color: 'rgba(0, 212, 255, 0.1)' },
+                        ticks: { color: '#8892b0' }
+                    },
+                    y: {
+                        grid: { color: 'rgba(0, 212, 255, 0.1)' },
+                        ticks: {
+                            color: '#8892b0',
+                            callback: (value) => '$' + value.toFixed(0)
+                        }
+                    }
+                }
+            }
+        });
+
+        // Drawdown Chart
+        const drawdownCtx = document.getElementById('drawdownChart').getContext('2d');
+        const drawdownGradient = drawdownCtx.createLinearGradient(0, 0, 0, 400);
+        drawdownGradient.addColorStop(0, 'rgba(255, 51, 102, 0.05)');
+        drawdownGradient.addColorStop(1, 'rgba(255, 51, 102, 0.3)');
+
+        new Chart(drawdownCtx, {
+            type: 'line',
+            data: {
+                datasets: [{
+                    label: 'Drawdown',
+                    data: generateDrawdownData(),
+                    borderColor: '#ff3366',
+                    backgroundColor: drawdownGradient,
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    x: {
+                        type: 'time',
+                        time: { unit: 'month' },
+                        grid: { color: 'rgba(0, 212, 255, 0.1)' },
+                        ticks: { color: '#8892b0' }
+                    },
+                    y: {
+                        grid: { color: 'rgba(0, 212, 255, 0.1)' },
+                        ticks: {
+                            color: '#8892b0',
+                            callback: (value) => value.toFixed(1) + '%'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Distribution Chart
+        const distributionCtx = document.getElementById('distributionChart').getContext('2d');
+        new Chart(distributionCtx, {
+            type: 'bar',
+            data: {
+                labels: ['-10%+', '-5 to -10%', '-2 to -5%', '0 to -2%', '0 to 2%', '2 to 5%', '5 to 10%', '10%+'],
+                datasets: [{
+                    label: 'Number of Trades',
+                    data: [5, 18, 54, 144, 289, 412, 245, 80],
+                    backgroundColor: (context) => {
+                        const index = context.dataIndex;
+                        return index < 4 ? '#ff3366' : '#00ff88';
+                    }
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: '#8892b0' }
+                    },
+                    y: {
+                        grid: { color: 'rgba(0, 212, 255, 0.1)' },
+                        ticks: {
+                            color: '#8892b0',
+                            beginAtZero: true
+                        }
+                    }
+                }
+            }
+        });
+
+        // Monthly Returns Heatmap
+        const monthlyReturns = {
+            2023: [null, 8.1, 13.4, 9.7, -2.3, 15.8, 11.2, 18.5, 6.4, 14.7, 9.3, 12.1],
+            2024: [10.5, 12.3, -2.1, 18.5, 9.2, 15.8, 7.4, 22.1, 11.3, 6.9, 14.7, 16.2],
+            2025: [15.3, 11.8, 19.2, 8.7, 13.5, 10.9, 17.4, 9.8, 12.6, 14.3, null, null]
+        };
+
+        function generateHeatmap() {
+            const container = document.getElementById('heatmap');
+            const months = ['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+            // Header row
+            months.forEach(month => {
+                const label = document.createElement('div');
+                label.className = 'heatmap-label';
+                label.textContent = month;
+                container.appendChild(label);
+            });
+
+            // Data rows
+            Object.entries(monthlyReturns).forEach(([year, returns]) => {
+                const yearLabel = document.createElement('div');
+                yearLabel.className = 'heatmap-label';
+                yearLabel.textContent = year;
+                container.appendChild(yearLabel);
+
+                returns.forEach(value => {
+                    const cell = document.createElement('div');
+                    cell.className = 'heatmap-cell';
+
+                    if (value === null) {
+                        cell.style.background = 'rgba(0, 212, 255, 0.05)';
+                        cell.textContent = '-';
+                    } else {
+                        const intensity = Math.min(Math.abs(value) / 25, 1);
+                        if (value < 0) {
+                            cell.style.background = `rgba(255, 51, 102, ${0.3 + intensity * 0.7})`;
+                        } else {
+                            cell.style.background = `rgba(0, 255, 136, ${0.3 + intensity * 0.7})`;
+                        }
+                        cell.textContent = value > 0 ? `+${value}%` : `${value}%`;
+                        cell.style.color = 'white';
+                    }
+
+                    container.appendChild(cell);
+                });
+            });
+        }
+
+        generateHeatmap();
+
+        // Tab switching
+        function switchTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Show selected tab
+            document.getElementById(tabName + '-tab').classList.add('active');
+            event.target.classList.add('active');
+        }
+    </script>
+
+</body>
+</html>

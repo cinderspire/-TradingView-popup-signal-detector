@@ -1,0 +1,843 @@
+// Prisma Schema for AutomatedTradeBot Platform
+// Complete production-ready database schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User Management
+enum UserRole {
+  USER
+  PROVIDER
+  ADMIN
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  PAUSED
+  CANCELLED
+  EXPIRED
+}
+
+enum TradingMode {
+  PAPER
+  REAL
+}
+
+enum SignalStatus {
+  PENDING
+  ACTIVE
+  EXECUTED
+  CLOSED
+  CANCELLED
+  EXPIRED
+}
+
+enum SignalType {
+  ENTRY
+  EXIT
+  UPDATE
+}
+
+enum PositionStatus {
+  OPEN
+  CLOSED
+  LIQUIDATED
+}
+
+enum OrderSide {
+  BUY
+  SELL
+}
+
+enum TransactionType {
+  SUBSCRIPTION_PAYMENT
+  REVENUE_SHARE
+  REFUND
+  WITHDRAWAL
+}
+
+enum BacktestStatus {
+  PENDING
+  RUNNING
+  COMPLETED
+  FAILED
+}
+
+enum RiskConfigType {
+  FIXED
+  ADAPTIVE
+  NEWS_BASED
+}
+
+enum OrderType {
+  SPOT
+  FUTURES
+}
+
+// Users Table
+model User {
+  id       String   @id @default(uuid())
+  email    String   @unique
+  username String   @unique
+  password String
+  role     UserRole @default(USER)
+
+  // Profile
+  firstName String?
+  lastName  String?
+  avatar    String?
+  bio       String?
+
+  // API Keys (encrypted)
+  apiKeys ApiKey[]
+
+  // Trading
+  tradingSessions TradingSession[]
+  positions       Position[]
+  subscriptions   Subscription[]
+  executionLogs   ExecutionLog[]
+
+  // Provider-specific
+  strategies Strategy[] // If user is a provider
+  earnings   Transaction[] @relation("ProviderEarnings")
+
+  // Payments
+  payments Transaction[] @relation("UserPayments")
+
+  // Risk Management
+  riskConfigs RiskConfig[]
+
+  // Settings
+  notificationSettings Json?
+  tradingPreferences   Json?
+
+  // Metadata
+  isActive      Boolean   @default(true)
+  emailVerified Boolean   @default(false)
+  lastLogin     DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([email])
+  @@index([username])
+  @@index([role])
+}
+
+// API Keys (encrypted storage)
+model ApiKey {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  exchange      String // bybit, binance, etc.
+  apiKey        String // Encrypted
+  apiSecret     String // Encrypted
+  apiPassphrase String? // Encrypted (for some exchanges)
+
+  isActive    Boolean  @default(true)
+  permissions String[] // ["spot", "futures", "margin"]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([exchange])
+}
+
+// Trading Strategies
+model Strategy {
+  id         String @id @default(uuid())
+  providerId String
+  provider   User   @relation(fields: [providerId], references: [id], onDelete: Cascade)
+
+  // Basic Info
+  name        String
+  description String
+  category    String // Technical, AI, Hybrid, etc.
+
+  // Strategy Details
+  type       String // RSI, MACD, AI_ML, CUSTOM
+  parameters Json // Strategy-specific parameters
+
+  // Supported Markets
+  supportedPairs      String[] // ["BTC/USDT", "ETH/USDT"]
+  supportedTimeframes String[] // ["5m", "15m", "1h", "4h"]
+
+  // Performance Metrics (updated from backtests and live trading)
+  winRate          Float?
+  avgProfit        Float?
+  maxDrawdown      Float?
+  sharpeRatio      Float?
+  totalTrades      Int    @default(0)
+  profitableTrades Int    @default(0)
+
+  // Subscription
+  monthlyPrice        Float
+  revenueSharePercent Float @default(20) // Platform takes this %
+
+  // Signals and Subscriptions
+  signals       Signal[]
+  subscriptions Subscription[]
+  backtests     Backtest[]
+  tradingBots   TradingBot[]
+
+  // Status
+  isActive Boolean @default(true)
+  isPublic Boolean @default(false)
+
+  // Metadata
+  totalSubscribers Int      @default(0)
+  rating           Float?
+  reviews          Review[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([providerId])
+  @@index([isActive, isPublic])
+  @@index([category])
+}
+
+// Trading Signals
+model Signal {
+  id         String    @id @default(uuid())
+  strategyId String? // Made optional for TradingView/Telegram signals
+  strategy   Strategy? @relation(fields: [strategyId], references: [id], onDelete: Cascade)
+
+  // Signal Source
+  source  String  @default("manual") // tradingview, telegram, manual, strategy
+  rawText String? // Original signal text from TradingView/Telegram
+
+  // Signal Details
+  type      String // ENTRY, EXIT, UPDATE
+  direction String // LONG, SHORT
+  status    SignalStatus @default(PENDING)
+
+  // Market Info
+  symbol    String // BTC/USDT (called 'pair' in services, 'symbol' in DB)
+  timeframe String? // 5m, 15m, etc. (optional)
+
+  // Price Levels
+  entryPrice   Float
+  currentPrice Float?
+  stopLoss     Float? // Made optional (not all signals have SL)
+  takeProfit   Float?
+  takeProfit2  Float?
+  takeProfit3  Float?
+
+  // Risk Management
+  riskRewardRatio Float?
+
+  // Execution & Results
+  executedPrice    Float?
+  exitPrice        Float?
+  profitLoss       Float?
+  profitLossAmount Float?
+
+  // Additional Info
+  note            String?
+  confidenceLevel Int?
+
+  // Timestamps
+  executedAt DateTime?
+  closedAt   DateTime?
+  expiresAt  DateTime?
+
+  // Related positions and paper trades
+  positions     Position[]
+  paperTrades   PaperTrade[]
+  executionLogs ExecutionLog[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([strategyId])
+  @@index([source])
+  @@index([status])
+  @@index([symbol])
+  @@index([createdAt])
+}
+
+// Trading Positions
+model Position {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  strategyId String?
+  sessionId  String?
+  session    TradingSession? @relation(fields: [sessionId], references: [id])
+
+  signalId String?
+  signal   Signal? @relation(fields: [signalId], references: [id])
+
+  // Position Details
+  symbol String
+  side   String // LONG, SHORT
+
+  // Quantities
+  size         Float  @default(1.0)
+  entryPrice   Float
+  currentPrice Float?
+  exitPrice    Float?
+
+  // Risk Management
+  stopLoss   Float?
+  takeProfit Float?
+
+  // Status
+  status String @default("OPEN") // OPEN, CLOSED
+
+  // PnL Tracking
+  realizedPnL   Float?
+  unrealizedPnL Float?
+
+  // Timestamps
+  openedAt    DateTime  @default(now())
+  closedAt    DateTime?
+  closeReason String?
+
+  // Metadata
+  notes String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([strategyId])
+  @@index([sessionId])
+  @@index([status])
+  @@index([symbol])
+}
+
+// Strategy Subscriptions
+model Subscription {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  strategyId String
+  strategy   Strategy @relation(fields: [strategyId], references: [id], onDelete: Cascade)
+
+  // Subscription Details
+  status    SubscriptionStatus @default(ACTIVE)
+  autoRenew Boolean            @default(true)
+
+  // Pricing (currently all FREE)
+  monthlyPrice Float   @default(0)
+  isFree       Boolean @default(true)
+
+  // Free Trial System
+  isTrial            Boolean   @default(false)
+  trialEndsAt        DateTime?
+  trialDays          Int? // Duration of trial (7, 14, 30 days)
+  convertedFromTrial Boolean   @default(false)
+  trialConvertedAt   DateTime?
+
+  // Pair Selection (which trading pairs user wants signals for)
+  subscribedPairs String[] // ["BTCUSDT", "ETHUSDT", "SOLUSDT"]
+  allPairs        Boolean  @default(true) // Subscribe to all pairs from this strategy
+
+  // Exchange Configuration
+  exchanges      String[] // ["binance", "bybit"] - where to activate signals
+  activeExchange String? // Current primary exchange
+
+  // Dates
+  startDate   DateTime  @default(now())
+  endDate     DateTime? // Null for free unlimited subscriptions
+  renewalDate DateTime?
+  cancelledAt DateTime?
+
+  // Stats
+  totalPnl    Float?
+  totalTrades Int    @default(0)
+
+  // Trading Configuration
+  orderType        OrderType @default(FUTURES) // SPOT or FUTURES
+  fixedOrderSize   Float? // Fixed USDT amount per trade (e.g., 100)
+  usePercentage    Boolean   @default(false) // Use % of balance instead
+  orderSizePercent Float? // % of balance (e.g., 10%)
+
+  // Auto Stop Configuration
+  autoStopEnabled       Boolean @default(false)
+  autoStopProfitPercent Float? // Stop when profit reaches X% (e.g., 50%)
+  autoStopLossPercent   Float? // Stop when loss reaches X% (e.g., -20%)
+  currentProfitLoss     Float   @default(0) // Track cumulative P&L
+
+  // ADAPTIVE TP/SL CONFIGURATION
+  useAdaptiveTPSL      Boolean @default(false) // Enable adaptive TP/SL based on historical data
+  riskProfile          String  @default("balanced") // conservative, balanced, aggressive
+  customTakeProfit     Float? // Manual override for TP (%)
+  customStopLoss       Float? // Manual override for SL (%)
+  useTrailingStop      Boolean @default(false) // Enable trailing stop
+  useBreakEven         Boolean @default(true) // Move SL to breakeven when in profit
+  usePairSpecificTPSL  Boolean @default(true) // Use pair-specific TP/SL instead of global
+
+  // AI RISK CONTROL
+  useAIRiskControl     Boolean @default(false) // Enable AI-powered risk management
+  aiModel              String  @default("glm-4") // AI model to use (glm-4, gpt-4, etc.)
+  aiRiskLevel          String  @default("medium") // low, medium, high, adaptive
+  aiDecisionLog        Json? // Log AI decisions for transparency
+
+  // Exchange API Keys (encrypted)
+  exchangeApiKey     String? // Encrypted
+  exchangeApiSecret  String? // Encrypted
+  exchangeSubAccount String? // For subaccount support
+
+  // Execution Logs
+  executionLogs ExecutionLog[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, strategyId])
+  @@index([userId])
+  @@index([strategyId])
+  @@index([status])
+}
+
+// Transactions & Payments
+model Transaction {
+  id String @id @default(uuid())
+
+  // Payer
+  userId String
+  user   User   @relation("UserPayments", fields: [userId], references: [id], onDelete: Cascade)
+
+  // Provider (for revenue share)
+  providerId String?
+  provider   User?   @relation("ProviderEarnings", fields: [providerId], references: [id])
+
+  // Transaction Details
+  type     TransactionType
+  amount   Float
+  currency String          @default("USD")
+
+  // References
+  strategyId     String?
+  subscriptionId String?
+
+  // Payment Details
+  paymentMethod String?
+  paymentId     String? // External payment ID
+
+  // Status
+  status String // pending, completed, failed
+
+  // Metadata
+  metadata Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([providerId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+// Backtesting Results
+model Backtest {
+  id         String   @id @default(uuid())
+  strategyId String
+  strategy   Strategy @relation(fields: [strategyId], references: [id], onDelete: Cascade)
+
+  // Backtest Configuration
+  pair      String
+  exchange  String
+  timeframe String
+
+  // Period
+  startDate DateTime
+  endDate   DateTime
+
+  // Status
+  status BacktestStatus @default(PENDING)
+
+  // Results
+  totalTrades      Int?
+  profitableTrades Int?
+  losingTrades     Int?
+
+  // Performance Metrics
+  winRate   Float?
+  avgProfit Float?
+  avgLoss   Float?
+
+  totalProfit Float?
+  totalLoss   Float?
+  netProfit   Float?
+
+  maxDrawdown        Float?
+  maxDrawdownPercent Float?
+
+  sharpeRatio  Float?
+  sortinoRatio Float?
+
+  profitFactor   Float?
+  recoveryFactor Float?
+
+  // Trade Statistics
+  avgWinningTrade Float?
+  avgLosingTrade  Float?
+  largestWin      Float?
+  largestLoss     Float?
+
+  avgTradeDuration Float? // in minutes
+
+  // Risk Metrics
+  maxConsecutiveWins   Int?
+  maxConsecutiveLosses Int?
+
+  // Equity Curve Data
+  equityCurve Json? // Array of {date, equity} objects
+  trades      Json? // Detailed trade log
+
+  // Execution Time
+  executionTime Int? // milliseconds
+
+  // Metadata
+  parameters Json? // Strategy parameters used
+  notes      String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([strategyId])
+  @@index([status])
+  @@index([pair, timeframe])
+}
+
+// Trading Sessions (Paper or Real)
+model TradingSession {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Session Details
+  name String
+  mode TradingMode
+
+  // Configuration
+  exchange   String
+  pairs      String[]
+  strategies String[] // Strategy IDs
+
+  // Capital Management
+  initialCapital Float
+  currentCapital Float
+
+  // Risk Settings
+  maxPositionSize Float? // Percentage of capital
+  maxDailyLoss    Float?
+  maxDrawdown     Float?
+
+  // Status
+  isActive Boolean @default(true)
+
+  // Performance
+  totalPnl         Float?
+  totalPnlPercent  Float?
+  totalTrades      Int    @default(0)
+  profitableTrades Int    @default(0)
+
+  winRate            Float?
+  sharpeRatio        Float?
+  maxDrawdownReached Float?
+
+  // Positions
+  positions Position[]
+
+  // Timestamps
+  startedAt DateTime  @default(now())
+  stoppedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([mode])
+  @@index([isActive])
+}
+
+// Strategy Reviews & Ratings
+model Review {
+  id         String   @id @default(uuid())
+  userId     String
+  strategyId String
+  strategy   Strategy @relation(fields: [strategyId], references: [id], onDelete: Cascade)
+
+  rating  Int // 1-5
+  comment String?
+
+  // Helpful votes
+  helpfulCount Int @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, strategyId])
+  @@index([strategyId])
+  @@index([rating])
+}
+
+// System Notifications
+model Notification {
+  id     String @id @default(uuid())
+  userId String
+
+  type    String // signal, position, system, etc.
+  title   String
+  message String
+
+  data Json? // Additional data
+
+  isRead Boolean @default(false)
+
+  createdAt DateTime @default(now())
+
+  @@index([userId, isRead])
+  @@index([createdAt])
+}
+
+// System Logs (for debugging and monitoring)
+model SystemLog {
+  id String @id @default(uuid())
+
+  level    String // info, warn, error, critical
+  category String // trading, signal, position, system
+
+  message String
+  data    Json?
+
+  userId     String?
+  strategyId String?
+
+  createdAt DateTime @default(now())
+
+  @@index([level])
+  @@index([category])
+  @@index([createdAt])
+}
+
+// Risk Management Configurations
+model RiskConfig {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Configuration Details
+  name        String
+  description String?
+  type        RiskConfigType @default(FIXED)
+
+  // Fixed Risk Settings
+  riskPerTrade    Float? // Percentage of capital per trade (e.g., 1.0 = 1%)
+  maxPositionSize Float? // Max % of capital in single position
+  maxDailyLoss    Float? // Max % loss per day before stopping
+  maxDrawdown     Float? // Max % drawdown before stopping
+
+  // Adaptive Risk Settings
+  adaptiveEnabled     Boolean @default(false)
+  baseRiskPercent     Float? // Starting risk percentage
+  winStreakMultiplier Float? // Increase risk on winning streak (e.g., 1.2)
+  lossStreakDivisor   Float? // Decrease risk on losing streak (e.g., 2.0)
+  maxAdaptiveRisk     Float? // Maximum adaptive risk percentage
+  minAdaptiveRisk     Float? // Minimum adaptive risk percentage
+
+  // News-Based Risk Settings
+  newsBasedEnabled     Boolean @default(false)
+  reduceRiskBeforeNews Boolean @default(false)
+  newsRiskReduction    Float? // % to reduce position size (e.g., 50.0 = 50% reduction)
+  newsSafetyWindow     Int? // Minutes before/after news to avoid trading
+
+  // Stop Loss & Take Profit
+  useStopLoss       Boolean @default(true)
+  stopLossPercent   Float? // Default SL % (e.g., 2.0 = 2%)
+  useTakeProfit     Boolean @default(true)
+  takeProfitPercent Float? // Default TP % (e.g., 3.0 = 3%)
+  riskRewardRatio   Float? // Minimum R:R ratio (e.g., 1.5)
+
+  // Position Management
+  maxOpenPositions Int? // Maximum concurrent positions
+  correlationLimit Float? // Max correlation between positions (0-1)
+  allowHedging     Boolean @default(false)
+
+  // Leverage & Margin
+  maxLeverage         Float? // Maximum allowed leverage
+  useMargin           Boolean @default(false)
+  marginSafetyPercent Float? // Keep this % of margin free
+
+  // Status
+  isActive  Boolean @default(true)
+  isDefault Boolean @default(false)
+
+  // Statistics (tracked over time)
+  totalTradesWithConfig Int    @default(0)
+  successfulTrades      Int    @default(0)
+  avgRiskTaken          Float?
+  avgReturn             Float?
+  largestLoss           Float?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([type])
+  @@index([isActive])
+}
+
+// Paper Trading Records
+model PaperTrade {
+  id     String @id @default(uuid())
+  userId String
+  // No foreign key to User to avoid dependency issues during testing
+
+  // Signal Reference
+  signalId String?
+  signal   Signal? @relation(fields: [signalId], references: [id], onDelete: SetNull)
+
+  // Trade Details
+  pair      String // BTC/USDT, ETH/USDT, etc.
+  direction String // LONG, SHORT
+
+  // Prices
+  entryPrice   Float
+  exitPrice    Float?
+  currentPrice Float?
+
+  // Position Size
+  size     Float // Amount of contracts/coins
+  leverage Float @default(10)
+
+  // Risk Management
+  takeProfit Float?
+  stopLoss   Float?
+
+  // Status
+  status String @default("OPEN") // OPEN, CLOSED
+
+  // PnL Tracking
+  pnl        Float @default(0) // Profit/Loss in USDT
+  pnlPercent Float @default(0) // Profit/Loss in %
+  margin     Float // Margin used for this position
+
+  // Source
+  source String @default("manual") // tradingview, telegram, manual
+
+  // Timestamps
+  timestamp   DateTime  @default(now()) // When position was opened
+  closedAt    DateTime? // When position was closed
+  closeReason String? // TP, SL, manual, auto, liquidation
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([signalId])
+  @@index([pair])
+  @@index([status])
+  @@index([source])
+  @@index([timestamp])
+}
+
+// Trading Bots (Auto-trading instances)
+model TradingBot {
+  id String @id @default(uuid())
+
+  // Strategy Reference
+  strategyId String
+  strategy   Strategy @relation(fields: [strategyId], references: [id], onDelete: Cascade)
+
+  // Bot Configuration
+  symbol   String // BTCUSDT, ETHUSDT, etc.
+  exchange String // BYBIT, BINANCE, etc.
+  capital  Float // Initial capital allocated
+  mode     String // PAPER, REAL
+
+  // Bot Status
+  status String @default("RUNNING") // RUNNING, STOPPED, PAUSED, ERROR
+
+  // Performance Metrics
+  totalPnl        Float  @default(0)
+  totalPnlPercent Float  @default(0)
+  totalTrades     Int    @default(0)
+  winningTrades   Int    @default(0)
+  losingTrades    Int    @default(0)
+  winRate         Float?
+
+  // Current State
+  currentCapital  Float?
+  currentDrawdown Float  @default(0)
+  openPositions   Int    @default(0)
+
+  // Configuration
+  config Json? // Bot settings (autoRestart, maxDrawdown, stopLossEnabled, etc.)
+
+  // Timestamps
+  startedAt   DateTime  @default(now())
+  stoppedAt   DateTime?
+  lastTradeAt DateTime?
+
+  // Metadata
+  errorMessage String?
+  errorCount   Int     @default(0)
+  restartCount Int     @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([strategyId])
+  @@index([symbol])
+  @@index([status])
+  @@index([exchange])
+  @@index([mode])
+  @@index([startedAt])
+}
+
+// Execution Log - Tracks all order executions from SubscriptionExecutor
+model ExecutionLog {
+  id             String @id @default(uuid())
+  userId         String
+  subscriptionId String
+  signalId       String
+
+  // Order Details
+  exchange  String // binance, mexc, bybit, etc.
+  orderType OrderType // SPOT or FUTURES
+  side      String // buy, sell
+  symbol    String // BTC/USDT
+
+  // Execution Data
+  amount  Float // Position size
+  price   Float? // Executed price
+  orderId String? // Exchange order ID
+
+  // Result
+  status String // SUCCESS, FAILED, PARTIAL
+  error  String? // Error message if failed
+
+  // Performance Tracking
+  executionTimeMs Int? // Execution latency in milliseconds
+
+  // Timestamps
+  executedAt DateTime @default(now())
+
+  // Relations
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subscription Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  signal       Signal       @relation(fields: [signalId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([subscriptionId])
+  @@index([signalId])
+  @@index([executedAt])
+  @@index([status])
+  @@index([exchange])
+}

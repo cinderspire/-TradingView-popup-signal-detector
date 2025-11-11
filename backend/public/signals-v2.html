@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Trading Signals | Professional Crypto & Forex</title>
+    <meta name="description" content="Live trading signals from professional traders. Real-time cryptocurrency, forex, and stock alerts. Copy trades automatically with AutomatedTradeBot. Verified performance history, transparent track records.">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #0a0e27;
+            color: #e8eaf6;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: #131829;
+            border-bottom: 1px solid #1e2337;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 700;
+            color: #5e72e4;
+        }
+
+        .header-stats {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            font-size: 13px;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #10b981;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .status-dot.disconnected {
+            background: #ef4444;
+            animation: none;
+        }
+
+        /* Main Layout */
+        .container {
+            display: flex;
+            max-width: 100%;
+            margin: 0 auto;
+        }
+
+        /* Sidebar Filters */
+        .sidebar {
+            width: 280px;
+            background: #131829;
+            border-right: 1px solid #1e2337;
+            padding: 20px;
+            height: calc(100vh - 61px);
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar.collapsed {
+            transform: translateX(-100%);
+            position: absolute;
+        }
+
+        .filter-section {
+            margin-bottom: 25px;
+        }
+
+        .filter-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #8b93a7;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            letter-spacing: 0.5px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .filter-btn {
+            padding: 6px 12px;
+            background: #1e2337;
+            border: 1px solid #2d3548;
+            border-radius: 6px;
+            color: #8b93a7;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+
+        .filter-btn:hover {
+            background: #252d44;
+            border-color: #5e72e4;
+        }
+
+        .filter-btn.active {
+            background: #5e72e4;
+            border-color: #5e72e4;
+            color: white;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px 12px;
+            background: #1e2337;
+            border: 1px solid #2d3548;
+            border-radius: 6px;
+            color: #e8eaf6;
+            font-size: 13px;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #5e72e4;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 20px 30px;
+            overflow-x: auto;
+        }
+
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .toggle-sidebar {
+            background: #1e2337;
+            border: 1px solid #2d3548;
+            color: #8b93a7;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .toggle-sidebar:hover {
+            background: #252d44;
+        }
+
+        .page-info {
+            color: #8b93a7;
+            font-size: 13px;
+        }
+
+        /* Signals Table */
+        .signals-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #131829;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .signals-table thead {
+            background: #1a1f36;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .signals-table th {
+            padding: 12px 15px;
+            text-align: left;
+            font-size: 11px;
+            font-weight: 600;
+            color: #8b93a7;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid #1e2337;
+        }
+
+        .signals-table td {
+            padding: 15px 15px;
+            border-bottom: 1px solid #1e2337;
+            font-size: 13px;
+        }
+
+        .signals-table tbody tr {
+            transition: background 0.2s;
+        }
+
+        .signals-table tbody tr:hover {
+            background: #1a1f36;
+        }
+
+        .signals-table tbody tr.new-signal {
+            animation: highlight 2s ease;
+        }
+
+        @keyframes highlight {
+            0% { background: #5e72e433; }
+            100% { background: transparent; }
+        }
+
+        /* Table Cell Styles */
+        .rank-cell {
+            color: #8b93a7;
+            font-weight: 600;
+        }
+
+        .pair-cell {
+            font-weight: 600;
+            color: #e8eaf6;
+        }
+
+        .strategy-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            background: #2d3548;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .direction-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .direction-badge.long {
+            background: #10b98122;
+            color: #10b981;
+            border: 1px solid #10b98144;
+        }
+
+        .direction-badge.short {
+            background: #ef444422;
+            color: #ef4444;
+            border: 1px solid #ef444444;
+        }
+
+        .price-cell {
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            color: #a8b2d1;
+        }
+
+        .gain-cell {
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .gain-cell.positive {
+            color: #10b981;
+        }
+
+        .gain-cell.negative {
+            color: #ef4444;
+        }
+
+        .gain-cell.neutral {
+            color: #8b93a7;
+        }
+
+        .time-cell {
+            color: #8b93a7;
+            font-size: 12px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .status-badge.active {
+            background: #3b82f622;
+            color: #3b82f6;
+            border: 1px solid #3b82f644;
+        }
+
+        .status-badge.closed {
+            background: #6b728022;
+            color: #9ca3af;
+            border: 1px solid #6b728044;
+        }
+
+        /* Mini Chart */
+        .chart-cell {
+            width: 120px;
+            height: 40px;
+        }
+
+        .mini-chart {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Action Buttons */
+        .action-btn {
+            padding: 6px 12px;
+            background: #1e2337;
+            border: 1px solid #2d3548;
+            color: #8b93a7;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            margin-right: 5px;
+            transition: all 0.2s;
+        }
+
+        .action-btn:hover {
+            background: #5e72e4;
+            border-color: #5e72e4;
+            color: white;
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            padding: 15px 0;
+        }
+
+        .pagination-info {
+            color: #8b93a7;
+            font-size: 13px;
+        }
+
+        .pagination-controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        .page-btn {
+            padding: 8px 12px;
+            background: #1e2337;
+            border: 1px solid #2d3548;
+            color: #8b93a7;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            min-width: 36px;
+            text-align: center;
+        }
+
+        .page-btn:hover:not(.active) {
+            background: #252d44;
+        }
+
+        .page-btn.active {
+            background: #5e72e4;
+            border-color: #5e72e4;
+            color: white;
+        }
+
+        .page-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #8b93a7;
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #0a0e27;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #2d3548;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #3d4558;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .sidebar {
+                position: absolute;
+                z-index: 99;
+                transform: translateX(-100%);
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="logo">📈 AutomatedTradeBot</div>
+        <div class="header-stats">
+            <div class="stat-item">
+                <span class="status-dot" id="connectionDot"></span>
+                <span id="connectionStatus">Connecting...</span>
+            </div>
+            <div class="stat-item">
+                <span>Total Signals: <strong id="totalSignals">0</strong></span>
+            </div>
+            <div class="stat-item">
+                <span>Active: <strong id="activeSignals">0</strong></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Sidebar Filters -->
+        <div class="sidebar" id="sidebar">
+            <div class="filter-section">
+                <div class="filter-title">Search</div>
+                <input type="text" class="search-input" id="searchInput" placeholder="Search pair, strategy...">
+            </div>
+
+            <div class="filter-section">
+                <div class="filter-title">Direction</div>
+                <div class="filter-group">
+                    <button class="filter-btn" data-filter="direction" data-value="">All</button>
+                    <button class="filter-btn" data-filter="direction" data-value="LONG">Long</button>
+                    <button class="filter-btn" data-filter="direction" data-value="SHORT">Short</button>
+                </div>
+            </div>
+
+            <div class="filter-section">
+                <div class="filter-title">Strategy</div>
+                <div class="filter-group">
+                    <button class="filter-btn" data-filter="strategy" data-value="">All</button>
+                    <button class="filter-btn" data-filter="strategy" data-value="3RSI">3RSI</button>
+                    <button class="filter-btn" data-filter="strategy" data-value="7RSI">7RSI</button>
+                    <button class="filter-btn" data-filter="strategy" data-value="GRID">GRID</button>
+                </div>
+            </div>
+
+            <div class="filter-section">
+                <div class="filter-title">Status</div>
+                <div class="filter-group">
+                    <button class="filter-btn" data-filter="status" data-value="">All</button>
+                    <button class="filter-btn" data-filter="status" data-value="Active">Active</button>
+                    <button class="filter-btn" data-filter="status" data-value="Closed">Closed</button>
+                </div>
+            </div>
+
+            <div class="filter-section">
+                <div class="filter-title">Time Period</div>
+                <div class="filter-group">
+                    <button class="filter-btn" data-filter="period" data-value="">All Time</button>
+                    <button class="filter-btn" data-filter="period" data-value="1h">1 Hour</button>
+                    <button class="filter-btn" data-filter="period" data-value="24h">24 Hours</button>
+                    <button class="filter-btn" data-filter="period" data-value="7d">7 Days</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="content-header">
+                <button class="toggle-sidebar" onclick="toggleSidebar()">☰ Filters</button>
+                <div class="page-info">
+                    <span id="pageInfo">Showing 1 to 20 of 0 signals</span>
+                </div>
+            </div>
+
+            <table class="signals-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Pair</th>
+                        <th>Strategy</th>
+                        <th>Direction</th>
+                        <th>Entry</th>
+                        <th>Take Profit</th>
+                        <th>Stop Loss</th>
+                        <th>Gain %</th>
+                        <th>Chart</th>
+                        <th>Time</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="signalsTableBody">
+                    <tr>
+                        <td colspan="12" class="empty-state">
+                            <div class="empty-state-icon">📡</div>
+                            <div>Waiting for signals...</div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="pagination">
+                <div class="pagination-info" id="paginationInfo">
+                    Showing 0 to 0 of 0 signals
+                </div>
+                <div class="pagination-controls" id="paginationControls">
+                    <button class="page-btn" onclick="changePage(-1)">Previous</button>
+                    <button class="page-btn active">1</button>
+                    <button class="page-btn" onclick="changePage(1)">Next</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script>
+        let ws;
+        let allSignals = [];
+        let filteredSignals = [];
+        let currentPage = 1;
+        let signalsPerPage = 20;
+        let filters = {
+            search: '',
+            direction: '',
+            strategy: '',
+            status: '',
+            period: ''
+        };
+
+        // WebSocket Connection
+        function initWebSocket() {
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsUrl = `${protocol}//${window.location.host}/ws/signals`;
+
+            console.log('Connecting to WebSocket:', wsUrl);
+            ws = new WebSocket(wsUrl);
+
+            ws.onopen = () => {
+                console.log('✅ WebSocket Connected');
+                document.getElementById('connectionStatus').textContent = 'Connected';
+                document.getElementById('connectionDot').classList.remove('disconnected');
+            };
+
+            ws.onmessage = (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+                    console.log('📩 Received:', data.type);
+
+                    switch (data.type) {
+                        case 'CONNECTED':
+                            console.log('✅ Connected:', data.message);
+                            break;
+
+                        case 'HISTORY':
+                            console.log('📚 Loading history:', data.signals.length, 'signals');
+                            allSignals = data.signals.reverse(); // Newest first
+                            applyFiltersAndRender();
+                            break;
+
+                        case 'SIGNAL':
+                            console.log('🆕 New signal:', data.signal.pair, data.signal.direction);
+                            allSignals.unshift(data.signal); // Add to beginning
+                            applyFiltersAndRender();
+                            highlightNewSignal();
+                            break;
+
+                        case 'PNL_UPDATE':
+                            console.log('💹 PnL Update:', data.updates.length, 'signals');
+                            updateSignalPnL(data.updates);
+                            break;
+
+                        case 'SIGNAL_CLOSED':
+                            console.log('🔒 Signal Closed:', data.signalId, data.reason);
+                            updateSignalStatus(data.signalId, 'Closed', data.finalPnL);
+                            break;
+                    }
+                } catch (error) {
+                    console.error('❌ Message parse error:', error);
+                }
+            };
+
+            ws.onerror = (error) => {
+                console.error('❌ WebSocket Error:', error);
+                document.getElementById('connectionStatus').textContent = 'Error';
+                document.getElementById('connectionDot').classList.add('disconnected');
+            };
+
+            ws.onclose = () => {
+                console.log('🔌 WebSocket Closed - Reconnecting in 5s...');
+                document.getElementById('connectionStatus').textContent = 'Disconnected';
+                document.getElementById('connectionDot').classList.add('disconnected');
+                setTimeout(initWebSocket, 5000);
+            };
+        }
+
+        // Filter Functions
+        function applyFiltersAndRender() {
+            filteredSignals = allSignals.filter(signal => {
+                // Search filter
+                if (filters.search) {
+                    const search = filters.search.toLowerCase();
+                    if (!signal.pair.toLowerCase().includes(search) &&
+                        !signal.strategy.toLowerCase().includes(search)) {
+                        return false;
+                    }
+                }
+
+                // Direction filter
+                if (filters.direction && signal.direction !== filters.direction) {
+                    return false;
+                }
+
+                // Strategy filter
+                if (filters.strategy && signal.strategy !== filters.strategy) {
+                    return false;
+                }
+
+                // Status filter (mock for now)
+                const status = getSignalStatus(signal);
+                if (filters.status && status !== filters.status) {
+                    return false;
+                }
+
+                // Period filter
+                if (filters.period) {
+                    const signalTime = new Date(signal.timestamp);
+                    const now = new Date();
+                    const diff = now - signalTime;
+
+                    const periods = {
+                        '1h': 3600000,
+                        '24h': 86400000,
+                        '7d': 604800000
+                    };
+
+                    if (diff > periods[filters.period]) {
+                        return false;
+                    }
+                }
+
+                return true;
+            });
+
+            currentPage = 1;
+            renderSignals();
+            updateStats();
+        }
+
+        // Render Signals Table
+        function renderSignals() {
+            const tbody = document.getElementById('signalsTableBody');
+            const start = (currentPage - 1) * signalsPerPage;
+            const end = start + signalsPerPage;
+            const pageSignals = filteredSignals.slice(start, end);
+
+            if (pageSignals.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="12" class="empty-state">
+                            <div class="empty-state-icon">📡</div>
+                            <div>${allSignals.length === 0 ? 'Waiting for signals...' : 'No signals match your filters'}</div>
+                        </td>
+                    </tr>
+                `;
+                updatePagination();
+                return;
+            }
+
+            tbody.innerHTML = pageSignals.map((signal, index) => {
+                const rank = start + index + 1;
+                const direction = signal.direction || 'LONG';
+                const strategy = signal.strategy || 'Unknown';
+                const pair = signal.pair || signal.symbol || 'N/A';
+                const entry = signal.entry || signal.entryPrice || 0;
+                const tp = signal.takeProfit || '-';
+                const sl = signal.stopLoss || '-';
+                const gain = calculateGain(signal);
+                const status = getSignalStatus(signal);
+                const time = formatTime(signal.timestamp);
+
+                return `
+                    <tr data-signal-id="${signal.id}">
+                        <td class="rank-cell">${rank}</td>
+                        <td class="pair-cell">${pair.replace('.P', '')}</td>
+                        <td><span class="strategy-badge">${strategy}</span></td>
+                        <td><span class="direction-badge ${direction.toLowerCase()}">${direction}</span></td>
+                        <td class="price-cell">${formatPrice(entry)}</td>
+                        <td class="price-cell">${formatPrice(tp)}</td>
+                        <td class="price-cell">${formatPrice(sl)}</td>
+                        <td class="gain-cell ${gain > 0 ? 'positive' : gain < 0 ? 'negative' : 'neutral'}">
+                            ${gain > 0 ? '+' : ''}${gain.toFixed(2)}%
+                        </td>
+                        <td class="chart-cell">
+                            <canvas class="mini-chart" id="chart-${signal.id}"></canvas>
+                        </td>
+                        <td class="time-cell">${time}</td>
+                        <td><span class="status-badge ${status.toLowerCase()}">${status}</span></td>
+                        <td>
+                            <button class="action-btn" onclick="viewDetails('${signal.id}')">View</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            // Render mini charts
+            setTimeout(() => {
+                pageSignals.forEach(signal => {
+                    renderMiniChart(signal);
+                });
+            }, 10);
+
+            updatePagination();
+        }
+
+        // Render Mini Chart
+        function renderMiniChart(signal) {
+            const canvas = document.getElementById(`chart-${signal.id}`);
+            if (!canvas) return;
+
+            const ctx = canvas.getContext('2d');
+
+            // Generate mock PnL data (replace with real data later)
+            const dataPoints = generateMockPnLData(signal);
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: dataPoints.map((_, i) => i),
+                    datasets: [{
+                        data: dataPoints,
+                        borderColor: dataPoints[dataPoints.length - 1] > 0 ? '#10b981' : '#ef4444',
+                        borderWidth: 2,
+                        fill: false,
+                        tension: 0.4,
+                        pointRadius: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { enabled: false }
+                    },
+                    scales: {
+                        x: { display: false },
+                        y: { display: false }
+                    }
+                }
+            });
+        }
+
+        // Generate PnL Data (Use real data if available, fallback to mock)
+        function generateMockPnLData(signal) {
+            // Use real PnL history if available
+            if (signal.pnlHistory && signal.pnlHistory.length > 0) {
+                return signal.pnlHistory;
+            }
+
+            // Fallback to mock data
+            const points = 20;
+            const data = [0];
+            const direction = signal.direction === 'LONG' ? 1 : -1;
+            const volatility = 0.5;
+
+            for (let i = 1; i < points; i++) {
+                const change = (Math.random() - 0.4) * volatility * direction;
+                data.push(data[i - 1] + change);
+            }
+
+            return data;
+        }
+
+        // Calculate Gain (Use real PnL if available)
+        function calculateGain(signal) {
+            // Use real currentPnL if available
+            if (signal.currentPnL !== undefined && signal.currentPnL !== null) {
+                return signal.currentPnL;
+            }
+
+            // Fallback to mock calculation
+            return (Math.random() - 0.5) * 10;
+        }
+
+        // Get Signal Status (Use real status if available)
+        function getSignalStatus(signal) {
+            // Use real status if available
+            if (signal.status) {
+                return signal.status;
+            }
+
+            // Fallback to mock logic
+            return 'Active';
+        }
+
+        // Update Signal PnL from real-time updates
+        function updateSignalPnL(updates) {
+            for (const update of updates) {
+                const signal = allSignals.find(s => s.id === update.signalId);
+
+                if (signal) {
+                    signal.currentPrice = update.currentPrice;
+                    signal.currentPnL = update.currentPnL;
+                    signal.status = update.status;
+
+                    // Update the row if it's visible
+                    updateSignalRow(signal);
+                }
+            }
+        }
+
+        // Update Signal Status (when closed)
+        function updateSignalStatus(signalId, status, finalPnL) {
+            const signal = allSignals.find(s => s.id === signalId);
+
+            if (signal) {
+                signal.status = status;
+                signal.currentPnL = finalPnL;
+
+                // Update the row if it's visible
+                updateSignalRow(signal);
+            }
+        }
+
+        // Update a single signal row without re-rendering everything
+        function updateSignalRow(signal) {
+            const row = document.querySelector(`tr[data-signal-id="${signal.id}"]`);
+
+            if (row) {
+                // Update Gain %
+                const gainCell = row.querySelector('.gain-cell');
+                if (gainCell && signal.currentPnL !== undefined) {
+                    const gain = signal.currentPnL;
+                    gainCell.textContent = `${gain > 0 ? '+' : ''}${gain.toFixed(2)}%`;
+                    gainCell.className = `gain-cell ${gain > 0 ? 'positive' : gain < 0 ? 'negative' : 'neutral'}`;
+                }
+
+                // Update Status
+                const statusCell = row.querySelector('.status-badge');
+                if (statusCell && signal.status) {
+                    statusCell.textContent = signal.status;
+                    statusCell.className = `status-badge ${signal.status.toLowerCase()}`;
+                }
+
+                // Update Chart
+                const chartCanvas = row.querySelector('.mini-chart');
+                if (chartCanvas) {
+                    // Destroy old chart if exists
+                    const chartId = chartCanvas.id;
+                    const existingChart = Chart.getChart(chartId);
+                    if (existingChart) {
+                        existingChart.destroy();
+                    }
+
+                    // Re-render chart with updated data
+                    renderMiniChart(signal);
+                }
+            }
+        }
+
+        // Format Price
+        function formatPrice(price) {
+            if (price === '-' || !price) return '-';
+            return parseFloat(price).toFixed(price < 1 ? 5 : 2);
+        }
+
+        // Format Time
+        function formatTime(timestamp) {
+            const date = new Date(timestamp);
+            const now = new Date();
+            const diff = now - date;
+
+            if (diff < 60000) return 'Just now';
+            if (diff < 3600000) return Math.floor(diff / 60000) + 'm ago';
+            if (diff < 86400000) return Math.floor(diff / 3600000) + 'h ago';
+            return Math.floor(diff / 86400000) + 'd ago';
+        }
+
+        // Update Stats
+        function updateStats() {
+            document.getElementById('totalSignals').textContent = allSignals.length;
+            document.getElementById('activeSignals').textContent = filteredSignals.length;
+        }
+
+        // Pagination
+        function updatePagination() {
+            const totalPages = Math.ceil(filteredSignals.length / signalsPerPage);
+            const start = (currentPage - 1) * signalsPerPage + 1;
+            const end = Math.min(currentPage * signalsPerPage, filteredSignals.length);
+
+            document.getElementById('paginationInfo').textContent =
+                `Showing ${start} to ${end} of ${filteredSignals.length} signals`;
+
+            const controls = document.getElementById('paginationControls');
+            controls.innerHTML = `
+                <button class="page-btn" onclick="changePage(-1)" ${currentPage === 1 ? 'disabled' : ''}>Previous</button>
+                ${Array.from({length: Math.min(totalPages, 5)}, (_, i) => {
+                    const page = i + 1;
+                    return `<button class="page-btn ${page === currentPage ? 'active' : ''}" onclick="goToPage(${page})">${page}</button>`;
+                }).join('')}
+                ${totalPages > 5 ? '<button class="page-btn">...</button>' : ''}
+                <button class="page-btn" onclick="changePage(1)" ${currentPage === totalPages ? 'disabled' : ''}>Next</button>
+            `;
+        }
+
+        function changePage(delta) {
+            const totalPages = Math.ceil(filteredSignals.length / signalsPerPage);
+            currentPage = Math.max(1, Math.min(currentPage + delta, totalPages));
+            renderSignals();
+        }
+
+        function goToPage(page) {
+            currentPage = page;
+            renderSignals();
+        }
+
+        // Toggle Sidebar
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('open');
+        }
+
+        // Highlight New Signal
+        function highlightNewSignal() {
+            const firstRow = document.querySelector('#signalsTableBody tr');
+            if (firstRow) {
+                firstRow.classList.add('new-signal');
+                setTimeout(() => firstRow.classList.remove('new-signal'), 2000);
+            }
+        }
+
+        // View Details
+        function viewDetails(signalId) {
+            // Navigate to signal detail page
+            window.location.href = `/signal-detail?id=${signalId}`;
+        }
+
+        // Event Listeners
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            filters.search = e.target.value;
+            applyFiltersAndRender();
+        });
+
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const filterType = this.dataset.filter;
+                const filterValue = this.dataset.value;
+
+                // Update active state
+                this.parentElement.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+
+                // Apply filter
+                filters[filterType] = filterValue;
+                applyFiltersAndRender();
+            });
+        });
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            initWebSocket();
+
+            // Set default active filters
+            document.querySelector('[data-filter="direction"][data-value=""]').classList.add('active');
+            document.querySelector('[data-filter="strategy"][data-value=""]').classList.add('active');
+            document.querySelector('[data-filter="status"][data-value=""]').classList.add('active');
+            document.querySelector('[data-filter="period"][data-value=""]').classList.add('active');
+        });
+    </script>
+</body>
+</html>

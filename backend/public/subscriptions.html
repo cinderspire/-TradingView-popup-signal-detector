@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Subscriptions - AutomatedTradeBot</title>
+    <meta name="description" content="Manage your AutomatedTradeBot subscriptions. Active strategies, signal services, premium features. Upgrade, downgrade, or cancel anytime. Billing history and renewal settings.">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #00d4ff;
+            --secondary: #ff00ff;
+            --success: #00ff88;
+            --danger: #ff3366;
+            --warning: #ffaa00;
+            --dark: #0a0e1a;
+            --darker: #060914;
+            --light: #ffffff;
+            --gray: #8892b0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--darker);
+            color: var(--light);
+            min-height: 100vh;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1rem 5%;
+            background: rgba(10, 14, 26, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0, 212, 255, 0.1);
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            cursor: pointer;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: var(--gray);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--primary);
+            background: rgba(0, 212, 255, 0.1);
+        }
+
+        /* Main Content */
+        main {
+            padding: 100px 5% 50px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            color: var(--gray);
+            margin-bottom: 3rem;
+        }
+
+        /* Subscriptions Grid */
+        .subscriptions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .subscription-card {
+            background: linear-gradient(135deg, rgba(10, 14, 26, 0.8), rgba(6, 9, 20, 0.8));
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .subscription-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.2);
+        }
+
+        .sub-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .sub-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--light);
+        }
+
+        .sub-status {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .sub-status.active {
+            background: rgba(0, 255, 136, 0.2);
+            color: var(--success);
+        }
+
+        .sub-status.paused {
+            background: rgba(255, 170, 0, 0.2);
+            color: var(--warning);
+        }
+
+        .sub-details {
+            margin: 1rem 0;
+        }
+
+        .sub-detail {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(136, 146, 176, 0.1);
+        }
+
+        .sub-detail label {
+            color: var(--gray);
+        }
+
+        .sub-detail value {
+            color: var(--light);
+            font-weight: 600;
+        }
+
+        .sub-pairs {
+            margin: 1rem 0;
+        }
+
+        .pairs-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .pair-badge {
+            padding: 0.3rem 0.8rem;
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 20px;
+            font-size: 0.75rem;
+            color: var(--primary);
+        }
+
+        .sub-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 0.8rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--light);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 212, 255, 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(136, 146, 176, 0.1);
+            border: 1px solid rgba(136, 146, 176, 0.3);
+            color: var(--gray);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(136, 146, 176, 0.2);
+            color: var(--light);
+        }
+
+        .btn-danger {
+            background: rgba(255, 51, 102, 0.1);
+            border: 1px solid rgba(255, 51, 102, 0.3);
+            color: var(--danger);
+        }
+
+        .btn-danger:hover {
+            background: rgba(255, 51, 102, 0.2);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            color: var(--gray);
+            margin-bottom: 1rem;
+        }
+
+        .empty-text {
+            color: var(--gray);
+            margin-bottom: 2rem;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--dark);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 16px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .modal-header {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--light);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            color: var(--gray);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.8rem;
+            background: rgba(136, 146, 176, 0.1);
+            border: 1px solid rgba(136, 146, 176, 0.3);
+            border-radius: 8px;
+            color: var(--light);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+        }
+
+        .checkbox-label input {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <div class="logo" onclick="window.location.href='/'">AutomatedTradeBot</div>
+            <div class="nav-menu">
+                <a href="/dashboard" class="nav-link">Dashboard</a>
+                <a href="/marketplace" class="nav-link">Marketplace</a>
+                <a href="/subscriptions" class="nav-link active">My Subscriptions</a>
+                <a href="#" class="nav-link" onclick="logout()">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <h1><i class="fas fa-bell"></i> My Subscriptions</h1>
+        <p class="subtitle">Manage your strategy subscriptions, pairs, and exchange settings</p>
+
+        <div id="subscriptions-container">
+            <div class="empty-state">
+                <div class="empty-icon"><i class="fas fa-spinner fa-spin"></i></div>
+                <div class="empty-text">Loading subscriptions...</div>
+            </div>
+        </div>
+    </main>
+
+    <!-- API Key Modal -->
+    <div id="apiKeyModal" class="modal">
+        <div class="modal-content">
+            <h2 class="modal-header"><i class="fas fa-key"></i> Connect Exchange API</h2>
+            <div style="padding: 1rem; background: rgba(255, 170, 0, 0.1); border-radius: 8px; border: 1px solid rgba(255, 170, 0, 0.3); margin-bottom: 1.5rem;">
+                <p style="color: var(--warning); margin: 0; font-size: 0.9rem;">
+                    <i class="fas fa-exclamation-triangle"></i> Your API keys are encrypted and stored securely.<br>
+                    We recommend using read-only + trading permission without withdrawal.
+                </p>
+            </div>
+            <form id="apiKeyForm">
+                <div class="form-group">
+                    <label class="form-label">API Key</label>
+                    <input type="text" class="form-control" id="apiKey" placeholder="Your API Key" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">API Secret</label>
+                    <input type="password" class="form-control" id="apiSecret" placeholder="Your API Secret" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Sub Account (Optional)</label>
+                    <input type="text" class="form-control" id="subAccount" placeholder="Sub account name (if applicable)">
+                </div>
+                <div class="sub-actions">
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save Keys</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeApiKeyModal()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <h2 class="modal-header">Edit Subscription</h2>
+            <form id="editForm">
+                <div class="form-group">
+                    <label class="form-label">Trading Pairs</label>
+
+                    <!-- All Pairs Toggle -->
+                    <label style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem; cursor: pointer; padding: 0.8rem; background: rgba(0, 212, 255, 0.05); border-radius: 8px; border: 1px solid rgba(0, 212, 255, 0.2);">
+                        <input type="checkbox" id="allPairsToggle">
+                        <span><strong>Enable All Pairs</strong> - Automatically trade all pairs for this strategy</span>
+                    </label>
+
+                    <div id="individualPairsContainer">
+                        <label class="form-label" style="font-size: 0.9rem; margin-bottom: 0.5rem;">Select Individual Pairs:</label>
+                        <div class="checkbox-group" id="pairsCheckboxes">
+                            <!-- Dynamically populated -->
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Active Exchange</label>
+                    <select class="form-control" id="activeExchange">
+                        <option value="binance">Binance</option>
+                        <option value="bybit">Bybit</option>
+                        <option value="okx">OKX</option>
+                        <option value="mexc">MEXC</option>
+                    </select>
+                </div>
+
+                <!-- Order Configuration -->
+                <div class="form-group">
+                    <label class="form-label"><i class="fas fa-cog"></i> Order Configuration</label>
+
+                    <div style="margin-bottom: 1rem;">
+                        <label class="form-label" style="font-size: 0.9rem;">Order Type</label>
+                        <select class="form-control" id="orderType">
+                            <option value="FUTURES">Futures</option>
+                            <option value="SPOT">Spot</option>
+                        </select>
+                    </div>
+
+                    <div style="margin-bottom: 1rem;">
+                        <label class="form-label" style="font-size: 0.9rem;">Order Size</label>
+                        <div style="display: flex; gap: 1rem; margin-bottom: 0.5rem;">
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                                <input type="radio" name="sizeMethod" value="fixed" id="sizeMethodFixed" checked>
+                                <span>Fixed Amount (USDT)</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                                <input type="radio" name="sizeMethod" value="percentage" id="sizeMethodPercent">
+                                <span>Percentage of Balance (%)</span>
+                            </label>
+                        </div>
+                        <input type="number" class="form-control" id="fixedOrderSize" placeholder="100" min="1" step="0.01">
+                        <input type="number" class="form-control" id="orderSizePercent" placeholder="10" min="1" max="100" step="0.1" style="display: none;">
+                    </div>
+                </div>
+
+                <!-- Auto Stop Configuration -->
+                <div class="form-group">
+                    <label class="form-label"><i class="fas fa-stop-circle"></i> Auto Stop Configuration</label>
+
+                    <label style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem; cursor: pointer;">
+                        <input type="checkbox" id="autoStopEnabled">
+                        <span>Enable Auto Stop</span>
+                    </label>
+
+                    <div id="autoStopOptions" style="display: none;">
+                        <div style="margin-bottom: 1rem;">
+                            <label class="form-label" style="font-size: 0.9rem;">Stop at Profit (%)</label>
+                            <input type="number" class="form-control" id="autoStopProfit" placeholder="50" min="1" step="0.1">
+                            <small style="color: var(--gray); font-size: 0.8rem;">Bot will pause when cumulative profit reaches this %</small>
+                        </div>
+                        <div style="margin-bottom: 1rem;">
+                            <label class="form-label" style="font-size: 0.9rem;">Stop at Loss (%)</label>
+                            <input type="number" class="form-control" id="autoStopLoss" placeholder="-20" max="-1" step="0.1">
+                            <small style="color: var(--gray); font-size: 0.8rem;">Bot will pause when cumulative loss reaches this %</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Account Balance & API Keys -->
+                <div class="form-group">
+                    <label class="form-label"><i class="fas fa-wallet"></i> Account Balance</label>
+                    <div id="balanceDisplay" style="padding: 1rem; background: rgba(0, 212, 255, 0.05); border-radius: 8px; border: 1px solid rgba(0, 212, 255, 0.1);">
+                        <p style="color: var(--gray); margin-bottom: 0.5rem;">Connect your exchange API to view balance</p>
+                        <button type="button" class="btn btn-secondary" onclick="showApiKeyModal()" style="margin-top: 0.5rem;">
+                            <i class="fas fa-key"></i> Connect Exchange API
+                        </button>
+                    </div>
+                </div>
+
+                <div class="sub-actions">
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let subscriptions = [];
+        let currentSubscription = null;
+
+        async function loadSubscriptions() {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    window.location.href = '/login';
+                    return;
+                }
+
+                const response = await fetch('/api/subscriptions/my-subscriptions', {
+                    headers: {
+                        'Authorization': 'Bearer ' + token
+                    }
+                });
+
+                if (response.status === 401) {
+                    // Token is invalid, redirect to login
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                    window.location.href = '/login';
+                    return;
+                }
+
+                const data = await response.json();
+
+                if (data.success) {
+                    subscriptions = data.subscriptions;
+                    renderSubscriptions();
+                } else {
+                    showError('Failed to load subscriptions');
+                }
+            } catch (error) {
+                console.error('Error loading subscriptions:', error);
+                showError('Failed to load subscriptions');
+            }
+        }
+
+        function renderSubscriptions() {
+            const container = document.getElementById('subscriptions-container');
+
+            if (subscriptions.length === 0) {
+                container.innerHTML = '<div class="empty-state"><div class="empty-icon"><i class="fas fa-inbox"></i></div><div class="empty-text">No active subscriptions. <a href="/marketplace">Browse strategies</a> to get started.</div></div>';
+                return;
+            }
+
+            container.innerHTML = '<div class="subscriptions-grid">' + 
+                subscriptions.map(sub => createSubscriptionCard(sub)).join('') + 
+            '</div>';
+        }
+
+        function createSubscriptionCard(sub) {
+            let pairsBadges = '';
+
+            if (sub.allPairs) {
+                // Show "All Pairs" badge with special styling for enabled state
+                pairsBadges = '<span class="pair-badge" style="background: rgba(0, 255, 136, 0.2); border-color: var(--success); color: var(--success);"><i class="fas fa-check-circle"></i> All Pairs Enabled</span>';
+            } else if (sub.subscribedPairs && sub.subscribedPairs.length > 0) {
+                // Show individual pairs
+                pairsBadges = sub.subscribedPairs.map(p => '<span class="pair-badge">' + p + '</span>').join('');
+            } else {
+                // No pairs selected
+                pairsBadges = '<span class="pair-badge" style="background: rgba(255, 170, 0, 0.2); border-color: var(--warning); color: var(--warning);"><i class="fas fa-exclamation-triangle"></i> No pairs selected</span>';
+            }
+
+            return '<div class="subscription-card"><div class="sub-header"><div class="sub-name">' + sub.strategy.name + '</div><span class="sub-status active">' + sub.status + '</span></div><div class="sub-details"><div class="sub-detail"><label>Category:</label><value>' + sub.strategy.category + '</value></div><div class="sub-detail"><label>Exchange:</label><value>' + (sub.activeExchange || 'Not set') + '</value></div><div class="sub-detail"><label>Win Rate:</label><value>' + (sub.strategy.winRate ? sub.strategy.winRate.toFixed(1) + '%' : 'N/A') + '</value></div></div><div class="sub-pairs"><label style="color: var(--gray)">Trading Mode:</label><div class="pairs-list">' + pairsBadges + '</div></div><div class="sub-actions"><button class="btn btn-primary" onclick="editSubscription(\'' + sub.id + '\')"><i class="fas fa-edit"></i> Edit</button><button class="btn btn-danger" onclick="unsubscribe(\'' + sub.id + '\')"><i class="fas fa-trash"></i> Unsubscribe</button></div></div>';
+        }
+
+        function editSubscription(id) {
+            currentSubscription = subscriptions.find(s => s.id === id);
+            if (!currentSubscription) return;
+
+            // Load available pairs for this strategy
+            loadAvailablePairs(currentSubscription.strategy.name);
+
+            // Set "All Pairs" toggle
+            const allPairsToggle = document.getElementById('allPairsToggle');
+            allPairsToggle.checked = currentSubscription.allPairs || false;
+
+            // Show/hide individual pairs based on allPairs setting
+            document.getElementById('individualPairsContainer').style.display =
+                currentSubscription.allPairs ? 'none' : 'block';
+
+            // Set current exchange
+            document.getElementById('activeExchange').value = currentSubscription.activeExchange || 'binance';
+
+            // Populate Order Configuration
+            document.getElementById('orderType').value = currentSubscription.orderType || 'FUTURES';
+
+            if (currentSubscription.usePercentage) {
+                document.getElementById('sizeMethodPercent').checked = true;
+                document.getElementById('fixedOrderSize').style.display = 'none';
+                document.getElementById('orderSizePercent').style.display = 'block';
+                document.getElementById('orderSizePercent').value = currentSubscription.orderSizePercent || '';
+            } else {
+                document.getElementById('sizeMethodFixed').checked = true;
+                document.getElementById('fixedOrderSize').style.display = 'block';
+                document.getElementById('orderSizePercent').style.display = 'none';
+                document.getElementById('fixedOrderSize').value = currentSubscription.fixedOrderSize || '';
+            }
+
+            // Populate Auto Stop Configuration
+            document.getElementById('autoStopEnabled').checked = currentSubscription.autoStopEnabled || false;
+            document.getElementById('autoStopOptions').style.display = currentSubscription.autoStopEnabled ? 'block' : 'none';
+            document.getElementById('autoStopProfit').value = currentSubscription.autoStopProfitPercent || '';
+            document.getElementById('autoStopLoss').value = currentSubscription.autoStopLossPercent || '';
+
+            // Load account balance if API keys are configured
+            if (currentSubscription.exchangeApiKey && currentSubscription.exchangeApiSecret) {
+                loadAccountBalance(currentSubscription.id);
+            }
+
+            // Show modal
+            document.getElementById('editModal').classList.add('active');
+        }
+
+        async function loadAvailablePairs(strategyName) {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch('/api/subscriptions/available-pairs/' + encodeURIComponent(strategyName), {
+                    headers: {
+                        'Authorization': 'Bearer ' + token
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    const container = document.getElementById('pairsCheckboxes');
+                    container.innerHTML = data.availablePairs.map(pair => 
+                        '<label class="checkbox-label"><input type="checkbox" name="pair" value="' + pair + '" ' + 
+                        (currentSubscription.allPairs || currentSubscription.subscribedPairs.includes(pair) ? 'checked' : '') + 
+                        '>' + pair + '</label>'
+                    ).join('');
+                }
+            } catch (error) {
+                console.error('Error loading pairs:', error);
+            }
+        }
+
+        document.getElementById('editForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // Get "All Pairs" toggle state
+            const allPairs = document.getElementById('allPairsToggle').checked;
+
+            // Get selected individual pairs (only if not using allPairs)
+            const selectedPairs = allPairs ? [] : Array.from(document.querySelectorAll('input[name="pair"]:checked'))
+                .map(cb => cb.value);
+
+            // Validation: If not allPairs and no pairs selected, show error
+            if (!allPairs && selectedPairs.length === 0) {
+                showToast('Please select at least one trading pair or enable "All Pairs"', 'error');
+                return;
+            }
+
+            const activeExchange = document.getElementById('activeExchange').value;
+
+            // Get Order Configuration
+            const orderType = document.getElementById('orderType').value;
+            const usePercentage = document.getElementById('sizeMethodPercent').checked;
+            const fixedOrderSize = parseFloat(document.getElementById('fixedOrderSize').value) || null;
+            const orderSizePercent = parseFloat(document.getElementById('orderSizePercent').value) || null;
+
+            // Get Auto Stop Configuration
+            const autoStopEnabled = document.getElementById('autoStopEnabled').checked;
+            const autoStopProfitPercent = parseFloat(document.getElementById('autoStopProfit').value) || null;
+            const autoStopLossPercent = parseFloat(document.getElementById('autoStopLoss').value) || null;
+
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch('/api/subscriptions/' + currentSubscription.id, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    },
+                    body: JSON.stringify({
+                        subscribedPairs: selectedPairs,
+                        allPairs: allPairs,  // CHANGED: Explicit allPairs value from toggle
+                        activeExchange,
+                        // New fields
+                        orderType,
+                        fixedOrderSize,
+                        usePercentage,
+                        orderSizePercent,
+                        autoStopEnabled,
+                        autoStopProfitPercent,
+                        autoStopLossPercent
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    closeModal();
+                    loadSubscriptions();
+                    showToast('Subscription updated successfully!', 'success');
+                } else {
+                    showToast('Failed to update subscription', 'error');
+                }
+            } catch (error) {
+                console.error('Error updating subscription:', error);
+                showToast('Failed to update subscription', 'error');
+            }
+        });
+
+        async function unsubscribe(id) {
+            if (!confirm('Are you sure you want to unsubscribe?')) return;
+
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch('/api/subscriptions/' + id, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': 'Bearer ' + token
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    loadSubscriptions();
+                    showToast('Successfully unsubscribed', 'success');
+                } else {
+                    showToast('Failed to unsubscribe', 'error');
+                }
+            } catch (error) {
+                console.error('Error unsubscribing:', error);
+                showToast('Failed to unsubscribe', 'error');
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('editModal').classList.remove('active');
+            currentSubscription = null;
+        }
+
+        // API Key Modal Functions
+        function showApiKeyModal() {
+            document.getElementById('apiKeyModal').classList.add('active');
+        }
+
+        function closeApiKeyModal() {
+            document.getElementById('apiKeyModal').classList.remove('active');
+            document.getElementById('apiKeyForm').reset();
+        }
+
+        // API Key Form Submit
+        document.getElementById('apiKeyForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const apiKey = document.getElementById('apiKey').value;
+            const apiSecret = document.getElementById('apiSecret').value;
+            const subAccount = document.getElementById('subAccount').value;
+
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch('/api/subscriptions/' + currentSubscription.id + '/api-keys', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    },
+                    body: JSON.stringify({
+                        apiKey,
+                        apiSecret,
+                        subAccount
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    closeApiKeyModal();
+                    showToast('API keys saved securely!', 'success');
+                    // Load balance after saving keys
+                    loadAccountBalance(currentSubscription.id);
+                } else {
+                    showToast('Failed to save API keys', 'error');
+                }
+            } catch (error) {
+                console.error('Error saving API keys:', error);
+                showToast('Failed to save API keys', 'error');
+            }
+        });
+
+        // Load Account Balance
+        async function loadAccountBalance(subscriptionId) {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch('/api/subscriptions/' + subscriptionId + '/balance', {
+                    headers: {
+                        'Authorization': 'Bearer ' + token
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    const balanceHtml = `
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <label style="color: var(--gray);">Total Balance:</label>
+                            <value style="color: var(--success); font-weight: 600;">${data.balance.total.toFixed(2)} USDT</value>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <label style="color: var(--gray);">Available:</label>
+                            <value>${data.balance.free.toFixed(2)} USDT</value>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+                            <label style="color: var(--gray);">In Use:</label>
+                            <value>${data.balance.used.toFixed(2)} USDT</value>
+                        </div>
+                        <button type="button" class="btn btn-secondary" onclick="loadAccountBalance('${subscriptionId}')" style="width: 100%;">
+                            <i class="fas fa-sync-alt"></i> Refresh Balance
+                        </button>
+                    `;
+                    document.getElementById('balanceDisplay').innerHTML = balanceHtml;
+                } else {
+                    document.getElementById('balanceDisplay').innerHTML = `
+                        <p style="color: var(--danger); margin-bottom: 0.5rem;">${data.message}</p>
+                        <button type="button" class="btn btn-secondary" onclick="showApiKeyModal()" style="margin-top: 0.5rem;">
+                            <i class="fas fa-key"></i> Update API Keys
+                        </button>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error loading balance:', error);
+                showToast('Failed to load account balance', 'error');
+            }
+        }
+
+        // Event Listeners for UI interactions
+        document.addEventListener('DOMContentLoaded', () => {
+            // Toggle between "All Pairs" and individual pair selection
+            document.getElementById('allPairsToggle').addEventListener('change', (e) => {
+                const individualContainer = document.getElementById('individualPairsContainer');
+                if (e.target.checked) {
+                    // Hide individual pair selection when "All Pairs" is enabled
+                    individualContainer.style.display = 'none';
+                    // Uncheck all individual pairs
+                    document.querySelectorAll('input[name="pair"]').forEach(cb => cb.checked = false);
+                } else {
+                    // Show individual pair selection when "All Pairs" is disabled
+                    individualContainer.style.display = 'block';
+                }
+            });
+
+            // Toggle between fixed and percentage order size
+            document.getElementById('sizeMethodFixed').addEventListener('change', (e) => {
+                if (e.target.checked) {
+                    document.getElementById('fixedOrderSize').style.display = 'block';
+                    document.getElementById('orderSizePercent').style.display = 'none';
+                }
+            });
+
+            document.getElementById('sizeMethodPercent').addEventListener('change', (e) => {
+                if (e.target.checked) {
+                    document.getElementById('fixedOrderSize').style.display = 'none';
+                    document.getElementById('orderSizePercent').style.display = 'block';
+                }
+            });
+
+            // Toggle auto-stop options
+            document.getElementById('autoStopEnabled').addEventListener('change', (e) => {
+                document.getElementById('autoStopOptions').style.display = e.target.checked ? 'block' : 'none';
+            });
+        });
+
+        function logout() {
+            localStorage.removeItem('token');
+            window.location.href = '/login';
+        }
+
+        function showError(message) {
+            document.getElementById('subscriptions-container').innerHTML = '<div class="empty-state"><div class="empty-icon"><i class="fas fa-exclamation-triangle"></i></div><div class="empty-text">' + message + '</div></div>';
+        }
+
+        // Load subscriptions on page load
+        loadSubscriptions();
+    </script>
+
+    <!-- Toast Notifications -->
+    <script src="/js/toast.js"></script>
+
+    <!-- Standardized Navigation -->
+    <script src="/js/navigation.js"></script>
+    <script>
+        document.body.dataset.page = 'subscriptions';
+    </script>
+</body>
+</html>

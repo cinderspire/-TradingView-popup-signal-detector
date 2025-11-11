@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signal Providers - AutomatedTradeBot</title>
+    <meta name="description" content="Top-rated strategy providers and signal services. Verified trading performance, transparent metrics, user reviews. Connect with professional traders and fund managers. Choose providers based on risk tolerance and returns.">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #00d4ff;
+            --secondary: #ff00ff;
+            --success: #00ff88;
+            --danger: #ff3366;
+            --warning: #ffaa00;
+            --dark: #0a0e1a;
+            --darker: #060914;
+            --light: #ffffff;
+            --gray: #8892b0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #060914 0%, #0a0e1a 50%, #060914 100%);
+            color: var(--light);
+            min-height: 100vh;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1rem 5%;
+            background: rgba(10, 14, 26, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0, 212, 255, 0.1);
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            cursor: pointer;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: var(--gray);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-link:hover {
+            color: var(--primary);
+            background: rgba(0, 212, 255, 0.1);
+        }
+
+        .nav-link.active {
+            color: var(--primary);
+            background: rgba(0, 212, 255, 0.15);
+        }
+
+        .nav-link i {
+            font-size: 1rem;
+        }
+
+        .nav-auth {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn-login {
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            padding: 0.6rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-login:hover {
+            background: rgba(0, 212, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .btn-register {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            color: white;
+            padding: 0.6rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-register:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0, 212, 255, 0.3);
+        }
+
+        /* Main Content */
+        .container {
+            max-width: 1400px;
+            margin: 100px auto 50px;
+            padding: 0 5%;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .page-title {
+            font-size: 3rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--light), var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .page-subtitle {
+            color: var(--gray);
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Stats Bar */
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            padding: 2rem;
+            background: rgba(0, 212, 255, 0.02);
+            border-radius: 20px;
+            margin-bottom: 3rem;
+            border: 1px solid rgba(0, 212, 255, 0.1);
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-label {
+            color: var(--gray);
+            margin-top: 0.5rem;
+        }
+
+        /* Providers Grid */
+        .providers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .provider-card {
+            background: rgba(0, 212, 255, 0.03);
+            border: 1px solid rgba(0, 212, 255, 0.1);
+            border-radius: 20px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .provider-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+            animation: slide 3s linear infinite;
+        }
+
+        @keyframes slide {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .provider-card:hover {
+            background: rgba(0, 212, 255, 0.08);
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 212, 255, 0.2);
+        }
+
+        .provider-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .provider-avatar {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .provider-info h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .provider-rating {
+            color: var(--warning);
+            font-size: 0.9rem;
+        }
+
+        .provider-badge {
+            display: inline-block;
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid var(--success);
+            color: var(--success);
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
+        }
+
+        .provider-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            padding: 1.5rem 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            margin: 1.5rem 0;
+        }
+
+        .provider-stat {
+            text-align: center;
+        }
+
+        .provider-stat-value {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .provider-stat-label {
+            color: var(--gray);
+            font-size: 0.75rem;
+            margin-top: 0.2rem;
+        }
+
+        .provider-description {
+            color: var(--gray);
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+        }
+
+        .provider-strategies {
+            margin-bottom: 1.5rem;
+        }
+
+        .strategies-label {
+            font-size: 0.9rem;
+            color: var(--gray);
+            margin-bottom: 0.5rem;
+        }
+
+        .strategy-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .strategy-tag {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .provider-footer {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 0.8rem;
+            border-radius: 10px;
+            font-weight: 600;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 212, 255, 0.3);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(0, 212, 255, 0.1);
+        }
+
+        /* Top Provider Badge */
+        .top-provider {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: linear-gradient(135deg, var(--warning), var(--secondary));
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fas fa-chart-line"></i> AutomatedTradeBot
+            </div>
+
+            <!-- Navigation Menu -->
+            <div class="nav-menu">
+                <a href="/" class="nav-link">
+                    <i class="fas fa-home"></i> Home
+                </a>
+                <a href="/signals" class="nav-link">
+                    <i class="fas fa-signal"></i> Signals
+                </a>
+                <a href="/backtest" class="nav-link">
+                    <i class="fas fa-chart-bar"></i> Backtest
+                </a>
+                <a href="/strategies" class="nav-link">
+                    <i class="fas fa-brain"></i> Strategies
+                </a>
+                <a href="/portfolio" class="nav-link">
+                    <i class="fas fa-wallet"></i> Portfolio
+                </a>
+                <a href="/providers" class="nav-link active">
+                    <i class="fas fa-users"></i> Providers
+                </a>
+            </div>
+
+            <!-- Auth Buttons -->
+            <div class="nav-auth">
+                <button class="btn-login" onclick="window.location.href='/login'">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </button>
+                <button class="btn-register" onclick="window.location.href='/register'">
+                    <i class="fas fa-user-plus"></i> Register
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <h1 class="page-title">Signal Providers</h1>
+            <p class="page-subtitle">Copy trades from the best crypto traders worldwide</p>
+        </div>
+
+        <div class="stats-bar">
+            <div class="stat-item">
+                <div class="stat-value">247</div>
+                <div class="stat-label">Active Providers</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">10,342</div>
+                <div class="stat-label">Total Followers</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">78.4%</div>
+                <div class="stat-label">Avg Win Rate</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">$12.4M</div>
+                <div class="stat-label">Total Profit Generated</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">70/30</div>
+                <div class="stat-label">Revenue Share</div>
+            </div>
+        </div>
+
+        <div class="providers-grid">
+            <!-- Provider 1 -->
+            <div class="provider-card">
+                <span class="top-provider">TOP RATED</span>
+                <div class="provider-header">
+                    <div class="provider-avatar">AI</div>
+                    <div class="provider-info">
+                        <h3>AI Strategy Engine</h3>
+                        <div class="provider-rating">
+                            ⭐⭐⭐⭐⭐ 4.9 (2,341 reviews)
+                            <span class="provider-badge">VERIFIED</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="provider-stats">
+                    <div class="provider-stat">
+                        <div class="provider-stat-value">82.3%</div>
+                        <div class="provider-stat-label">Win Rate</div>
+                    </div>
+                    <div class="provider-stat">
+                        <div class="provider-stat-value">+582%</div>
+                        <div class="provider-stat-label">Total ROI</div>
+                    </div>
+                    <div class="provider-stat">
+                        <div class="provider-stat-value">3,421</div>
+                        <div class="provider-stat-label">Followers</div>
+                    </div>
+                </div>
+
+                <p class="provider-description">
+                    Advanced AI-powered trading system using machine learning to identify high-probability setups across multiple timeframes. Specializes in momentum and reversal strategies.
+                </p>
+
+                <div class="provider-strategies">
+                    <div class="strategies-label">Active Strategies:</div>
+                    <div class="strategy-tags">
+                        <span class="strategy-tag">7RSI Strategy</span>
+                        <span class="strategy-tag">MACD Optimized</span>
+                        <span class="strategy-tag">AI Momentum</span>
+                    </div>
+                </div>
+
+                <div class="provider-footer">
+                    <button class="btn btn-secondary">View Profile</button>
+                    <button class="btn btn-primary">Follow ($3/mo)</button>
+                </div>
+            </div>
+
+            <!-- Provider 2 -->
+            <div class="provider-card">
+                <div class="provider-header">
+                    <div class="provider-avatar">CT</div>
+                    <div class="provider-info">
+                        <h3>CryptoTrader Pro</h3>
+                        <div class="provider-rating">
+                            ⭐⭐⭐⭐⭐ 4.8 (1,892 reviews)
+                            <span class="provider-badge">VERIFIED</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="provider-stats">
+                    <div class="provider-stat">
+                        <div class="provider-stat-value">79.1%</div>
+                        <div class="provider-stat-label">Win Rate</div>
+                    </div>
+                    <div class="provider-stat">
+                        <div class="provider-stat-value">+312%</div>
+                        <div class="provider-stat-label">Total ROI</div>
+                    </div>
+                    <div class="provider-stat">
+                        <div class="provider-stat-value">2,156</div>
+                        <div class="provider-stat-label">Followers</div>
+                    </div>
+                </div>
+
+                <p class="provider-description">
+                    Professional trader with 8+ years experience. Focus on technical analysis and risk management. Consistent profits with low drawdown.
+                </p>
+
+                <div class="provider-strategies">
+                    <div class="strategies-label">Active Strategies:</div>
+                    <div class="strategy-tags">
+                        <span class="strategy-tag">3RSI + CCI</span>
+                        <span class="strategy-tag">Bollinger Bands</span>
+                        <span class="strategy-tag">Support/Resistance</span>
+                    </div>
+                </div>
+
+                <div class="provider-footer">
+                    <button class="btn btn-secondary">View Profile</button>
+                    <button class="btn btn-primary">Follow ($3/mo)</button>
+                </div>
+            </div>
+
+            <!-- Provider 3 -->
+            <div class="provider-card">
+                <div class="provider-header">
+                    <div class="provider-avatar">QT</div>
+                    <div class="provider-info">
+                        <h3>QuantumTrader</h3>
+                        <div class="provider-rating">
+                            ⭐⭐⭐⭐ 4.7 (1,234 reviews)
+                        </div>
+                    </div>
+                </div>
+
+                <div class="provider-stats">
+                    <div class="provider-stat">
+                        <div class="provider-stat-value">75.8%</div>
+                        <div class="provider-stat-label">Win Rate</div>
+                    </div>
+                    <div class="provider-stat">
+                        <div class="provider-stat-value">+248%</div>
+                        <div class="provider-stat-label">Total ROI</div>
+                    </div>
+                    <div class="provider-stat">
+                        <div class="provider-stat-value">1,789</div>
+                        <div class="provider-stat-label">Followers</div>
+                    </div>
+                </div>
+
+                <p class="provider-description">
+                    Quantitative trading strategies based on statistical arbitrage and market inefficiencies. High-frequency trading with automated execution.
+                </p>
+
+                <div class="provider-strategies">
+                    <div class="strategies-label">Active Strategies:</div>
+                    <div class="strategy-tags">
+                        <span class="strategy-tag">Statistical Arb</span>
+                        <span class="strategy-tag">Mean Reversion</span>
+                        <span class="strategy-tag">Pairs Trading</span>
+                    </div>
+                </div>
+
+                <div class="provider-footer">
+                    <button class="btn btn-secondary">View Profile</button>
+                    <button class="btn btn-primary">Follow ($3/mo)</button>
+                </div>
+            </div>
+
+            <!-- Provider 4 -->
+            <div class="provider-card">
+                <div class="provider-header">
+                    <div class="provider-avatar">DT</div>
+                    <div class="provider-info">
+                        <h3>DayTrader Elite</h3>
+                        <div class="provider-rating">
+                            ⭐⭐⭐⭐ 4.6 (987 reviews)
+                        </div>
+                    </div>
+                </div>
+
+                <div class="provider-stats">
+                    <div class="provider-stat">
+                        <div class="provider-stat-value">71.2%</div>
+                        <div class="provider-stat-label">Win Rate</div>
+                    </div>
+                    <div class="provider-stat">
+                        <div class="provider-stat-value">+198%</div>
+                        <div class="provider-stat-label">Total ROI</div>
+                    </div>
+                    <div class="provider-stat">
+                        <div class="provider-stat-value">1,234</div>
+                        <div class="provider-stat-label">Followers</div>
+                    </div>
+                </div>
+
+                <p class="provider-description">
+                    Specializing in intraday trading with focus on volatility breakouts and momentum plays. Quick entries and exits with tight risk management.
+                </p>
+
+                <div class="provider-strategies">
+                    <div class="strategies-label">Active Strategies:</div>
+                    <div class="strategy-tags">
+                        <span class="strategy-tag">Breakout Trading</span>
+                        <span class="strategy-tag">Scalping</span>
+                        <span class="strategy-tag">Volume Analysis</span>
+                    </div>
+                </div>
+
+                <div class="provider-footer">
+                    <button class="btn btn-secondary">View Profile</button>
+                    <button class="btn btn-primary">Follow ($3/mo)</button>
+                </div>
+            </div>
+
+            <!-- Provider 5 -->
+            <div class="provider-card">
+                <div class="provider-header">
+                    <div class="provider-avatar">SW</div>
+                    <div class="provider-info">
+                        <h3>SwingMaster</h3>
+                        <div class="provider-rating">
+                            ⭐⭐⭐⭐ 4.5 (756 reviews)
+                        </div>
+                    </div>
+                </div>
+
+                <div class="provider-stats">
+                    <div class="provider-stat">
+                        <div class="provider-stat-value">68.9%</div>
+                        <div class="provider-stat-label">Win Rate</div>
+                    </div>
+                    <div class="provider-stat">
+                        <div class="provider-stat-value">+156%</div>
+                        <div class="provider-stat-label">Total ROI</div>
+                    </div>
+                    <div class="provider-stat">
+                        <div class="provider-stat-value">892</div>
+                        <div class="provider-stat-label">Followers</div>
+                    </div>
+                </div>
+
+                <p class="provider-description">
+                    Long-term swing trading strategies focusing on major trends and market cycles. Lower frequency trades with higher profit targets.
+                </p>
+
+                <div class="provider-strategies">
+                    <div class="strategies-label">Active Strategies:</div>
+                    <div class="strategy-tags">
+                        <span class="strategy-tag">Trend Following</span>
+                        <span class="strategy-tag">Elliott Wave</span>
+                        <span class="strategy-tag">Fibonacci</span>
+                    </div>
+                </div>
+
+                <div class="provider-footer">
+                    <button class="btn btn-secondary">View Profile</button>
+                    <button class="btn btn-primary">Follow ($3/mo)</button>
+                </div>
+            </div>
+
+            <!-- Provider 6 -->
+            <div class="provider-card">
+                <div class="provider-header">
+                    <div class="provider-avatar">RS</div>
+                    <div class="provider-info">
+                        <h3>RiskSmart Algo</h3>
+                        <div class="provider-rating">
+                            ⭐⭐⭐⭐ 4.4 (542 reviews)
+                        </div>
+                    </div>
+                </div>
+
+                <div class="provider-stats">
+                    <div class="provider-stat">
+                        <div class="provider-stat-value">73.4%</div>
+                        <div class="provider-stat-label">Win Rate</div>
+                    </div>
+                    <div class="provider-stat">
+                        <div class="provider-stat-value">+134%</div>
+                        <div class="provider-stat-label">Total ROI</div>
+                    </div>
+                    <div class="provider-stat">
+                        <div class="provider-stat-value">678</div>
+                        <div class="provider-stat-label">Followers</div>
+                    </div>
+                </div>
+
+                <p class="provider-description">
+                    Conservative approach with focus on capital preservation. Uses advanced risk management techniques to minimize drawdowns.
+                </p>
+
+                <div class="provider-strategies">
+                    <div class="strategies-label">Active Strategies:</div>
+                    <div class="strategy-tags">
+                        <span class="strategy-tag">Risk Parity</span>
+                        <span class="strategy-tag">Hedging</span>
+                        <span class="strategy-tag">Low Volatility</span>
+                    </div>
+                </div>
+
+                <div class="provider-footer">
+                    <button class="btn btn-secondary">View Profile</button>
+                    <button class="btn btn-primary">Follow ($3/mo)</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Provider Profile Modal -->
+    <div id="profileModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); z-index: 2000; overflow-y: auto;">
+        <div style="max-width: 900px; margin: 50px auto; background: var(--dark); border-radius: 20px; padding: 2.5rem; position: relative; border: 1px solid rgba(0, 212, 255, 0.2);">
+            <button onclick="closeProfileModal()" style="position: absolute; top: 20px; right: 20px; background: transparent; border: 1px solid var(--primary); color: var(--primary); padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; font-size: 1rem;">
+                <i class="fas fa-times"></i> Close
+            </button>
+            <div id="profileModalContent"></div>
+        </div>
+    </div>
+
+    <!-- Follow Provider Modal -->
+    <div id="followModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); z-index: 2000;">
+        <div style="max-width: 600px; margin: 100px auto; background: var(--dark); border-radius: 20px; padding: 2rem; border: 1px solid rgba(0, 212, 255, 0.2);">
+            <h2 style="margin-bottom: 1.5rem; background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                <i class="fas fa-user-plus"></i> Follow Provider
+            </h2>
+            <div id="followModalContent"></div>
+            <div style="margin-top: 2rem; display: flex; gap: 1rem;">
+                <button onclick="confirmFollow()" style="flex: 1; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; border: none; padding: 1rem; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 1rem;">
+                    <i class="fas fa-check"></i> Confirm & Follow
+                </button>
+                <button onclick="closeFollowModal()" style="flex: 1; background: transparent; border: 1px solid var(--danger); color: var(--danger); padding: 1rem; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 1rem;">
+                    <i class="fas fa-times"></i> Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Provider data extracted from cards
+        const providersData = [
+            {
+                name: 'AI Strategy Engine',
+                avatar: 'AI',
+                rating: '4.9',
+                reviews: '2,341',
+                verified: true,
+                topRated: true,
+                winRate: '82.3%',
+                roi: '+582%',
+                followers: '3,421',
+                description: 'Advanced AI-powered trading system using machine learning to identify high-probability setups across multiple timeframes. Specializes in momentum and reversal strategies.',
+                strategies: ['7RSI Strategy', 'MACD Optimized', 'AI Momentum'],
+                monthlyFee: '$3'
+            },
+            {
+                name: 'CryptoTrader Pro',
+                avatar: 'CT',
+                rating: '4.8',
+                reviews: '1,892',
+                verified: true,
+                topRated: false,
+                winRate: '79.1%',
+                roi: '+312%',
+                followers: '2,156',
+                description: 'Professional trader with 8+ years experience. Focus on technical analysis and risk management. Consistent profits with low drawdown.',
+                strategies: ['Scalping Master', 'Trend Following', 'Support/Resistance'],
+                monthlyFee: '$3'
+            },
+            {
+                name: 'AlgoTrade Master',
+                avatar: 'AT',
+                rating: '4.7',
+                reviews: '1,543',
+                verified: true,
+                topRated: false,
+                winRate: '76.5%',
+                roi: '+289%',
+                followers: '1,789',
+                description: 'Quantitative analyst specializing in algorithmic trading strategies. Data-driven approach with backtested strategies.',
+                strategies: ['Mean Reversion', 'Statistical Arbitrage', 'ML Predictor'],
+                monthlyFee: '$3'
+            },
+            {
+                name: 'Momentum King',
+                avatar: 'MK',
+                rating: '4.6',
+                reviews: '1,234',
+                verified: true,
+                topRated: false,
+                winRate: '74.2%',
+                roi: '+234%',
+                followers: '1,567',
+                description: 'Specialized in momentum trading and breakout strategies. High win rate with aggressive position sizing for maximum gains.',
+                strategies: ['Breakout Hunter', 'Momentum Scanner', 'Volume Analysis'],
+                monthlyFee: '$3'
+            },
+            {
+                name: 'Swing Trader Elite',
+                avatar: 'ST',
+                rating: '4.5',
+                reviews: '987',
+                verified: true,
+                topRated: false,
+                winRate: '72.8%',
+                roi: '+198%',
+                followers: '1,234',
+                description: 'Expert swing trader focusing on multi-day price movements. Patient approach with high risk-reward ratios.',
+                strategies: ['Swing Setup Pro', 'Pattern Recognition', 'Fibonacci Levels'],
+                monthlyFee: '$3'
+            },
+            {
+                name: 'Scalp Master',
+                avatar: 'SM',
+                rating: '4.4',
+                reviews: '856',
+                verified: true,
+                topRated: false,
+                winRate: '71.3%',
+                roi: '+176%',
+                followers: '1,098',
+                description: 'High-frequency scalping specialist. Multiple trades per day capturing small price movements with tight risk control.',
+                strategies: ['1-Min Scalper', 'Quick Profits', 'Tight Stops'],
+                monthlyFee: '$3'
+            }
+        ];
+
+        let currentProvider = null;
+
+        // View Profile Modal
+        function showProfileModal(index) {
+            const provider = providersData[index];
+            if (!provider) return;
+
+            currentProvider = provider;
+            const modal = document.getElementById('profileModal');
+            const content = document.getElementById('profileModalContent');
+
+            content.innerHTML = `
+                <div style="text-align: center; margin-bottom: 2rem;">
+                    <div style="width: 120px; height: 120px; background: linear-gradient(135deg, var(--primary), var(--secondary)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 3rem; font-weight: bold; margin: 0 auto 1rem; color: white;">
+                        ${provider.avatar}
+                    </div>
+                    <h1 style="font-size: 2.5rem; margin-bottom: 0.5rem; color: var(--light);">
+                        ${provider.name}
+                        ${provider.verified ? '<i class="fas fa-check-circle" style="color: var(--success); font-size: 1.5rem; margin-left: 0.5rem;"></i>' : ''}
+                    </h1>
+                    <div style="color: var(--warning); font-size: 1.2rem; margin-bottom: 1rem;">
+                        ${'⭐'.repeat(Math.floor(parseFloat(provider.rating)))} ${provider.rating} (${provider.reviews} reviews)
+                    </div>
+                    ${provider.topRated ? '<span style="background: linear-gradient(135deg, var(--warning), var(--secondary)); color: white; padding: 0.4rem 1rem; border-radius: 15px; font-size: 0.9rem; font-weight: 600;">TOP RATED</span>' : ''}
+                </div>
+
+                <div style="background: rgba(0, 212, 255, 0.05); border: 1px solid rgba(0, 212, 255, 0.1); border-radius: 15px; padding: 2rem; margin-bottom: 2rem;">
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; text-align: center;">
+                        <div>
+                            <div style="font-size: 2rem; font-weight: bold; color: var(--success); margin-bottom: 0.5rem;">
+                                ${provider.winRate}
+                            </div>
+                            <div style="color: var(--gray); font-size: 0.9rem;">Win Rate</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 2rem; font-weight: bold; color: var(--primary); margin-bottom: 0.5rem;">
+                                ${provider.roi}
+                            </div>
+                            <div style="color: var(--gray); font-size: 0.9rem;">Total ROI</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 2rem; font-weight: bold; color: var(--warning); margin-bottom: 0.5rem;">
+                                ${provider.followers}
+                            </div>
+                            <div style="color: var(--gray); font-size: 0.9rem;">Followers</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 2rem;">
+                    <h3 style="color: var(--light); margin-bottom: 1rem; font-size: 1.3rem;">
+                        <i class="fas fa-info-circle"></i> About
+                    </h3>
+                    <p style="color: var(--gray); line-height: 1.8; font-size: 1.05rem;">
+                        ${provider.description}
+                    </p>
+                </div>
+
+                <div style="margin-bottom: 2rem;">
+                    <h3 style="color: var(--light); margin-bottom: 1rem; font-size: 1.3rem;">
+                        <i class="fas fa-brain"></i> Active Strategies
+                    </h3>
+                    <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                        ${provider.strategies.map(s => `
+                            <span style="background: rgba(0, 212, 255, 0.1); color: var(--primary); padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.9rem; border: 1px solid rgba(0, 212, 255, 0.2);">
+                                ${s}
+                            </span>
+                        `).join('')}
+                    </div>
+                </div>
+
+                <div style="background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(255, 0, 255, 0.1)); border-radius: 15px; padding: 1.5rem; text-align: center;">
+                    <div style="font-size: 1.1rem; color: var(--gray); margin-bottom: 0.5rem;">Monthly Subscription</div>
+                    <div style="font-size: 2.5rem; font-weight: bold; background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 1rem;">
+                        ${provider.monthlyFee}/month
+                    </div>
+                    <button onclick="closeProfileModal(); showFollowModal(${index})" style="background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; border: none; padding: 1rem 2rem; border-radius: 25px; cursor: pointer; font-weight: 600; font-size: 1.1rem;">
+                        <i class="fas fa-user-plus"></i> Follow This Provider
+                    </button>
+                </div>
+            `;
+
+            modal.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeProfileModal() {
+            const modal = document.getElementById('profileModal');
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        // Follow Modal
+        function showFollowModal(index) {
+            const provider = providersData[index];
+            if (!provider) return;
+
+            currentProvider = provider;
+            const modal = document.getElementById('followModal');
+            const content = document.getElementById('followModalContent');
+
+            content.innerHTML = `
+                <div style="background: rgba(0, 212, 255, 0.05); border: 1px solid rgba(0, 212, 255, 0.1); border-radius: 15px; padding: 1.5rem; margin-bottom: 1.5rem; text-align: center;">
+                    <div style="width: 80px; height: 80px; background: linear-gradient(135deg, var(--primary), var(--secondary)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: bold; margin: 0 auto 1rem; color: white;">
+                        ${provider.avatar}
+                    </div>
+                    <h3 style="font-size: 1.5rem; margin-bottom: 0.5rem; color: var(--light);">${provider.name}</h3>
+                    <p style="color: var(--gray);">Win Rate: ${provider.winRate} • ROI: ${provider.roi}</p>
+                </div>
+
+                <div style="background: rgba(255, 170, 0, 0.1); border: 1px solid var(--warning); border-radius: 10px; padding: 1.5rem; margin-bottom: 1.5rem;">
+                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                        <i class="fas fa-exclamation-triangle" style="color: var(--warning); font-size: 1.5rem;"></i>
+                        <h4 style="color: var(--warning); font-size: 1.1rem; margin: 0;">Risk Warning</h4>
+                    </div>
+                    <p style="color: var(--gray); line-height: 1.6; font-size: 0.95rem;">
+                        Following a signal provider involves copying their trades automatically. Past performance does not guarantee future results. You may lose money. Only invest what you can afford to lose.
+                    </p>
+                    <label style="display: flex; align-items: center; gap: 0.5rem; margin-top: 1rem; cursor: pointer;">
+                        <input type="checkbox" id="acceptRisk" style="width: 18px; height: 18px; cursor: pointer;">
+                        <span style="color: var(--light); font-size: 0.95rem;">I understand and accept the risks</span>
+                    </label>
+                </div>
+
+                <div style="background: rgba(0, 212, 255, 0.05); border: 1px solid rgba(0, 212, 255, 0.1); border-radius: 10px; padding: 1.5rem; text-align: center;">
+                    <div style="font-size: 1rem; color: var(--gray); margin-bottom: 0.5rem;">Monthly Subscription Fee</div>
+                    <div style="font-size: 2rem; font-weight: bold; background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                        ${provider.monthlyFee}/month
+                    </div>
+                </div>
+            `;
+
+            closeProfileModal();
+            modal.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeFollowModal() {
+            const modal = document.getElementById('followModal');
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        function confirmFollow() {
+            const acceptRisk = document.getElementById('acceptRisk').checked;
+
+            if (!acceptRisk) {
+                alert('Please accept the risk warning to continue.');
+                return;
+            }
+
+            // Show success message
+            const modal = document.getElementById('followModal');
+            modal.innerHTML = `
+                <div style="max-width: 600px; margin: 100px auto; background: var(--dark); border-radius: 20px; padding: 3rem; border: 1px solid rgba(0, 255, 136, 0.3); text-align: center;">
+                    <div style="width: 80px; height: 80px; background: rgba(0, 255, 136, 0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem;">
+                        <i class="fas fa-check" style="font-size: 2.5rem; color: var(--success);"></i>
+                    </div>
+                    <h2 style="color: var(--success); margin-bottom: 1rem; font-size: 2rem;">Successfully Followed!</h2>
+                    <p style="color: var(--gray); margin-bottom: 2rem; line-height: 1.8;">
+                        You are now following <strong style="color: var(--primary);">${currentProvider.name}</strong>.
+                        <br><br>
+                        All trades from this provider will be automatically copied to your account. You will be charged <strong style="color: var(--warning);">${currentProvider.monthlyFee}/month</strong>.
+                        <br><br>
+                        You can manage your subscriptions in your account settings.
+                    </p>
+                    <button onclick="closeFollowModal(); window.location.reload();" style="background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; border: none; padding: 1rem 2rem; border-radius: 25px; cursor: pointer; font-weight: 600; font-size: 1rem;">
+                        <i class="fas fa-check"></i> Got it!
+                    </button>
+                </div>
+            `;
+        }
+
+        // Add event listeners to all provider cards
+        document.addEventListener('DOMContentLoaded', function() {
+            const viewButtons = document.querySelectorAll('.btn-secondary');
+            const followButtons = document.querySelectorAll('.btn-primary');
+
+            viewButtons.forEach((btn, index) => {
+                btn.addEventListener('click', () => showProfileModal(index));
+            });
+
+            followButtons.forEach((btn, index) => {
+                btn.addEventListener('click', () => showFollowModal(index));
+            });
+
+            // Close modals on background click
+            document.getElementById('profileModal').addEventListener('click', function(e) {
+                if (e.target === this) closeProfileModal();
+            });
+
+            document.getElementById('followModal').addEventListener('click', function(e) {
+                if (e.target === this) closeFollowModal();
+            });
+        });
+    </script>
+
+    <script src="/js/realtime.js"></script>
+</body>
+</html>

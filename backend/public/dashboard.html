@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Dashboard - AutomatedTradeBot</title>
+    <meta name="description" content="Your AutomatedTradeBot trading dashboard. Monitor active strategies, track performance, manage subscriptions. Real-time portfolio analytics, profit/loss tracking, risk metrics. Control your automated trading operations.">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #00d4ff;
+            --secondary: #ff00ff;
+            --success: #00ff88;
+            --danger: #ff3366;
+            --warning: #ffaa00;
+            --dark: #0a0e1a;
+            --darker: #060914;
+            --light: #ffffff;
+            --gray: #8892b0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #060914 0%, #0a0e1a 50%, #060914 100%);
+            color: var(--light);
+            min-height: 100vh;
+        }
+
+        /* Grid Background */
+        .grid-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(0, 212, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 212, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: -1;
+        }
+
+        /* Header */
+        header {
+            background: rgba(10, 14, 26, 0.9);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0, 212, 255, 0.1);
+            padding: 1rem 2rem;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid var(--success);
+            color: var(--success);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--success);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.5;
+                transform: scale(1.5);
+            }
+        }
+
+        /* Main Content */
+        .dashboard {
+            max-width: 1600px;
+            margin: 80px auto 0;
+            padding: 2rem;
+        }
+
+        .dashboard-header {
+            margin-bottom: 2rem;
+        }
+
+        .dashboard-title {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--light), var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .dashboard-subtitle {
+            color: var(--gray);
+            font-size: 1.1rem;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: rgba(0, 212, 255, 0.03);
+            border: 1px solid rgba(0, 212, 255, 0.1);
+            border-radius: 15px;
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+            animation: slide 3s linear infinite;
+        }
+
+        @keyframes slide {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .stat-card:hover {
+            background: rgba(0, 212, 255, 0.08);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.2);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 0.3rem;
+        }
+
+        .stat-label {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        .stat-change {
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+        }
+
+        .stat-change.positive {
+            color: var(--success);
+        }
+
+        .stat-change.negative {
+            color: var(--danger);
+        }
+
+        /* Main Grid Layout */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+        }
+
+        /* Panel Styles */
+        .panel {
+            background: rgba(0, 212, 255, 0.03);
+            border: 1px solid rgba(0, 212, 255, 0.1);
+            border-radius: 20px;
+            padding: 1.5rem;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .panel-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .panel-badge {
+            background: rgba(0, 212, 255, 0.1);
+            color: var(--primary);
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.85rem;
+        }
+
+        /* Exchange Status */
+        .exchange-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .exchange-item {
+            display: grid;
+            grid-template-columns: auto 1fr auto auto;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .exchange-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .exchange-logo {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .exchange-info h4 {
+            font-size: 1rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .exchange-info span {
+            color: var(--gray);
+            font-size: 0.85rem;
+        }
+
+        .exchange-price {
+            text-align: right;
+        }
+
+        .price-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .price-label {
+            color: var(--gray);
+            font-size: 0.75rem;
+        }
+
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--success);
+        }
+
+        .status-indicator.offline {
+            background: var(--danger);
+        }
+
+        .status-indicator.warning {
+            background: var(--warning);
+        }
+
+        /* Trading Signals */
+        .signals-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .signal-item {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: 1rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 10px;
+            margin-bottom: 0.8rem;
+            transition: all 0.3s ease;
+        }
+
+        .signal-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateX(5px);
+        }
+
+        .signal-type {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .signal-type.buy {
+            background: rgba(0, 255, 136, 0.1);
+            color: var(--success);
+        }
+
+        .signal-type.sell {
+            background: rgba(255, 51, 102, 0.1);
+            color: var(--danger);
+        }
+
+        /* Performance Metrics */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .metric-box {
+            background: rgba(255, 255, 255, 0.02);
+            padding: 1rem;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .metric-label {
+            color: var(--gray);
+            font-size: 0.85rem;
+            margin-top: 0.3rem;
+        }
+
+        /* System Health */
+        .health-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .health-item {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 0.8rem;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 10px;
+        }
+
+        .health-icon {
+            width: 35px;
+            height: 35px;
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid var(--success);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--success);
+        }
+
+        .health-info h4 {
+            font-size: 0.9rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .health-info span {
+            color: var(--gray);
+            font-size: 0.8rem;
+        }
+
+        /* Footer */
+        .dashboard-footer {
+            margin-top: 3rem;
+            padding: 2rem;
+            background: rgba(0, 212, 255, 0.02);
+            border-radius: 15px;
+            text-align: center;
+            border: 1px solid rgba(0, 212, 255, 0.1);
+        }
+
+        .footer-text {
+            color: var(--gray);
+            margin-bottom: 1rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 212, 255, 0.3);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(0, 212, 255, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="grid-bg"></div>
+
+    <header>
+        <div class="header-container">
+            <div class="logo">
+                <i class="fas fa-chart-line"></i>
+                AutomatedTradeBot Dashboard
+            </div>
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <div class="status-badge">
+                    <div class="status-dot"></div>
+                    SYSTEM ONLINE
+                </div>
+                <button onclick="logout()" style="background: rgba(255,77,77,0.1); color: #ff4d4d; border: 1px solid rgba(255,77,77,0.3); padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-weight: 500; transition: all 0.3s;">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="dashboard">
+        <div class="dashboard-header">
+            <h1 class="dashboard-title">System Control Center</h1>
+            <p class="dashboard-subtitle">Real-time monitoring and control of all trading systems</p>
+        </div>
+
+        <!-- Main Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-label">Total Strategies</span>
+                    <div class="stat-icon">
+                        <i class="fas fa-code-branch"></i>
+                    </div>
+                </div>
+                <div class="stat-value">31</div>
+                <div class="stat-change positive">+3 this week</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-label">Active Positions</span>
+                    <div class="stat-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                </div>
+                <div class="stat-value">14</div>
+                <div class="stat-change positive">+5.82% PnL</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-label">System Latency</span>
+                    <div class="stat-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                </div>
+                <div class="stat-value">47ms</div>
+                <div class="stat-change positive">-12ms from avg</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-label">Win Rate</span>
+                    <div class="stat-icon">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                </div>
+                <div class="stat-value">78.4%</div>
+                <div class="stat-change positive">+2.3% this month</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-label">Total Volume</span>
+                    <div class="stat-icon">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                </div>
+                <div class="stat-value">$2.4M</div>
+                <div class="stat-change positive">24h volume</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-label">API Calls</span>
+                    <div class="stat-icon">
+                        <i class="fas fa-server"></i>
+                    </div>
+                </div>
+                <div class="stat-value">142K</div>
+                <div class="stat-change">Today</div>
+            </div>
+        </div>
+
+        <!-- Main Grid -->
+        <div class="dashboard-grid">
+            <!-- Left Column -->
+            <div>
+                <!-- Exchange Status Panel -->
+                <div class="panel">
+                    <div class="panel-header">
+                        <h3 class="panel-title">Exchange Connections</h3>
+                        <span class="panel-badge">REAL DATA</span>
+                    </div>
+                    <div class="exchange-list">
+                        <div class="exchange-item">
+                            <div class="exchange-logo">BY</div>
+                            <div class="exchange-info">
+                                <h4>Bybit</h4>
+                                <span>API Key Required</span>
+                            </div>
+                            <div class="exchange-price">
+                                <div class="price-value">$109,158</div>
+                                <div class="price-label">BTC/USDT</div>
+                            </div>
+                            <div class="status-indicator warning"></div>
+                        </div>
+
+                        <div class="exchange-item">
+                            <div class="exchange-logo">BG</div>
+                            <div class="exchange-info">
+                                <h4>Bitget</h4>
+                                <span>Connected</span>
+                            </div>
+                            <div class="exchange-price">
+                                <div class="price-value">$109,158</div>
+                                <div class="price-label">BTC/USDT</div>
+                            </div>
+                            <div class="status-indicator"></div>
+                        </div>
+
+                        <div class="exchange-item">
+                            <div class="exchange-logo">MX</div>
+                            <div class="exchange-info">
+                                <h4>MEXC</h4>
+                                <span>API Key Required</span>
+                            </div>
+                            <div class="exchange-price">
+                                <div class="price-value">--</div>
+                                <div class="price-label">BTC/USDT</div>
+                            </div>
+                            <div class="status-indicator warning"></div>
+                        </div>
+
+                        <div class="exchange-item">
+                            <div class="exchange-logo">BN</div>
+                            <div class="exchange-info">
+                                <h4>Binance</h4>
+                                <span>API Key Required</span>
+                            </div>
+                            <div class="exchange-price">
+                                <div class="price-value">--</div>
+                                <div class="price-label">BTC/USDT</div>
+                            </div>
+                            <div class="status-indicator warning"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Live Signals Panel -->
+                <div class="panel" style="margin-top: 2rem;">
+                    <div class="panel-header">
+                        <h3 class="panel-title">Live Trading Signals</h3>
+                        <span class="panel-badge">AUTO-GENERATED</span>
+                    </div>
+                    <div class="signals-list">
+                        <div class="signal-item">
+                            <span class="signal-type buy">BUY</span>
+                            <div>
+                                <h4>XRP/USDT</h4>
+                                <span style="color: var(--gray); font-size: 0.85rem;">RSI Oversold (28.4)</span>
+                            </div>
+                            <span>$0.5234</span>
+                        </div>
+
+                        <div class="signal-item">
+                            <span class="signal-type sell">SELL</span>
+                            <div>
+                                <h4>SOL/USDT</h4>
+                                <span style="color: var(--gray); font-size: 0.85rem;">RSI Overbought (72.1)</span>
+                            </div>
+                            <span>$160.45</span>
+                        </div>
+
+                        <div class="signal-item">
+                            <span class="signal-type buy">BUY</span>
+                            <div>
+                                <h4>ETH/USDT</h4>
+                                <span style="color: var(--gray); font-size: 0.85rem;">MACD Cross</span>
+                            </div>
+                            <span>$3,892</span>
+                        </div>
+
+                        <div class="signal-item">
+                            <span class="signal-type buy">BUY</span>
+                            <div>
+                                <h4>DOGE/USDT</h4>
+                                <span style="color: var(--gray); font-size: 0.85rem;">Support Bounce</span>
+                            </div>
+                            <span>$0.0823</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column -->
+            <div>
+                <!-- Performance Metrics -->
+                <div class="panel">
+                    <div class="panel-header">
+                        <h3 class="panel-title">Performance Metrics</h3>
+                    </div>
+                    <div class="metrics-grid">
+                        <div class="metric-box">
+                            <div class="metric-value">312%</div>
+                            <div class="metric-label">Total ROI</div>
+                        </div>
+                        <div class="metric-box">
+                            <div class="metric-value">1.82</div>
+                            <div class="metric-label">Sharpe Ratio</div>
+                        </div>
+                        <div class="metric-box">
+                            <div class="metric-value">12.4%</div>
+                            <div class="metric-label">Max Drawdown</div>
+                        </div>
+                        <div class="metric-box">
+                            <div class="metric-value">2.8</div>
+                            <div class="metric-label">Profit Factor</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- System Health -->
+                <div class="panel" style="margin-top: 2rem;">
+                    <div class="panel-header">
+                        <h3 class="panel-title">System Health</h3>
+                    </div>
+                    <div class="health-grid">
+                        <div class="health-item">
+                            <div class="health-icon">
+                                <i class="fas fa-database"></i>
+                            </div>
+                            <div class="health-info">
+                                <h4>Database</h4>
+                                <span>Connected</span>
+                            </div>
+                        </div>
+
+                        <div class="health-item">
+                            <div class="health-icon">
+                                <i class="fas fa-wifi"></i>
+                            </div>
+                            <div class="health-info">
+                                <h4>WebSocket</h4>
+                                <span>Active</span>
+                            </div>
+                        </div>
+
+                        <div class="health-item">
+                            <div class="health-icon">
+                                <i class="fas fa-memory"></i>
+                            </div>
+                            <div class="health-info">
+                                <h4>Memory</h4>
+                                <span>132MB / 1GB</span>
+                            </div>
+                        </div>
+
+                        <div class="health-item">
+                            <div class="health-icon">
+                                <i class="fas fa-microchip"></i>
+                            </div>
+                            <div class="health-info">
+                                <h4>CPU</h4>
+                                <span>2.3% usage</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Strategy Status -->
+                <div class="panel" style="margin-top: 2rem;">
+                    <div class="panel-header">
+                        <h3 class="panel-title">Top Strategies</h3>
+                    </div>
+                    <div style="font-size: 0.9rem;">
+                        <div style="padding: 0.8rem; background: rgba(255,255,255,0.02); border-radius: 8px; margin-bottom: 0.8rem;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.3rem;">
+                                <strong>7RSI_Strategy</strong>
+                                <span style="color: var(--success);">+82.3%</span>
+                            </div>
+                            <div style="color: var(--gray); font-size: 0.85rem;">142 trades • 78% win rate</div>
+                        </div>
+
+                        <div style="padding: 0.8rem; background: rgba(255,255,255,0.02); border-radius: 8px; margin-bottom: 0.8rem;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.3rem;">
+                                <strong>MACD_Optimized</strong>
+                                <span style="color: var(--success);">+308.8%</span>
+                            </div>
+                            <div style="color: var(--gray); font-size: 0.85rem;">89 trades • 71% win rate</div>
+                        </div>
+
+                        <div style="padding: 0.8rem; background: rgba(255,255,255,0.02); border-radius: 8px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.3rem;">
+                                <strong>3RSI_CCI</strong>
+                                <span style="color: var(--success);">+156.4%</span>
+                            </div>
+                            <div style="color: var(--gray); font-size: 0.85rem;">234 trades • 69% win rate</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer Actions -->
+        <div class="dashboard-footer">
+            <p class="footer-text">
+                System running for 14 minutes • Last update: <span id="lastUpdate">Just now</span>
+            </p>
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="runBacktest()">
+                    <i class="fas fa-play"></i> Run Backtest
+                </button>
+                <button class="btn btn-secondary" onclick="viewReports()">
+                    <i class="fas fa-chart-bar"></i> View Reports
+                </button>
+                <button class="btn btn-secondary" onclick="configureAPI()">
+                    <i class="fas fa-key"></i> Configure API Keys
+                </button>
+            </div>
+        </div>
+
+        <!-- My Subscriptions Widget -->
+        <div class="section-card" style="margin-top: 2rem;">
+            <div class="section-header">
+                <h2>My Active Subscriptions</h2>
+                <a href="/subscriptions" class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.9rem;">
+                    <i class="fas fa-cog"></i> Manage
+                </a>
+            </div>
+            <div id="dashboard-subscriptions" class="subscriptions-mini-grid">
+                <div style="text-align: center; padding: 2rem; color: var(--gray);">
+                    <i class="fas fa-spinner fa-spin" style="font-size: 2rem;"></i>
+                    <p style="margin-top: 1rem;">Loading subscriptions...</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Update last update time
+        setInterval(() => {
+            document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString();
+        }, 1000);
+
+        // Button actions
+        function runBacktest() {
+            alert('Backtest system will use REAL historical data from /home/karsilas/Tamoto/historical_data/');
+        }
+
+        function viewReports() {
+            window.location.href = '/reports';
+        }
+
+        function configureAPI() {
+            alert('Add your exchange API keys to /home/automatedtradebot/backend/.env');
+        }
+
+        // Load Subscriptions
+        async function loadDashboardSubscriptions() {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+
+            try {
+                const response = await fetch('/api/subscriptions/my-subscriptions', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+
+                if (response.status === 401) {
+                    // Token expired, redirect to login
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                    window.location.href = '/login';
+                    return;
+                }
+
+                const data = await response.json();
+
+                const container = document.getElementById('dashboard-subscriptions');
+                if (data.success && data.subscriptions.length > 0) {
+                    container.innerHTML = data.subscriptions.slice(0, 3).map(sub =>
+                        '<div style="padding: 1rem; background: rgba(0,212,255,0.05); border: 1px solid rgba(0,212,255,0.2); border-radius: 8px;">' +
+                        '<div style="font-weight: 600; color: var(--primary); margin-bottom: 0.5rem;">' + sub.strategy.name + '</div>' +
+                        '<div style="font-size: 0.85rem; color: var(--gray);">Exchange: ' + (sub.activeExchange || 'Not set') + '</div>' +
+                        '<div style="font-size: 0.85rem; color: var(--gray);">Pairs: ' + (sub.allPairs ? 'All' : sub.subscribedPairs.length) + '</div>' +
+                        '</div>'
+                    ).join('') + (data.subscriptions.length > 3 ?
+                        '<div style="text-align: center; padding: 1rem;"><a href="/subscriptions" style="color: var(--primary);">View all ' + data.subscriptions.length + ' subscriptions →</a></div>' : '');
+                } else {
+                    container.innerHTML = '<div style="text-align: center; padding: 2rem; color: var(--gray);">' +
+                        '<i class="fas fa-inbox" style="font-size: 2rem; margin-bottom: 1rem;"></i>' +
+                        '<p>No active subscriptions</p>' +
+                        '<a href="/marketplace" style="color: var(--primary); margin-top: 1rem; display: inline-block;">Browse Marketplace →</a>' +
+                        '</div>';
+                }
+            } catch (error) {
+                console.error('Error loading subscriptions:', error);
+            }
+        }
+
+        // Logout function
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = '/login';
+        }
+
+        // Load subscriptions on page load
+        loadDashboardSubscriptions();
+
+        // Load real-time client
+        const script = document.createElement('script');
+        script.src = '/js/realtime.js';
+        document.body.appendChild(script);
+    </script>
+
+    <!-- Toast Notifications -->
+    <script src="/js/toast.js"></script>
+
+    <!-- Standardized Navigation -->
+    <script src="/js/navigation.js"></script>
+    <script>
+        document.body.dataset.page = 'dashboard';
+    </script>
+</body>
+</html>

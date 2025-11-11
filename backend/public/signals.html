@@ -1,0 +1,1713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Trading Signals | Professional Crypto & Forex</title>
+    <meta name="description" content="Live trading signals from professional traders. Real-time cryptocurrency, forex, and stock alerts. Copy trades automatically with AutomatedTradeBot. Verified performance history, transparent track records.">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #0a0e27;
+            color: #e8eaf6;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: #131829;
+            border-bottom: 1px solid #1e2337;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 700;
+            color: #5e72e4;
+        }
+
+        .header-stats {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            font-size: 13px;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #10b981;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .status-dot.disconnected {
+            background: #ef4444;
+            animation: none;
+        }
+
+        /* Main Layout */
+        .container {
+            display: flex;
+            max-width: 100%;
+            margin: 0 auto;
+        }
+
+        /* Sidebar Filters */
+        .sidebar {
+            width: 280px;
+            background: #131829;
+            border-right: 1px solid #1e2337;
+            padding: 20px;
+            height: calc(100vh - 61px);
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar.collapsed {
+            transform: translateX(-100%);
+            position: absolute;
+        }
+
+        .filter-section {
+            margin-bottom: 25px;
+        }
+
+        .filter-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #8b93a7;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            letter-spacing: 0.5px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .filter-btn {
+            padding: 6px 12px;
+            background: #1e2337;
+            border: 1px solid #2d3548;
+            border-radius: 6px;
+            color: #8b93a7;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+
+        .filter-btn:hover {
+            background: #252d44;
+            border-color: #5e72e4;
+        }
+
+        .filter-btn.active {
+            background: #5e72e4;
+            border-color: #5e72e4;
+            color: white;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px 12px;
+            background: #1e2337;
+            border: 1px solid #2d3548;
+            border-radius: 6px;
+            color: #e8eaf6;
+            font-size: 13px;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #5e72e4;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 20px 30px;
+            overflow-x: auto;
+        }
+
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .toggle-sidebar {
+            background: #1e2337;
+            border: 1px solid #2d3548;
+            color: #8b93a7;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .toggle-sidebar:hover {
+            background: #252d44;
+        }
+
+        .page-info {
+            color: #8b93a7;
+            font-size: 13px;
+        }
+
+        /* Signals Table */
+        .signals-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #131829;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .signals-table thead {
+            background: #1a1f36;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .signals-table th {
+            padding: 12px 15px;
+            text-align: left;
+            font-size: 11px;
+            font-weight: 600;
+            color: #8b93a7;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid #1e2337;
+        }
+
+        .signals-table td {
+            padding: 15px 15px;
+            border-bottom: 1px solid #1e2337;
+            font-size: 13px;
+        }
+
+        .signals-table tbody tr {
+            transition: background 0.2s;
+        }
+
+        .signals-table tbody tr:hover {
+            background: #1a1f36;
+        }
+
+        .signals-table tbody tr.new-signal {
+            animation: highlight 2s ease;
+        }
+
+        @keyframes highlight {
+            0% { background: #5e72e433; }
+            100% { background: transparent; }
+        }
+
+        /* Table Cell Styles */
+        .rank-cell {
+            color: #8b93a7;
+            font-weight: 600;
+        }
+
+        .pair-cell {
+            font-weight: 600;
+            color: #e8eaf6;
+        }
+
+        .strategy-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            background: #2d3548;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .direction-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .direction-badge.long {
+            background: #10b98122;
+            color: #10b981;
+            border: 1px solid #10b98144;
+        }
+
+        .direction-badge.short {
+            background: #ef444422;
+            color: #ef4444;
+            border: 1px solid #ef444444;
+        }
+
+        .price-cell {
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            color: #a8b2d1;
+        }
+
+        .gain-cell {
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .gain-cell.positive {
+            color: #10b981;
+        }
+
+        .gain-cell.negative {
+            color: #ef4444;
+        }
+
+        .gain-cell.neutral {
+            color: #8b93a7;
+        }
+
+        .time-cell {
+            color: #8b93a7;
+            font-size: 12px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .status-badge.active {
+            background: #3b82f622;
+            color: #3b82f6;
+            border: 1px solid #3b82f644;
+        }
+
+        .status-badge.closed {
+            background: #6b728022;
+            color: #9ca3af;
+            border: 1px solid #6b728044;
+        }
+
+        /* Mini Chart */
+        .chart-cell {
+            width: 120px;
+            height: 40px;
+        }
+
+        .mini-chart {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Action Buttons */
+        .action-btn {
+            padding: 6px 12px;
+            background: #1e2337;
+            border: 1px solid #2d3548;
+            color: #8b93a7;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            margin-right: 5px;
+            transition: all 0.2s;
+        }
+
+        .action-btn:hover {
+            background: #5e72e4;
+            border-color: #5e72e4;
+            color: white;
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            padding: 15px 0;
+        }
+
+        .pagination-info {
+            color: #8b93a7;
+            font-size: 13px;
+        }
+
+        .pagination-controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        .page-btn {
+            padding: 8px 12px;
+            background: #1e2337;
+            border: 1px solid #2d3548;
+            color: #8b93a7;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            min-width: 36px;
+            text-align: center;
+        }
+
+        .page-btn:hover:not(.active) {
+            background: #252d44;
+        }
+
+        .page-btn.active {
+            background: #5e72e4;
+            border-color: #5e72e4;
+            color: white;
+        }
+
+        .page-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #8b93a7;
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #0a0e27;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #2d3548;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #3d4558;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .sidebar {
+                position: absolute;
+                z-index: 99;
+                transform: translateX(-100%);
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+        }
+
+        /* Navigation Styles */
+        #navbar {
+            background: rgba(10, 14, 38, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(94, 114, 228, 0.2);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #5e72e4;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: color 0.3s;
+        }
+
+        .logo:hover {
+            color: #825ee4;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 0.5rem;
+            margin: 0;
+            padding: 0;
+        }
+
+        .nav-links li {
+            margin: 0;
+        }
+
+        .nav-links a {
+            color: #e8eaf6;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .nav-links a:hover {
+            background: rgba(94, 114, 228, 0.1);
+            color: #fff;
+        }
+
+        .nav-links a.active {
+            background: rgba(94, 114, 228, 0.2);
+            color: #fff;
+            border: 1px solid rgba(94, 114, 228, 0.3);
+        }
+
+        .nav-cta {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .btn-nav {
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-nav.profile {
+            background: rgba(94, 114, 228, 0.1);
+            border: 1px solid rgba(94, 114, 228, 0.3);
+            color: #e8eaf6;
+        }
+
+        .btn-nav.profile:hover {
+            background: rgba(94, 114, 228, 0.2);
+            color: #fff;
+        }
+
+        .btn-nav.logout {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #ef4444;
+        }
+
+        .btn-nav.logout:hover {
+            background: rgba(239, 68, 68, 0.2);
+            color: #fff;
+        }
+    </style>
+</head>
+<body data-page="signals">
+    <!-- Navigation -->
+    <nav id="navbar">
+        <div class="nav-container">
+            <a href="/" class="logo">
+                <i class="fas fa-chart-line"></i>
+                AutomatedTradeBot
+            </a>
+            <ul class="nav-links">
+                <li><a href="/" data-page="home">Home</a></li>
+                <li><a href="/dashboard" data-page="dashboard">Dashboard</a></li>
+                <li><a href="/marketplace" data-page="marketplace">Marketplace</a></li>
+                <li><a href="/subscriptions" data-page="subscriptions">My Subscriptions</a></li>
+                <li><a href="/signals" data-page="signals" class="active">Signals</a></li>
+                <li><a href="/completed-trades" data-page="trades">Trades</a></li>
+                <li><a href="/active-positions" data-page="active">Active</a></li>
+            </ul>
+            <div class="nav-cta">
+                <a href="/profile" class="btn-nav profile">
+                    <i class="fas fa-user-circle"></i> Profile
+                </a>
+                <a href="#" class="btn-nav logout" onclick="logout(); return false;">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Stats Header -->
+    <div class="header" style="background: #131829; border-bottom: 1px solid #1e2337; padding: 15px 30px;">
+        <div class="header-stats" style="display: flex; gap: 20px; align-items: center; justify-content: center; font-size: 13px;">
+            <div class="stat-item">
+                <span class="status-dot" id="connectionDot"></span>
+                <span id="connectionStatus">Connecting...</span>
+            </div>
+            <div class="stat-item">
+                <span>Total Signals: <strong id="totalSignals">0</strong></span>
+            </div>
+            <div class="stat-item">
+                <span>Active: <strong id="activeSignals">0</strong></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Sidebar Filters -->
+        <div class="sidebar" id="sidebar">
+            <div class="filter-section">
+                <div class="filter-title">Search</div>
+                <input type="text" class="search-input" id="searchInput" placeholder="Search pair, strategy...">
+            </div>
+
+            <div class="filter-section">
+                <div class="filter-title">Direction</div>
+                <div class="filter-group">
+                    <button class="filter-btn" data-filter="direction" data-value="">All</button>
+                    <button class="filter-btn" data-filter="direction" data-value="LONG">Long</button>
+                    <button class="filter-btn" data-filter="direction" data-value="SHORT">Short</button>
+                </div>
+            </div>
+
+            <div class="filter-section">
+                <div class="filter-title">Strategy</div>
+                <div class="filter-group">
+                    <button class="filter-btn" data-filter="strategy" data-value="">All</button>
+                    <button class="filter-btn" data-filter="strategy" data-value="3RSI">3RSI</button>
+                    <button class="filter-btn" data-filter="strategy" data-value="7RSI">7RSI</button>
+                    <button class="filter-btn" data-filter="strategy" data-value="GRID">GRID</button>
+                </div>
+            </div>
+
+            <div class="filter-section">
+                <div class="filter-title">Status</div>
+                <div class="filter-group">
+                    <button class="filter-btn" data-filter="status" data-value="">All</button>
+                    <button class="filter-btn" data-filter="status" data-value="Active">Active</button>
+                    <button class="filter-btn" data-filter="status" data-value="Closed">Closed</button>
+                </div>
+            </div>
+
+            <div class="filter-section">
+                <div class="filter-title">Sort By</div>
+                <div class="filter-group">
+                    <button class="filter-btn active" data-sort="time-desc">Newest First</button>
+                    <button class="filter-btn" data-sort="time-asc">Oldest First</button>
+                    <button class="filter-btn" data-sort="pnl-desc">Highest PnL</button>
+                    <button class="filter-btn" data-sort="pnl-asc">Lowest PnL</button>
+                    <button class="filter-btn" data-sort="strategy">Strategy A-Z</button>
+                    <button class="filter-btn" data-sort="pair">Pair A-Z</button>
+                </div>
+            </div>
+
+            <div class="filter-section">
+                <div class="filter-title">Time Period</div>
+                <div class="filter-group">
+                    <button class="filter-btn" data-filter="period" data-value="">All Time</button>
+                    <button class="filter-btn" data-filter="period" data-value="1h">1 Hour</button>
+                    <button class="filter-btn" data-filter="period" data-value="24h">24 Hours</button>
+                    <button class="filter-btn" data-filter="period" data-value="7d">7 Days</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="content-header">
+                <button class="toggle-sidebar" onclick="toggleSidebar()">☰ Filters</button>
+                <div class="page-info">
+                    <span id="pageInfo">Showing 1 to 20 of 0 signals</span>
+                </div>
+            </div>
+
+            <!-- Strategy Pair Performance Panel -->
+            <div id="strategyPerformancePanel" style="display: none; margin: 20px 0; background: #131829; border-radius: 12px; padding: 20px; border: 1px solid #1e2337;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; gap: 20px;">
+                    <h2 id="strategyPerformanceTitle" style="font-size: 24px; color: #5e72e4; margin: 0; flex: 1;">Strategy Performance by Pair</h2>
+
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <select id="pairSelectDropdown" style="background: #1e2337; color: #e8eaf6; border: 1px solid #5e72e4; padding: 10px 16px; border-radius: 8px; font-size: 14px; cursor: pointer; min-width: 200px;">
+                            <option value="">Select Pair(s) for Bot</option>
+                        </select>
+
+                        <button id="startBotBtn" style="background: linear-gradient(135deg, #5e72e4, #825ee4); color: white; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 14px; transition: transform 0.2s; white-space: nowrap;">
+                            🤖 Start Bot (MEXC, 2 USD, Spot)
+                        </button>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap;">
+                    <button class="pair-sort-btn active" data-sort="totalROI" style="padding: 8px 16px; background: #1e2337; border: 1px solid #5e72e4; border-radius: 6px; color: #e8eaf6; cursor: pointer; font-size: 13px;">Total ROI ↓</button>
+                    <button class="pair-sort-btn" data-sort="winRate" style="padding: 8px 16px; background: #1e2337; border: 1px solid #2e3347; border-radius: 6px; color: #e8eaf6; cursor: pointer; font-size: 13px;">Win Rate</button>
+                    <button class="pair-sort-btn" data-sort="profitFactor" style="padding: 8px 16px; background: #1e2337; border: 1px solid #2e3347; border-radius: 6px; color: #e8eaf6; cursor: pointer; font-size: 13px;">Profit Factor</button>
+                    <button class="pair-sort-btn" data-sort="sortinoRatio" style="padding: 8px 16px; background: #1e2337; border: 1px solid #2e3347; border-radius: 6px; color: #e8eaf6; cursor: pointer; font-size: 13px;">Sortino Ratio</button>
+                    <button class="pair-sort-btn" data-sort="avgPerTrade" style="padding: 8px 16px; background: #1e2337; border: 1px solid #2e3347; border-radius: 6px; color: #e8eaf6; cursor: pointer; font-size: 13px;">Avg Per Trade</button>
+                    <button class="pair-sort-btn" data-sort="closedTrades" style="padding: 8px 16px; background: #1e2337; border: 1px solid #2e3347; border-radius: 6px; color: #e8eaf6; cursor: pointer; font-size: 13px;">Trade Count</button>
+                </div>
+
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="background: #1e2337; border-bottom: 2px solid #5e72e4;">
+                                <th style="padding: 12px; text-align: left; font-size: 13px; color: #8892b0;">#</th>
+                                <th style="padding: 12px; text-align: left; font-size: 13px; color: #8892b0;">Pair</th>
+                                <th style="padding: 12px; text-align: center; font-size: 13px; color: #8892b0;">Bot Status</th>
+                                <th style="padding: 12px; text-align: right; font-size: 13px; color: #8892b0;">Total ROI</th>
+                                <th style="padding: 12px; text-align: right; font-size: 13px; color: #8892b0;">Closed ROI</th>
+                                <th style="padding: 12px; text-align: right; font-size: 13px; color: #8892b0;">Open ROI</th>
+                                <th style="padding: 12px; text-align: right; font-size: 13px; color: #8892b0;">Win Rate</th>
+                                <th style="padding: 12px; text-align: right; font-size: 13px; color: #8892b0;">Trades</th>
+                                <th style="padding: 12px; text-align: right; font-size: 13px; color: #8892b0;">Avg/Trade</th>
+                                <th style="padding: 12px; text-align: right; font-size: 13px; color: #8892b0;">Max DD</th>
+                                <th style="padding: 12px; text-align: center; font-size: 13px; color: #8892b0;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pairPerformanceTableBody">
+                            <tr>
+                                <td colspan="11" style="padding: 40px; text-align: center; color: #8892b0;">
+                                    Select a strategy to view pair performance
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <table class="signals-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Pair</th>
+                        <th>Strategy</th>
+                        <th>Direction</th>
+                        <th>Entry</th>
+                        <th>Take Profit</th>
+                        <th>Stop Loss</th>
+                        <th>Gain %</th>
+                        <th>Chart</th>
+                        <th>Time</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="signalsTableBody">
+                    <tr>
+                        <td colspan="12" class="empty-state">
+                            <div class="empty-state-icon">📡</div>
+                            <div>Waiting for signals...</div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="pagination">
+                <div class="pagination-info" id="paginationInfo">
+                    Showing 0 to 0 of 0 signals
+                </div>
+                <div class="pagination-controls" id="paginationControls">
+                    <button class="page-btn" onclick="changePage(-1)">Previous</button>
+                    <button class="page-btn active">1</button>
+                    <button class="page-btn" onclick="changePage(1)">Next</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script>
+        let ws;
+        let allSignals = [];
+        let filteredSignals = [];
+        let currentPage = 1;
+        let signalsPerPage = 20;
+        let filters = {
+            search: '',
+            direction: '',
+            strategy: '',
+            status: '',
+            period: ''
+        };
+
+        // Cache of pairs for strategy filter (for fast filtering)
+        let strategyPairsFilter = null;
+
+        // Check for strategy filter from URL or localStorage
+        async function initializeStrategyFilter() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const strategyFromUrl = urlParams.get('strategy');
+            const strategyFromStorage = localStorage.getItem('filterStrategy');
+
+            if (strategyFromUrl) {
+                filters.strategy = decodeURIComponent(strategyFromUrl);
+                // Update strategy select dropdown if exists
+                const strategySelect = document.getElementById('strategyFilter');
+                if (strategySelect) {
+                    strategySelect.value = filters.strategy;
+                }
+                // Clear localStorage
+                localStorage.removeItem('filterStrategy');
+
+                // CRITICAL: Load strategy performance FIRST to get pairs list
+                console.log('⚡ [FAST] Loading strategy performance FIRST for:', filters.strategy);
+                await loadStrategyPerformance(filters.strategy);
+            } else if (strategyFromStorage) {
+                filters.strategy = strategyFromStorage;
+                // Clear localStorage
+                localStorage.removeItem('filterStrategy');
+
+                // CRITICAL: Load strategy performance FIRST to get pairs list
+                console.log('⚡ [FAST] Loading strategy performance FIRST for:', filters.strategy);
+                await loadStrategyPerformance(filters.strategy);
+            }
+        }
+
+        // WebSocket Connection
+        function initWebSocket() {
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsUrl = `${protocol}//${window.location.host}/ws/signals`;
+
+            console.log('Connecting to WebSocket:', wsUrl);
+            ws = new WebSocket(wsUrl);
+
+            ws.onopen = () => {
+                console.log('✅ WebSocket Connected');
+                document.getElementById('connectionStatus').textContent = 'Connected';
+                document.getElementById('connectionDot').classList.remove('disconnected');
+            };
+
+            ws.onmessage = async (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+                    console.log('📩 Received:', data.type, 'Data:', data);
+
+                    switch (data.type) {
+                        case 'CONNECTED':
+                            console.log('✅ Connected:', data.message);
+                            break;
+
+                        case 'HISTORY':
+                            console.log('📚 Received FIRST chunk:', data.signals.length, 'signals');
+                            if (data.chunkInfo) {
+                                console.log(`📦 Chunk ${data.chunkInfo.current}/${data.chunkInfo.total}`);
+                                // First chunk - initialize array
+                                allSignals = data.signals || [];
+                                console.log('📚 Started receiving chunks... Total so far:', allSignals.length);
+                                // If this is also the last chunk, process now
+                                if (data.chunkInfo.isLast) {
+                                    console.log('✅ Only one chunk! Processing now...');
+                                    allSignals = allSignals.reverse(); // Newest first
+                                    await initializeStrategyFilter(); // Wait for performance data FIRST
+                                    applyFiltersAndRender();
+                                }
+                            } else {
+                                // No chunk info means this is the complete history
+                                allSignals = (data.signals || []).reverse(); // Newest first
+                                console.log('📚 Received all signals at once:', allSignals.length);
+                                await initializeStrategyFilter(); // Wait for performance data FIRST
+                                applyFiltersAndRender();
+                            }
+                            break;
+
+                        case 'HISTORY_CHUNK':
+                            console.log('📦 Received chunk:', data.signals.length, 'signals');
+                            if (data.chunkInfo) {
+                                console.log(`📦 Chunk ${data.chunkInfo.current}/${data.chunkInfo.total}`, 'isLast:', data.chunkInfo.isLast);
+                            }
+                            // Append chunk to existing signals
+                            allSignals = allSignals.concat(data.signals || []);
+                            console.log('📚 Total signals accumulated:', allSignals.length);
+                            // Only process after receiving all chunks
+                            if (data.chunkInfo && data.chunkInfo.isLast) {
+                                console.log('✅ All chunks received! Processing signals...');
+                                allSignals = allSignals.reverse(); // Newest first
+                                await initializeStrategyFilter(); // Wait for performance data FIRST
+                                applyFiltersAndRender();
+                            } else if (data.chunkInfo && data.chunkInfo.current === data.chunkInfo.total) {
+                                // Fallback: if current === total but isLast not set
+                                console.log('⚠️ Last chunk detected by count! Processing signals...');
+                                allSignals = allSignals.reverse();
+                                await initializeStrategyFilter(); // Wait for performance data FIRST
+                                applyFiltersAndRender();
+                            }
+                            break;
+
+                        case 'SIGNAL':
+                            console.log('🆕 New signal:', data.signal.pair, data.signal.direction);
+                            allSignals.unshift(data.signal); // Add to beginning
+                            applyFiltersAndRender();
+                            highlightNewSignal();
+                            break;
+
+                        case 'PNL_UPDATE':
+                            console.log('💹 PnL Update:', data.updates.length, 'signals');
+                            updateSignalPnL(data.updates);
+                            break;
+
+                        case 'SIGNAL_CLOSED':
+                            console.log('🔒 Signal Closed:', data.signalId, data.reason);
+                            updateSignalStatus(data.signalId, 'Closed', data.finalPnL);
+                            break;
+                    }
+                } catch (error) {
+                    console.error('❌ Message parse error:', error);
+                }
+            };
+
+            ws.onerror = (error) => {
+                console.error('❌ WebSocket Error:', error);
+                document.getElementById('connectionStatus').textContent = 'Error';
+                document.getElementById('connectionDot').classList.add('disconnected');
+            };
+
+            ws.onclose = () => {
+                console.log('🔌 WebSocket Closed - Reconnecting in 5s...');
+                document.getElementById('connectionStatus').textContent = 'Disconnected';
+                document.getElementById('connectionDot').classList.add('disconnected');
+                setTimeout(initWebSocket, 5000);
+            };
+        }
+
+        // Filter Functions
+        // Extract strategy name from signal - FULLY AUTOMATIC (same as marketplace)
+        function extractStrategyFromSignal(signal) {
+            const signalName = (signal.strategy || signal.pair || signal.id || '').trim();
+            if (!signalName) return 'Unknown';
+
+            const original = signalName.trim();
+            const name = signalName.toUpperCase();
+
+            // Pattern 1: Strategy embedded in pair name
+            if (name.includes('7RSI')) return '7RSI';
+            if (name.includes('3RSI')) return '3RSI';
+            if (name.includes('P3RSI')) return 'P3RSI';
+
+            // Pattern 2: Trading pair detection
+            const isPair = name.includes('USDT') || name.includes('BUSD') ||
+                          name.includes('BTC') || name.includes('ETH') ||
+                          name.includes('.P') || name.includes('USD');
+
+            if (isPair) {
+                return original;
+            }
+
+            // Pattern 3: Standalone strategy - use exactly as received
+            return original;
+        }
+
+        function applyFiltersAndRender() {
+            filteredSignals = allSignals.filter(signal => {
+                // CRITICAL: Pair filter for strategy performance (FAST filtering)
+                // When strategy filter is active, ONLY show signals for pairs in performance data
+                if (strategyPairsFilter && strategyPairsFilter.length > 0) {
+                    if (!strategyPairsFilter.includes(signal.pair)) {
+                        return false; // Skip signals not in pair performance
+                    }
+                }
+
+                // Search filter
+                if (filters.search) {
+                    const search = filters.search.toLowerCase();
+                    if (!signal.pair.toLowerCase().includes(search) &&
+                        !signal.strategy.toLowerCase().includes(search)) {
+                        return false;
+                    }
+                }
+
+                // Direction filter
+                if (filters.direction && signal.direction !== filters.direction) {
+                    return false;
+                }
+
+                // Strategy filter - use extracted strategy name
+                if (filters.strategy) {
+                    const signalStrategy = extractStrategyFromSignal(signal);
+                    if (signalStrategy !== filters.strategy) {
+                        return false;
+                    }
+                }
+
+                // Status filter (mock for now)
+                const status = getSignalStatus(signal);
+                if (filters.status && status !== filters.status) {
+                    return false;
+                }
+
+                // Period filter
+                if (filters.period) {
+                    const signalTime = new Date(signal.timestamp);
+                    const now = new Date();
+                    const diff = now - signalTime;
+
+                    const periods = {
+                        '1h': 3600000,
+                        '24h': 86400000,
+                        '7d': 604800000
+                    };
+
+                    if (diff > periods[filters.period]) {
+                        return false;
+                    }
+                }
+
+                return true;
+            });
+
+            // Apply sorting
+            applySorting();
+
+            currentPage = 1;
+            renderSignals();
+            updateStats();
+        }
+
+        // Apply sorting to filtered signals
+        function applySorting() {
+            const sortBy = filters.sortBy || 'time-desc';
+
+            filteredSignals.sort((a, b) => {
+                switch(sortBy) {
+                    case 'time-desc':
+                        return (b.timestamp || 0) - (a.timestamp || 0); // Newest first
+                    case 'time-asc':
+                        return (a.timestamp || 0) - (b.timestamp || 0); // Oldest first
+                    case 'pnl-desc':
+                        return calculateGain(b).value - calculateGain(a).value; // Highest PnL
+                    case 'pnl-asc':
+                        return calculateGain(a).value - calculateGain(b).value; // Lowest PnL
+                    case 'strategy':
+                        return (a.strategy || '').localeCompare(b.strategy || ''); // A-Z
+                    case 'pair':
+                        return (a.pair || '').localeCompare(b.pair || ''); // A-Z
+                    default:
+                        return 0;
+                }
+            });
+        }
+
+        // Render Signals Table
+        function renderSignals() {
+            const tbody = document.getElementById('signalsTableBody');
+            const start = (currentPage - 1) * signalsPerPage;
+            const end = start + signalsPerPage;
+            const pageSignals = filteredSignals.slice(start, end);
+
+            if (pageSignals.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="12" class="empty-state">
+                            <div class="empty-state-icon">📡</div>
+                            <div>${allSignals.length === 0 ? 'Waiting for signals...' : 'No signals match your filters'}</div>
+                        </td>
+                    </tr>
+                `;
+                updatePagination();
+                return;
+            }
+
+            tbody.innerHTML = pageSignals.map((signal, index) => {
+                const rank = start + index + 1;
+                const direction = signal.direction || 'LONG';
+                const strategy = signal.strategy || 'Unknown';
+                const pair = signal.pair || signal.symbol || 'N/A';
+                const entry = signal.entry || signal.entryPrice || 0;
+                const tp = signal.takeProfit || '-';
+                const sl = signal.stopLoss || '-';
+                const gain = calculateGain(signal);
+                const status = getSignalStatus(signal);
+                const time = formatTime(signal.timestamp);
+
+                return `
+                    <tr data-signal-id="${signal.id}">
+                        <td class="rank-cell">${rank}</td>
+                        <td class="pair-cell">${pair.replace('.P', '')}</td>
+                        <td><span class="strategy-badge">${strategy}</span></td>
+                        <td><span class="direction-badge ${direction.toLowerCase()}">${direction}</span></td>
+                        <td class="price-cell">${formatPrice(entry)}</td>
+                        <td class="price-cell">${formatPrice(tp)}</td>
+                        <td class="price-cell">${formatPrice(sl)}</td>
+                        <td class="gain-cell ${gain > 0 ? 'positive' : gain < 0 ? 'negative' : 'neutral'}">
+                            ${gain > 0 ? '+' : ''}${gain.toFixed(2)}%
+                        </td>
+                        <td class="chart-cell">
+                            <canvas class="mini-chart" id="chart-${signal.id}"></canvas>
+                        </td>
+                        <td class="time-cell">${time}</td>
+                        <td><span class="status-badge ${status.toLowerCase()}">${status}</span></td>
+                        <td>
+                            <button class="action-btn" onclick="viewDetails('${signal.id}')">View</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            // Render mini charts
+            setTimeout(() => {
+                pageSignals.forEach(signal => {
+                    renderMiniChart(signal);
+                });
+            }, 10);
+
+            updatePagination();
+        }
+
+        // Render Mini Chart
+        function renderMiniChart(signal) {
+            const canvas = document.getElementById(`chart-${signal.id}`);
+            if (!canvas) return;
+
+            const ctx = canvas.getContext('2d');
+
+            // Generate mock PnL data (replace with real data later)
+            const dataPoints = generateMockPnLData(signal);
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: dataPoints.map((_, i) => i),
+                    datasets: [{
+                        data: dataPoints,
+                        borderColor: dataPoints[dataPoints.length - 1] > 0 ? '#10b981' : '#ef4444',
+                        borderWidth: 2,
+                        fill: false,
+                        tension: 0.4,
+                        pointRadius: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { enabled: false }
+                    },
+                    scales: {
+                        x: { display: false },
+                        y: { display: false }
+                    }
+                }
+            });
+        }
+
+        // Generate PnL Data (Use real data if available, fallback to mock)
+        function generateMockPnLData(signal) {
+            // Use real PnL history if available
+            if (signal.pnlHistory && signal.pnlHistory.length > 0) {
+                return signal.pnlHistory;
+            }
+
+            // Fallback to mock data
+            const points = 20;
+            const data = [0];
+            const direction = signal.direction === 'LONG' ? 1 : -1;
+            const volatility = 0.5;
+
+            for (let i = 1; i < points; i++) {
+                const change = (Math.random() - 0.4) * volatility * direction;
+                data.push(data[i - 1] + change);
+            }
+
+            return data;
+        }
+
+        // Calculate Gain (Use real PnL if available)
+        function calculateGain(signal) {
+            // Use real currentPnL if available
+            if (signal.currentPnL !== undefined && signal.currentPnL !== null) {
+                return signal.currentPnL;
+            }
+
+            // Fallback to mock calculation
+            return (Math.random() - 0.5) * 10;
+        }
+
+        // Get Signal Status (Use real status if available)
+        function getSignalStatus(signal) {
+            // Use real status if available
+            if (signal.status) {
+                return signal.status;
+            }
+
+            // Fallback to mock logic
+            return 'Active';
+        }
+
+        // Update Signal PnL from real-time updates
+        function updateSignalPnL(updates) {
+            for (const update of updates) {
+                const signal = allSignals.find(s => s.id === update.signalId);
+
+                if (signal) {
+                    signal.currentPrice = update.currentPrice;
+                    signal.currentPnL = update.currentPnL;
+                    signal.status = update.status;
+
+                    // Update the row if it's visible
+                    updateSignalRow(signal);
+                }
+            }
+        }
+
+        // Update Signal Status (when closed)
+        function updateSignalStatus(signalId, status, finalPnL) {
+            const signal = allSignals.find(s => s.id === signalId);
+
+            if (signal) {
+                signal.status = status;
+                signal.currentPnL = finalPnL;
+
+                // Update the row if it's visible
+                updateSignalRow(signal);
+            }
+        }
+
+        // Update a single signal row without re-rendering everything
+        function updateSignalRow(signal) {
+            const row = document.querySelector(`tr[data-signal-id="${signal.id}"]`);
+
+            if (row) {
+                // Update Gain %
+                const gainCell = row.querySelector('.gain-cell');
+                if (gainCell && signal.currentPnL !== undefined) {
+                    const gain = signal.currentPnL;
+                    gainCell.textContent = `${gain > 0 ? '+' : ''}${gain.toFixed(2)}%`;
+                    gainCell.className = `gain-cell ${gain > 0 ? 'positive' : gain < 0 ? 'negative' : 'neutral'}`;
+                }
+
+                // Update Status
+                const statusCell = row.querySelector('.status-badge');
+                if (statusCell && signal.status) {
+                    statusCell.textContent = signal.status;
+                    statusCell.className = `status-badge ${signal.status.toLowerCase()}`;
+                }
+
+                // Update Chart
+                const chartCanvas = row.querySelector('.mini-chart');
+                if (chartCanvas) {
+                    // Destroy old chart if exists
+                    const chartId = chartCanvas.id;
+                    const existingChart = Chart.getChart(chartId);
+                    if (existingChart) {
+                        existingChart.destroy();
+                    }
+
+                    // Re-render chart with updated data
+                    renderMiniChart(signal);
+                }
+            }
+        }
+
+        // Format Price
+        function formatPrice(price) {
+            if (price === '-' || !price) return '-';
+            return parseFloat(price).toFixed(price < 1 ? 5 : 2);
+        }
+
+        // Format Time
+        function formatTime(timestamp) {
+            const date = new Date(timestamp);
+            const now = new Date();
+            const diff = now - date;
+
+            if (diff < 60000) return 'Just now';
+            if (diff < 3600000) return Math.floor(diff / 60000) + 'm ago';
+            if (diff < 86400000) return Math.floor(diff / 3600000) + 'h ago';
+            return Math.floor(diff / 86400000) + 'd ago';
+        }
+
+        // Update Stats
+        function updateStats() {
+            document.getElementById('totalSignals').textContent = allSignals.length;
+            document.getElementById('activeSignals').textContent = filteredSignals.length;
+        }
+
+        // Pagination
+        function updatePagination() {
+            const totalPages = Math.ceil(filteredSignals.length / signalsPerPage);
+            const start = (currentPage - 1) * signalsPerPage + 1;
+            const end = Math.min(currentPage * signalsPerPage, filteredSignals.length);
+
+            document.getElementById('paginationInfo').textContent =
+                `Showing ${start} to ${end} of ${filteredSignals.length} signals`;
+
+            const controls = document.getElementById('paginationControls');
+            controls.innerHTML = `
+                <button class="page-btn" onclick="changePage(-1)" ${currentPage === 1 ? 'disabled' : ''}>Previous</button>
+                ${Array.from({length: Math.min(totalPages, 5)}, (_, i) => {
+                    const page = i + 1;
+                    return `<button class="page-btn ${page === currentPage ? 'active' : ''}" onclick="goToPage(${page})">${page}</button>`;
+                }).join('')}
+                ${totalPages > 5 ? '<button class="page-btn">...</button>' : ''}
+                <button class="page-btn" onclick="changePage(1)" ${currentPage === totalPages ? 'disabled' : ''}>Next</button>
+            `;
+        }
+
+        function changePage(delta) {
+            const totalPages = Math.ceil(filteredSignals.length / signalsPerPage);
+            currentPage = Math.max(1, Math.min(currentPage + delta, totalPages));
+            renderSignals();
+        }
+
+        function goToPage(page) {
+            currentPage = page;
+            renderSignals();
+        }
+
+        // Toggle Sidebar
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('open');
+        }
+
+        // Highlight New Signal
+        function highlightNewSignal() {
+            const firstRow = document.querySelector('#signalsTableBody tr');
+            if (firstRow) {
+                firstRow.classList.add('new-signal');
+                setTimeout(() => firstRow.classList.remove('new-signal'), 2000);
+            }
+        }
+
+        // View Details
+        function viewDetails(signalId) {
+            // Navigate to signal detail page
+            window.location.href = `/signal-detail?id=${signalId}`;
+        }
+
+        // ============ STRATEGY PAIR PERFORMANCE ============
+
+        let currentStrategyData = null;
+        let currentPairSort = 'totalROI';
+        let currentPairSortOrder = 'desc';
+
+        // Load strategy performance from marketplace API
+        async function loadStrategyPerformance(strategyName) {
+            try {
+                console.log('📊 Loading performance for strategy:', strategyName);
+                const response = await fetch('/api/marketplace/strategies');
+
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+                const result = await response.json();
+
+                if (result.success && result.data && result.data.strategies) {
+                    const strategy = result.data.strategies.find(s => s.name === strategyName);
+
+                    if (strategy) {
+                        currentStrategyData = strategy;
+                        console.log('✅ Strategy found:', strategy.name);
+                        console.log('📈 Pair performance data:', strategy.pairPerformance);
+
+                        // CRITICAL: Extract pairs list for filtering signals
+                        if (strategy.pairPerformance && strategy.pairPerformance.length > 0) {
+                            strategyPairsFilter = strategy.pairPerformance.map(p => p.symbol);
+                            console.log(`⚡ [FAST] Cached ${strategyPairsFilter.length} pairs for filtering:`, strategyPairsFilter);
+                        } else {
+                            strategyPairsFilter = null;
+                            console.log('⚠️  No pairs in performance data');
+                        }
+
+                        // Show panel
+                        document.getElementById('strategyPerformancePanel').style.display = 'block';
+                        document.getElementById('strategyPerformanceTitle').textContent = `${strategy.name} - Performance by Pair (Total ROI: ${strategy.totalROI >= 0 ? '+' : ''}${strategy.totalROI.toFixed(2)}%)`;
+
+                        // Render pair performance
+                        renderPairPerformance(strategy.pairPerformance || [], currentPairSort);
+                    } else {
+                        console.warn('⚠️ Strategy not found:', strategyName);
+                        document.getElementById('strategyPerformancePanel').style.display = 'none';
+                        strategyPairsFilter = null;
+                    }
+                } else {
+                    throw new Error('Invalid API response');
+                }
+            } catch (error) {
+                console.error('❌ Failed to load strategy performance:', error);
+                document.getElementById('strategyPerformancePanel').style.display = 'none';
+                strategyPairsFilter = null;
+            }
+        }
+
+        // Bot running status (mock data - will be replaced with real API)
+        const runningBots = new Set(); // Store running bot pairs
+
+        // Render pair performance table
+        function renderPairPerformance(pairs, sortBy = 'totalROI') {
+            const tbody = document.getElementById('pairPerformanceTableBody');
+            const pairSelect = document.getElementById('pairSelectDropdown');
+
+            if (!pairs || pairs.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="11" style="padding: 40px; text-align: center; color: #8892b0;">
+                            No pair data available for this strategy
+                        </td>
+                    </tr>
+                `;
+                pairSelect.innerHTML = '<option value="">Select Pair(s) for Bot</option>';
+                return;
+            }
+
+            // Sort pairs
+            const sortedPairs = [...pairs].sort((a, b) => {
+                const aVal = a[sortBy] || 0;
+                const bVal = b[sortBy] || 0;
+                return currentPairSortOrder === 'desc' ? (bVal - aVal) : (aVal - bVal);
+            });
+
+            // Populate pair selection dropdown
+            pairSelect.innerHTML = '<option value="">Select Pair(s) for Bot</option>' +
+                '<option value="ALL">ALL PAIRS</option>' +
+                sortedPairs.map(pair => {
+                    const cleanSymbol = pair.symbol.replace('.P', '').replace('.p', '');
+                    const roi = pair.totalROI || 0;
+                    return `<option value="${pair.symbol}">${cleanSymbol} (${roi >= 0 ? '+' : ''}${roi.toFixed(2)}%)</option>`;
+                }).join('');
+
+            // Render rows
+            tbody.innerHTML = sortedPairs.map((pair, index) => {
+                const cleanSymbol = pair.symbol.replace('.P', '').replace('.p', '');
+                const totalROI = pair.totalROI || 0;
+                const closedROI = pair.closedROI || 0;
+                const openROI = pair.openROI || 0;
+                const winRate = pair.winRate || 0;
+                const trades = `${pair.closedTrades || 0}C + ${pair.openTrades || 0}O`;
+                const avgPerTrade = pair.avgPerTrade || 0;
+                const maxDD = pair.maxDD || 0;
+
+                const roiClass = totalROI >= 0 ? 'positive' : 'negative';
+                const roiColor = totalROI >= 0 ? '#10b981' : '#ef4444';
+
+                // Bot running status
+                const isRunning = runningBots.has(pair.symbol);
+                const botStatusColor = isRunning ? '#10b981' : '#ef4444';
+                const botStatusText = isRunning ? 'RUNNING' : 'STOPPED';
+
+                return `
+                    <tr style="border-bottom: 1px solid #1e2337;">
+                        <td style="padding: 12px; color: #8892b0;">${index + 1}</td>
+                        <td style="padding: 12px; color: #e8eaf6; font-weight: 600;">${cleanSymbol}</td>
+                        <td style="padding: 12px; text-align: center;">
+                            <div style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; background: ${botStatusColor}22; border: 1px solid ${botStatusColor}; border-radius: 4px;">
+                                <div style="width: 8px; height: 8px; background: ${botStatusColor}; border-radius: 50%;"></div>
+                                <span style="color: ${botStatusColor}; font-size: 11px; font-weight: 700;">${botStatusText}</span>
+                            </div>
+                        </td>
+                        <td style="padding: 12px; text-align: right; color: ${roiColor}; font-weight: 700;">
+                            ${totalROI >= 0 ? '+' : ''}${totalROI.toFixed(2)}%
+                        </td>
+                        <td style="padding: 12px; text-align: right; color: ${closedROI >= 0 ? '#10b981' : '#ef4444'};">
+                            ${closedROI >= 0 ? '+' : ''}${closedROI.toFixed(2)}%
+                        </td>
+                        <td style="padding: 12px; text-align: right; color: ${openROI >= 0 ? '#10b981' : '#ef4444'};">
+                            ${openROI >= 0 ? '+' : ''}${openROI.toFixed(2)}%
+                        </td>
+                        <td style="padding: 12px; text-align: right; color: #e8eaf6;">${winRate.toFixed(1)}%</td>
+                        <td style="padding: 12px; text-align: right; color: #e8eaf6;">${trades}</td>
+                        <td style="padding: 12px; text-align: right; color: ${avgPerTrade >= 0 ? '#10b981' : '#ef4444'};">
+                            ${avgPerTrade >= 0 ? '+' : ''}${avgPerTrade.toFixed(2)}%
+                        </td>
+                        <td style="padding: 12px; text-align: right; color: #ef4444;">${maxDD.toFixed(2)}%</td>
+                        <td style="padding: 12px; text-align: center;">
+                            <button class="start-bot-btn" data-pair="${pair.symbol}" style="background: linear-gradient(135deg, #5e72e4, #825ee4); color: white; border: none; padding: 8px 16px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 12px; transition: transform 0.2s; white-space: nowrap;">
+                                🤖 Start Bot
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            // Add click handlers for per-pair bot start buttons (event delegation)
+            setTimeout(() => {
+                document.querySelectorAll('.start-bot-btn').forEach(btn => {
+                    btn.addEventListener('click', async function(e) {
+                        e.stopPropagation();
+                        const pair = this.dataset.pair;
+                        const cleanPair = pair.replace('.P', '').replace('.p', '');
+
+                        this.style.transform = 'scale(0.95)';
+                        setTimeout(() => this.style.transform = 'scale(1)', 200);
+
+                        const confirmed = confirm(`🤖 Start Trading Bot?\n\nStrategy: ${currentStrategyData.name}\nPair: ${cleanPair}\nExchange: MEXC\nCapital: 2 USD\nMode: Spot\n\nContinue?`);
+
+                        if (confirmed) {
+                            try {
+                                // Disable button during API call
+                                const originalText = this.innerHTML;
+                                this.innerHTML = '⏳ Starting...';
+                                this.disabled = true;
+
+                                // Call real bot API
+                                const response = await fetch('/api/bots/start', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({
+                                        strategyName: currentStrategyData.name,
+                                        pairs: [cleanPair],
+                                        exchange: 'MEXC',
+                                        capital: 2,
+                                        mode: 'SPOT'
+                                    })
+                                });
+
+                                const result = await response.json();
+
+                                if (result.success) {
+                                    runningBots.add(pair);
+                                    renderPairPerformance(currentStrategyData.pairPerformance, currentPairSort);
+                                    alert(`✅ Bot started successfully!\n\nStrategy: ${currentStrategyData.name}\nPair: ${cleanPair}\nCapital: 2 USD\nMode: Spot Trading`);
+                                } else {
+                                    alert(`❌ Failed to start bot:\n\n${result.message}`);
+                                    this.innerHTML = originalText;
+                                    this.disabled = false;
+                                }
+                            } catch (error) {
+                                console.error('Error starting bot:', error);
+                                alert(`❌ Error starting bot:\n\n${error.message}`);
+                                this.innerHTML = '🤖 Start Bot';
+                                this.disabled = false;
+                            }
+                        }
+                    });
+                });
+            }, 100);
+        }
+
+        // Handle pair sorting buttons
+        function initPairSortingButtons() {
+            document.querySelectorAll('.pair-sort-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const sortBy = this.dataset.sort;
+
+                    // Toggle sort order if clicking same button
+                    if (currentPairSort === sortBy) {
+                        currentPairSortOrder = currentPairSortOrder === 'desc' ? 'asc' : 'desc';
+                    } else {
+                        currentPairSort = sortBy;
+                        currentPairSortOrder = 'desc'; // Default to descending for new sort
+                    }
+
+                    // Update button states
+                    document.querySelectorAll('.pair-sort-btn').forEach(b => {
+                        b.classList.remove('active');
+                        b.style.borderColor = '#2e3347';
+                        b.textContent = b.textContent.replace(' ↓', '').replace(' ↑', '');
+                    });
+
+                    this.classList.add('active');
+                    this.style.borderColor = '#5e72e4';
+                    this.textContent += currentPairSortOrder === 'desc' ? ' ↓' : ' ↑';
+
+                    // Re-render with new sort
+                    if (currentStrategyData && currentStrategyData.pairPerformance) {
+                        renderPairPerformance(currentStrategyData.pairPerformance, currentPairSort);
+                    }
+                });
+            });
+        }
+
+        // Handle start bot button
+        function initStartBotButton() {
+            const btn = document.getElementById('startBotBtn');
+            if (btn) {
+                btn.addEventListener('click', async function() {
+                    if (!currentStrategyData) {
+                        alert('⚠️ Please select a strategy first');
+                        return;
+                    }
+
+                    const pairSelect = document.getElementById('pairSelectDropdown');
+                    const selectedPair = pairSelect.value;
+
+                    if (!selectedPair) {
+                        alert('⚠️ Please select a pair from the dropdown');
+                        return;
+                    }
+
+                    this.style.transform = 'scale(0.95)';
+                    setTimeout(() => this.style.transform = 'scale(1)', 200);
+
+                    const cleanPair = selectedPair.replace('.P', '').replace('.p', '');
+                    const pairDisplay = selectedPair === 'ALL' ? 'ALL PAIRS' : cleanPair;
+
+                    // Real bot start with API
+                    const confirmed = confirm(`🤖 Start Trading Bot?\n\nStrategy: ${currentStrategyData.name}\nPair(s): ${pairDisplay}\nExchange: MEXC\nCapital: 2 USD\nMode: Spot\n\nContinue?`);
+
+                    if (confirmed) {
+                        try {
+                            // Disable button during API call
+                            const originalText = this.innerHTML;
+                            this.innerHTML = '⏳ Starting Bot...';
+                            this.disabled = true;
+
+                            // Prepare pairs list
+                            const pairs = selectedPair === 'ALL'
+                                ? currentStrategyData.pairPerformance.map(p => p.symbol.replace('.P', '').replace('.p', ''))
+                                : [cleanPair];
+
+                            // Call real bot API
+                            const response = await fetch('/api/bots/start', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    strategyName: currentStrategyData.name,
+                                    pairs: pairs,
+                                    exchange: 'MEXC',
+                                    capital: 2,
+                                    mode: 'SPOT'
+                                })
+                            });
+
+                            const result = await response.json();
+
+                            if (result.success) {
+                                // Add to running bots
+                                if (selectedPair === 'ALL') {
+                                    currentStrategyData.pairPerformance.forEach(p => runningBots.add(p.symbol));
+                                } else {
+                                    runningBots.add(selectedPair);
+                                }
+
+                                // Re-render to show updated status
+                                renderPairPerformance(currentStrategyData.pairPerformance, currentPairSort);
+
+                                alert(`✅ Bot started successfully!\n\nStrategy: ${currentStrategyData.name}\nPair(s): ${pairDisplay}\nBots Started: ${result.data.bots.length}\nCapital: 2 USD per pair\nMode: Spot Trading`);
+
+                                // Reset button
+                                this.innerHTML = originalText;
+                                this.disabled = false;
+                            } else {
+                                alert(`❌ Failed to start bot:\n\n${result.message}`);
+                                this.innerHTML = originalText;
+                                this.disabled = false;
+                            }
+                        } catch (error) {
+                            console.error('Error starting bot:', error);
+                            alert(`❌ Error starting bot:\n\n${error.message}`);
+                            this.innerHTML = '🤖 Start Bot (MEXC, 2 USD, Spot)';
+                            this.disabled = false;
+                        }
+                    }
+                });
+            }
+        }
+
+        // Event Listeners
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            filters.search = e.target.value;
+            applyFiltersAndRender();
+        });
+
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const filterType = this.dataset.filter;
+                const filterValue = this.dataset.value;
+                const sortType = this.dataset.sort;
+
+                // Update active state
+                this.parentElement.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+
+                // Apply filter or sort
+                if (sortType) {
+                    filters.sortBy = sortType;
+                } else {
+                    filters[filterType] = filterValue;
+                }
+                applyFiltersAndRender();
+            });
+        });
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🚀 [Signals] DOM loaded - Starting initialization...');
+            console.log('🚀 [Signals] Current allSignals length:', allSignals.length);
+
+            try {
+                initWebSocket();
+                console.log('✅ [Signals] WebSocket initialized');
+            } catch (error) {
+                console.error('❌ [Signals] WebSocket init failed:', error);
+            }
+
+            // Set default active filters
+            try {
+                document.querySelector('[data-filter="direction"][data-value=""]')?.classList.add('active');
+                document.querySelector('[data-filter="strategy"][data-value=""]')?.classList.add('active');
+                document.querySelector('[data-filter="status"][data-value=""]')?.classList.add('active');
+                document.querySelector('[data-filter="period"][data-value=""]')?.classList.add('active');
+                console.log('✅ [Signals] Filters initialized');
+            } catch (error) {
+                console.error('❌ [Signals] Filter init failed:', error);
+            }
+
+            // Initialize pair performance features
+            try {
+                initPairSortingButtons();
+                initStartBotButton();
+                console.log('✅ [Signals] Pair performance features initialized');
+
+                // NOTE: Strategy performance is now loaded by initializeStrategyFilter()
+                // which is called when signals are received (see WebSocket onmessage handlers)
+            } catch (error) {
+                console.error('❌ [Signals] Pair performance init failed:', error);
+            }
+        });
+    </script>
+
+    <!-- Toast Notifications -->
+    <script src="/js/toast.js"></script>
+
+    <!-- Standardized Navigation -->
+    <script src="/js/navigation.js?v=6.0"></script>
+
+    <!-- Logout Function -->
+    <script>
+        function logout() {
+            localStorage.removeItem('auth_token');
+            sessionStorage.clear();
+            window.location.href = '/login';
+        }
+    </script>
+</body>
+</html>

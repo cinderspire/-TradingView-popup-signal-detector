@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trading Strategies - AutomatedTradeBot</title>
+    <meta name="description" content="Browse verified trading strategies on AutomatedTradeBot. Backtested algorithms, proven performance metrics, risk-adjusted returns. Filter by asset class, timeframe, risk level. Purchase strategies with confidence.">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0e27;
+            color: #e8eaf6;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: #131829;
+            border-bottom: 1px solid #1e2337;
+            padding: 20px 40px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1600px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 700;
+            color: #5e72e4;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 25px;
+        }
+
+        .nav-link {
+            color: #8b93a7;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: #5e72e4;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 40px;
+        }
+
+        .page-title {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .page-subtitle {
+            font-size: 16px;
+            color: #8b93a7;
+            margin-bottom: 40px;
+        }
+
+        /* Strategies Grid */
+        .strategies-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .strategy-card {
+            background: #131829;
+            border: 1px solid #1e2337;
+            border-radius: 12px;
+            padding: 30px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .strategy-card:hover {
+            border-color: #5e72e4;
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(94, 114, 228, 0.15);
+        }
+
+        .strategy-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .strategy-name {
+            font-size: 24px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .strategy-badge {
+            padding: 6px 14px;
+            background: #1e3a5f;
+            color: #64b5f6;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .strategy-badge.active {
+            background: #1b4d3e;
+            color: #4caf50;
+        }
+
+        .strategy-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #8b93a7;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .stat-value.green {
+            color: #4caf50;
+        }
+
+        .stat-value.red {
+            color: #f44336;
+        }
+
+        .stat-value.blue {
+            color: #64b5f6;
+        }
+
+        .stat-value.orange {
+            color: #ff9800;
+        }
+
+        .strategy-chart {
+            height: 150px;
+            margin-top: 20px;
+            border-top: 1px solid #1e2337;
+            padding-top: 20px;
+        }
+
+        /* Summary Cards */
+        .summary-section {
+            background: #131829;
+            border: 1px solid #1e2337;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 40px;
+        }
+
+        .summary-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 25px;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .summary-card {
+            background: #1a2332;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #2a3544;
+        }
+
+        .summary-label {
+            font-size: 12px;
+            color: #8b93a7;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+        }
+
+        .summary-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            color: #8b93a7;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #2a3544;
+            border-top-color: #64b5f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            .strategies-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .strategy-stats {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <div class="logo">📈 AutomatedTradeBot</div>
+            <div class="nav-links">
+                <a href="/signals" class="nav-link">Signals</a>
+                <a href="/strategies" class="nav-link active">Strategies</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <h1 class="page-title">Trading Strategies</h1>
+        <p class="page-subtitle">Performance metrics for TradingView automated strategies</p>
+
+        <!-- Loading State -->
+        <div class="loading" id="loadingState">
+            <div class="loading-spinner"></div>
+            <div>Loading strategies...</div>
+        </div>
+
+        <!-- Main Content -->
+        <div id="mainContent" style="display: none;">
+            <!-- Overall Summary -->
+            <div class="summary-section">
+                <h2 class="summary-title">Overall Performance</h2>
+                <div class="summary-grid">
+                    <div class="summary-card">
+                        <div class="summary-label">Total Strategies</div>
+                        <div class="summary-value" id="summaryStrategies">0</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-label">Total Signals</div>
+                        <div class="summary-value" id="summarySignals">0</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-label">Overall Win Rate</div>
+                        <div class="summary-value" style="color: #64b5f6;" id="summaryWinRate">0%</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-label">Total Return</div>
+                        <div class="summary-value" style="color: #4caf50;" id="summaryReturn">+0.00%</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Strategies Grid -->
+            <div class="strategies-grid" id="strategiesGrid">
+                <!-- Strategies will be rendered here -->
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script>
+        let ws;
+        let allSignals = [];
+        let strategies = new Map();
+
+        // Initialize WebSocket
+        function initWebSocket() {
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsUrl = `${protocol}//${window.location.host}/ws/signals`;
+
+            console.log('Connecting to WebSocket:', wsUrl);
+            ws = new WebSocket(wsUrl);
+
+            ws.onopen = () => {
+                console.log('✅ WebSocket Connected');
+            };
+
+            ws.onmessage = (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+
+                    switch (data.type) {
+                        case 'HISTORY':
+                            console.log('📚 Loading history:', data.signals.length, 'signals');
+                            allSignals = data.signals;
+                            processStrategies();
+                            renderStrategies();
+                            break;
+
+                        case 'SIGNAL':
+                            console.log('🆕 New signal:', data.signal.pair, data.signal.direction);
+                            allSignals.unshift(data.signal);
+                            processStrategies();
+                            renderStrategies();
+                            break;
+
+                        case 'PNL_UPDATE':
+                            updateStrategyPnL(data.updates);
+                            break;
+
+                        case 'SIGNAL_CLOSED':
+                            updateSignalStatus(data.signalId, data.finalPnL);
+                            break;
+                    }
+                } catch (error) {
+                    console.error('❌ Message parse error:', error);
+                }
+            };
+
+            ws.onerror = (error) => {
+                console.error('❌ WebSocket Error:', error);
+            };
+
+            ws.onclose = () => {
+                console.log('🔌 WebSocket Closed - Reconnecting in 5s...');
+                setTimeout(initWebSocket, 5000);
+            };
+        }
+
+        // Process strategies from signals
+        function processStrategies() {
+            strategies.clear();
+
+            for (const signal of allSignals) {
+                const strategyName = signal.strategy || 'Unknown';
+
+                if (!strategies.has(strategyName)) {
+                    strategies.set(strategyName, {
+                        name: strategyName,
+                        signals: [],
+                        stats: calculateDefaultStats()
+                    });
+                }
+
+                strategies.get(strategyName).signals.push(signal);
+            }
+
+            // Calculate stats for each strategy
+            for (const [name, data] of strategies.entries()) {
+                data.stats = calculateStrategyStats(data.signals);
+            }
+        }
+
+        // Calculate strategy statistics
+        function calculateStrategyStats(signals) {
+            const activeSignals = signals.filter(s => (s.status || 'Active') === 'Active');
+            const closedSignals = signals.filter(s => (s.status || 'Active') === 'Closed');
+
+            const totalSignals = signals.length;
+            const wins = closedSignals.filter(s => (s.currentPnL || 0) > 0).length;
+            const losses = closedSignals.filter(s => (s.currentPnL || 0) <= 0).length;
+
+            const winRate = closedSignals.length > 0 ? (wins / closedSignals.length) * 100 : 0;
+
+            // Calculate total return
+            const totalReturn = signals.reduce((sum, s) => sum + (s.currentPnL || 0), 0);
+
+            // Calculate profit factor
+            const profits = closedSignals.filter(s => (s.currentPnL || 0) > 0);
+            const lossSignals = closedSignals.filter(s => (s.currentPnL || 0) <= 0);
+
+            const totalProfit = profits.reduce((sum, s) => sum + (s.currentPnL || 0), 0);
+            const totalLoss = Math.abs(lossSignals.reduce((sum, s) => sum + (s.currentPnL || 0), 0));
+
+            const profitFactor = totalLoss > 0 ? totalProfit / totalLoss : 0;
+
+            // Average win/loss
+            const avgWin = wins > 0 ? totalProfit / wins : 0;
+            const avgLoss = losses > 0 ? totalLoss / losses : 0;
+
+            return {
+                totalSignals,
+                activeSignals: activeSignals.length,
+                closedSignals: closedSignals.length,
+                wins,
+                losses,
+                winRate,
+                totalReturn,
+                profitFactor,
+                avgWin,
+                avgLoss
+            };
+        }
+
+        // Calculate default stats
+        function calculateDefaultStats() {
+            return {
+                totalSignals: 0,
+                activeSignals: 0,
+                closedSignals: 0,
+                wins: 0,
+                losses: 0,
+                winRate: 0,
+                totalReturn: 0,
+                profitFactor: 0,
+                avgWin: 0,
+                avgLoss: 0
+            };
+        }
+
+        // Render strategies
+        function renderStrategies() {
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('mainContent').style.display = 'block';
+
+            // Update summary
+            const totalStrategies = strategies.size;
+            const totalSignals = allSignals.length;
+
+            const allWins = Array.from(strategies.values()).reduce((sum, s) => sum + s.stats.wins, 0);
+            const allClosed = Array.from(strategies.values()).reduce((sum, s) => sum + s.stats.closedSignals, 0);
+            const overallWinRate = allClosed > 0 ? (allWins / allClosed) * 100 : 0;
+
+            const totalReturn = Array.from(strategies.values()).reduce((sum, s) => sum + s.stats.totalReturn, 0);
+
+            document.getElementById('summaryStrategies').textContent = totalStrategies;
+            document.getElementById('summarySignals').textContent = totalSignals;
+            document.getElementById('summaryWinRate').textContent = overallWinRate.toFixed(1) + '%';
+            document.getElementById('summaryReturn').textContent = (totalReturn > 0 ? '+' : '') + totalReturn.toFixed(2) + '%';
+
+            // Render strategy cards
+            const grid = document.getElementById('strategiesGrid');
+            grid.innerHTML = '';
+
+            for (const [name, data] of strategies.entries()) {
+                const card = createStrategyCard(name, data);
+                grid.appendChild(card);
+            }
+        }
+
+        // Create strategy card
+        function createStrategyCard(name, data) {
+            const card = document.createElement('div');
+            card.className = 'strategy-card';
+            card.onclick = () => {
+                window.location.href = `/signals?strategy=${encodeURIComponent(name)}`;
+            };
+
+            const stats = data.stats;
+
+            card.innerHTML = `
+                <div class="strategy-header">
+                    <div class="strategy-name">${name}</div>
+                    <div class="strategy-badge ${stats.activeSignals > 0 ? 'active' : ''}">
+                        ${stats.activeSignals > 0 ? 'Active' : 'Idle'}
+                    </div>
+                </div>
+
+                <div class="strategy-stats">
+                    <div class="stat-item">
+                        <div class="stat-label">Win Rate</div>
+                        <div class="stat-value blue">${stats.winRate.toFixed(1)}%</div>
+                    </div>
+
+                    <div class="stat-item">
+                        <div class="stat-label">Total Return</div>
+                        <div class="stat-value ${stats.totalReturn >= 0 ? 'green' : 'red'}">
+                            ${stats.totalReturn >= 0 ? '+' : ''}${stats.totalReturn.toFixed(2)}%
+                        </div>
+                    </div>
+
+                    <div class="stat-item">
+                        <div class="stat-label">Profit Factor</div>
+                        <div class="stat-value orange">${stats.profitFactor.toFixed(2)}</div>
+                    </div>
+
+                    <div class="stat-item">
+                        <div class="stat-label">Total Signals</div>
+                        <div class="stat-value">${stats.totalSignals}</div>
+                    </div>
+                </div>
+
+                <div class="strategy-chart">
+                    <canvas id="chart-${name.replace(/\s+/g, '-')}"></canvas>
+                </div>
+            `;
+
+            // Render mini chart
+            setTimeout(() => {
+                renderStrategyChart(name, data.signals);
+            }, 10);
+
+            return card;
+        }
+
+        // Render strategy chart
+        function renderStrategyChart(strategyName, signals) {
+            const canvasId = `chart-${strategyName.replace(/\s+/g, '-')}`;
+            const canvas = document.getElementById(canvasId);
+
+            if (!canvas) return;
+
+            const ctx = canvas.getContext('2d');
+
+            // Calculate cumulative PnL
+            const pnlData = [];
+            let cumulative = 0;
+
+            for (const signal of signals) {
+                cumulative += (signal.currentPnL || 0);
+                pnlData.push(cumulative);
+            }
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: pnlData.map((_, i) => i),
+                    datasets: [{
+                        data: pnlData,
+                        borderColor: pnlData[pnlData.length - 1] >= 0 ? '#4caf50' : '#f44336',
+                        borderWidth: 2,
+                        fill: false,
+                        tension: 0.4,
+                        pointRadius: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { enabled: false }
+                    },
+                    scales: {
+                        x: { display: false },
+                        y: {
+                            display: true,
+                            grid: {
+                                color: '#1e2337'
+                            },
+                            ticks: {
+                                color: '#8b93a7',
+                                font: { size: 10 }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Update strategy PnL from WebSocket
+        function updateStrategyPnL(updates) {
+            for (const update of updates) {
+                const signal = allSignals.find(s => s.id === update.signalId);
+
+                if (signal) {
+                    signal.currentPnL = update.currentPnL;
+                    signal.currentPrice = update.currentPrice;
+                    signal.status = update.status;
+                }
+            }
+
+            processStrategies();
+            renderStrategies();
+        }
+
+        // Update signal status
+        function updateSignalStatus(signalId, finalPnL) {
+            const signal = allSignals.find(s => s.id === signalId);
+
+            if (signal) {
+                signal.status = 'Closed';
+                signal.currentPnL = finalPnL;
+            }
+
+            processStrategies();
+            renderStrategies();
+        }
+
+        // Initialize on page load
+        initWebSocket();
+    </script>
+</body>
+</html>

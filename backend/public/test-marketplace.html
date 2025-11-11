@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Strategy Marketplace | AutomatedTradeBot</title>
+    <meta name="description" content="AutomatedTradeBot strategy marketplace. Discover, compare, and purchase verified trading algorithms. Browse by performance, risk level, asset class. Secure transactions, instant strategy deployment.">
+    <style>
+        body { background: #0a0e27; color: #fff; font-family: monospace; padding: 20px; }
+        .log { background: #1a1e2e; padding: 10px; margin: 5px 0; border-radius: 5px; }
+        .success { color: #00ff88; }
+        .error { color: #ff3366; }
+        .info { color: #00d4ff; }
+    </style>
+</head>
+<body>
+    <h1>Marketplace WebSocket Debug Test</h1>
+    <div id="logs"></div>
+
+    <script>
+        const logs = document.getElementById('logs');
+
+        function log(msg, type = 'info') {
+            const div = document.createElement('div');
+            div.className = 'log ' + type;
+            div.textContent = new Date().toISOString() + ' - ' + msg;
+            logs.appendChild(div);
+            console.log(msg);
+        }
+
+        log('Starting test...', 'info');
+
+        // Connect to WebSocket
+        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        const wsUrl = `${protocol}//${window.location.host}/ws/signals`;
+
+        log('Connecting to: ' + wsUrl, 'info');
+
+        const ws = new WebSocket(wsUrl);
+
+        ws.onopen = () => {
+            log('✅ WebSocket CONNECTED!', 'success');
+        };
+
+        ws.onmessage = (event) => {
+            try {
+                const data = JSON.parse(event.data);
+                log('📨 Message type: ' + data.type, 'success');
+
+                if (data.type === 'HISTORY') {
+                    const count = data.signals ? data.signals.length : 0;
+                    log('📊 HISTORY received: ' + count + ' signals', 'success');
+
+                    if (count > 0) {
+                        // Extract unique strategies
+                        const strategies = new Set();
+                        data.signals.forEach(s => {
+                            if (s.strategy) strategies.add(s.strategy);
+                        });
+                        log('🎯 Unique strategies: ' + Array.from(strategies).join(', '), 'success');
+                        log('Sample signal: ' + JSON.stringify(data.signals[0]).slice(0, 200), 'info');
+                    } else {
+                        log('⚠️ No signals in HISTORY message!', 'error');
+                    }
+                } else if (data.type === 'CONNECTED') {
+                    log('✅ CONNECTED message received', 'success');
+                } else {
+                    log('Other message: ' + JSON.stringify(data).slice(0, 100), 'info');
+                }
+            } catch (err) {
+                log('❌ Parse error: ' + err.message, 'error');
+            }
+        };
+
+        ws.onerror = (error) => {
+            log('❌ WebSocket ERROR: ' + error, 'error');
+        };
+
+        ws.onclose = () => {
+            log('🔴 WebSocket CLOSED', 'error');
+        };
+
+        // Timeout after 10 seconds
+        setTimeout(() => {
+            log('⏱️ Test completed', 'info');
+        }, 10000);
+    </script>
+</body>
+</html>

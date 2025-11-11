@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signal Details - AutomatedTradeBot</title>
+    <meta name="description" content="Live trading signals from professional traders. Real-time cryptocurrency, forex, and stock alerts. Copy trades automatically with AutomatedTradeBot. Verified performance history, transparent track records.">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0f1419;
+            color: #e4e8ec;
+            min-height: 100vh;
+            padding-bottom: 50px;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #1a2332 0%, #0f1419 100%);
+            border-bottom: 2px solid #2a3544;
+            padding: 20px 40px;
+        }
+
+        .back-btn {
+            color: #64b5f6;
+            text-decoration: none;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 15px;
+        }
+
+        .back-btn:hover {
+            color: #90caf9;
+        }
+
+        .signal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .signal-title {
+            flex: 1;
+        }
+
+        .signal-pair {
+            font-size: 32px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 8px;
+        }
+
+        .signal-meta {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            font-size: 14px;
+            color: #8b98a5;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .strategy-badge {
+            background: #1e3a5f;
+            color: #64b5f6;
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        .direction-badge {
+            padding: 5px 14px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        .direction-badge.long {
+            background: #1b4d3e;
+            color: #4caf50;
+        }
+
+        .direction-badge.short {
+            background: #5c1f1f;
+            color: #f44336;
+        }
+
+        .signal-pnl {
+            text-align: right;
+        }
+
+        .pnl-label {
+            font-size: 14px;
+            color: #8b98a5;
+            margin-bottom: 5px;
+        }
+
+        .pnl-value {
+            font-size: 42px;
+            font-weight: 700;
+        }
+
+        .pnl-value.positive {
+            color: #4caf50;
+        }
+
+        .pnl-value.negative {
+            color: #f44336;
+        }
+
+        .current-price {
+            font-size: 14px;
+            color: #8b98a5;
+            margin-top: 5px;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 30px 40px;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: #1a2332;
+            border: 1px solid #2a3544;
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover {
+            border-color: #3a4554;
+            transform: translateY(-2px);
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #8b98a5;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .stat-value.green {
+            color: #4caf50;
+        }
+
+        .stat-value.red {
+            color: #f44336;
+        }
+
+        .stat-value.blue {
+            color: #64b5f6;
+        }
+
+        .stat-value.orange {
+            color: #ff9800;
+        }
+
+        .stat-change {
+            font-size: 12px;
+            color: #8b98a5;
+            margin-top: 5px;
+        }
+
+        /* Charts Section */
+        .charts-section {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .chart-card {
+            background: #1a2332;
+            border: 1px solid #2a3544;
+            border-radius: 12px;
+            padding: 25px;
+        }
+
+        .chart-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chart-timeframe {
+            font-size: 12px;
+            color: #8b98a5;
+            font-weight: 400;
+        }
+
+        .chart-container {
+            height: 300px;
+            position: relative;
+        }
+
+        /* Statistics Table */
+        .statistics-section {
+            background: #1a2332;
+            border: 1px solid #2a3544;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 20px;
+        }
+
+        .stats-table {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #2a3544;
+        }
+
+        .stat-row:last-child {
+            border-bottom: none;
+        }
+
+        .stat-row-label {
+            font-size: 14px;
+            color: #8b98a5;
+        }
+
+        .stat-row-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        /* Trades History */
+        .trades-section {
+            background: #1a2332;
+            border: 1px solid #2a3544;
+            border-radius: 12px;
+            padding: 25px;
+        }
+
+        .trades-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .trades-table th {
+            text-align: left;
+            font-size: 11px;
+            color: #8b98a5;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 12px 15px;
+            border-bottom: 1px solid #2a3544;
+        }
+
+        .trades-table td {
+            padding: 15px;
+            border-bottom: 1px solid #2a3544;
+            font-size: 13px;
+        }
+
+        .trades-table tr:hover {
+            background: #1f2937;
+        }
+
+        .trade-type {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .trade-type.buy {
+            background: #1b4d3e;
+            color: #4caf50;
+        }
+
+        .trade-type.sell {
+            background: #5c1f1f;
+            color: #f44336;
+        }
+
+        .profit-positive {
+            color: #4caf50;
+            font-weight: 600;
+        }
+
+        .profit-negative {
+            color: #f44336;
+            font-weight: 600;
+        }
+
+        /* Status Badge */
+        .status-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-badge.active {
+            background: #1e3a5f;
+            color: #64b5f6;
+        }
+
+        .status-badge.closed {
+            background: #3a3a3a;
+            color: #9e9e9e;
+        }
+
+        /* Loading State */
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            color: #8b98a5;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #2a3544;
+            border-top-color: #64b5f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .charts-section {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            .header {
+                padding: 15px 20px;
+            }
+
+            .signal-pair {
+                font-size: 24px;
+            }
+
+            .pnl-value {
+                font-size: 32px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <a href="/signals-v2" class="back-btn">← Back to Signals</a>
+
+        <div class="signal-header">
+            <div class="signal-title">
+                <div class="signal-pair" id="signalPair">Loading...</div>
+                <div class="signal-meta">
+                    <span class="strategy-badge" id="signalStrategy">-</span>
+                    <span class="direction-badge" id="signalDirection">-</span>
+                    <span class="status-badge" id="signalStatus">-</span>
+                    <div class="meta-item">
+                        <span>Entry:</span>
+                        <strong id="signalEntry">-</strong>
+                    </div>
+                    <div class="meta-item">
+                        <span>Current:</span>
+                        <strong id="signalCurrent">-</strong>
+                    </div>
+                </div>
+            </div>
+
+            <div class="signal-pnl">
+                <div class="pnl-label">Current P&L</div>
+                <div class="pnl-value" id="signalPnL">+0.00%</div>
+                <div class="current-price" id="signalTime">-</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Loading State -->
+        <div class="loading" id="loadingState">
+            <div class="loading-spinner"></div>
+            <div>Loading signal details...</div>
+        </div>
+
+        <!-- Main Content (Hidden until loaded) -->
+        <div id="mainContent" style="display: none;">
+            <!-- Performance Stats -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Total Return</div>
+                    <div class="stat-value green" id="statReturn">+0.00%</div>
+                    <div class="stat-change" id="statReturnChange">-</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-label">Win Rate</div>
+                    <div class="stat-value blue" id="statWinRate">0%</div>
+                    <div class="stat-change" id="statWinRateInfo">-</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-label">Profit Factor</div>
+                    <div class="stat-value orange" id="statProfitFactor">0.00</div>
+                    <div class="stat-change">Avg Win / Avg Loss</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-label">Max Drawdown</div>
+                    <div class="stat-value red" id="statDrawdown">0.00%</div>
+                    <div class="stat-change">Peak to Valley</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-label">Total Trades</div>
+                    <div class="stat-value" id="statTotalTrades">0</div>
+                    <div class="stat-change" id="statTradesInfo">-</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-label">Sharpe Ratio</div>
+                    <div class="stat-value blue" id="statSharpe">0.00</div>
+                    <div class="stat-change">Risk-adjusted return</div>
+                </div>
+            </div>
+
+            <!-- Charts -->
+            <div class="charts-section">
+                <div class="chart-card">
+                    <div class="chart-title">
+                        <span>Balance & Equity Curve</span>
+                        <span class="chart-timeframe">Last 100 updates</span>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="equityChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-title">
+                        <span>Drawdown</span>
+                        <span class="chart-timeframe">%</span>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="drawdownChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detailed Statistics -->
+            <div class="statistics-section">
+                <div class="section-title">Detailed Statistics</div>
+                <div class="stats-table">
+                    <div>
+                        <div class="stat-row">
+                            <span class="stat-row-label">Total Trades</span>
+                            <span class="stat-row-value" id="detailTotalTrades">0</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-row-label">Winning Trades</span>
+                            <span class="stat-row-value" id="detailWinningTrades">0</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-row-label">Losing Trades</span>
+                            <span class="stat-row-value" id="detailLosingTrades">0</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-row-label">Win Rate</span>
+                            <span class="stat-row-value" id="detailWinRate">0%</span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="stat-row">
+                            <span class="stat-row-label">Best Trade</span>
+                            <span class="stat-row-value" id="detailBestTrade">+0.00%</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-row-label">Worst Trade</span>
+                            <span class="stat-row-value" id="detailWorstTrade">-0.00%</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-row-label">Average Win</span>
+                            <span class="stat-row-value" id="detailAvgWin">+0.00%</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-row-label">Average Loss</span>
+                            <span class="stat-row-value" id="detailAvgLoss">-0.00%</span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="stat-row">
+                            <span class="stat-row-label">Profit Factor</span>
+                            <span class="stat-row-value" id="detailProfitFactor">0.00</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-row-label">Expected Payoff</span>
+                            <span class="stat-row-value" id="detailExpectedPayoff">0.00%</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-row-label">Sharpe Ratio</span>
+                            <span class="stat-row-value" id="detailSharpe">0.00</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-row-label">Recovery Factor</span>
+                            <span class="stat-row-value" id="detailRecovery">0.00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Trades -->
+            <div class="trades-section">
+                <div class="section-title">Recent Updates</div>
+                <table class="trades-table">
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>Type</th>
+                            <th>Price</th>
+                            <th>P&L %</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tradesTableBody">
+                        <tr>
+                            <td colspan="5" style="text-align: center; color: #8b98a5;">
+                                No trade history available
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script>
+        // Get signal ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const signalId = urlParams.get('id');
+
+        let ws;
+        let signalData = null;
+        let equityChart, drawdownChart;
+
+        // Initialize WebSocket
+        function initWebSocket() {
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsUrl = `${protocol}//${window.location.host}/ws/signals`;
+
+            ws = new WebSocket(wsUrl);
+
+            ws.onopen = () => {
+                console.log('✅ WebSocket Connected');
+            };
+
+            ws.onmessage = (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+
+                    switch (data.type) {
+                        case 'HISTORY':
+                            loadSignalFromHistory(data.signals);
+                            break;
+
+                        case 'PNL_UPDATE':
+                            updateSignalPnL(data.updates);
+                            break;
+
+                        case 'SIGNAL_CLOSED':
+                            if (data.signalId === signalId) {
+                                updateSignalStatus('Closed', data.finalPnL);
+                            }
+                            break;
+                    }
+                } catch (error) {
+                    console.error('❌ Message parse error:', error);
+                }
+            };
+
+            ws.onerror = (error) => {
+                console.error('❌ WebSocket Error:', error);
+            };
+
+            ws.onclose = () => {
+                console.log('🔌 WebSocket Closed - Reconnecting in 5s...');
+                setTimeout(initWebSocket, 5000);
+            };
+        }
+
+        // Load signal from history
+        function loadSignalFromHistory(signals) {
+            signalData = signals.find(s => s.id === signalId);
+
+            if (signalData) {
+                renderSignalDetails();
+            } else {
+                document.getElementById('loadingState').innerHTML =
+                    '<div class="loading-spinner"></div><div>Signal not found</div>';
+            }
+        }
+
+        // Render signal details
+        function renderSignalDetails() {
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('mainContent').style.display = 'block';
+
+            // Header
+            document.getElementById('signalPair').textContent =
+                (signalData.pair || 'N/A').replace('.P', '');
+            document.getElementById('signalStrategy').textContent = signalData.strategy || 'Unknown';
+
+            const directionBadge = document.getElementById('signalDirection');
+            directionBadge.textContent = signalData.direction || 'LONG';
+            directionBadge.className = `direction-badge ${(signalData.direction || 'long').toLowerCase()}`;
+
+            const statusBadge = document.getElementById('signalStatus');
+            statusBadge.textContent = signalData.status || 'Active';
+            statusBadge.className = `status-badge ${(signalData.status || 'active').toLowerCase()}`;
+
+            document.getElementById('signalEntry').textContent =
+                formatPrice(signalData.entry || signalData.entryPrice);
+            document.getElementById('signalCurrent').textContent =
+                formatPrice(signalData.currentPrice || signalData.entry);
+
+            const pnl = signalData.currentPnL || 0;
+            const pnlElement = document.getElementById('signalPnL');
+            pnlElement.textContent = `${pnl > 0 ? '+' : ''}${pnl.toFixed(2)}%`;
+            pnlElement.className = `pnl-value ${pnl > 0 ? 'positive' : pnl < 0 ? 'negative' : ''}`;
+
+            document.getElementById('signalTime').textContent =
+                formatTime(signalData.timestamp);
+
+            // Stats (Mock data for now - will be replaced with real calculations)
+            document.getElementById('statReturn').textContent = `${pnl > 0 ? '+' : ''}${pnl.toFixed(2)}%`;
+            document.getElementById('statReturnChange').textContent = `Since ${formatDate(signalData.timestamp)}`;
+
+            document.getElementById('statWinRate').textContent = '65%';
+            document.getElementById('statWinRateInfo').textContent = '13 wins / 7 losses';
+
+            document.getElementById('statProfitFactor').textContent = '1.85';
+            document.getElementById('statDrawdown').textContent = '-5.23%';
+            document.getElementById('statTotalTrades').textContent = '20';
+            document.getElementById('statTradesInfo').textContent = '13W / 7L';
+            document.getElementById('statSharpe').textContent = '1.42';
+
+            // Detailed stats
+            renderDetailedStats();
+
+            // Charts
+            renderCharts();
+        }
+
+        // Render detailed statistics
+        function renderDetailedStats() {
+            // Mock data - will be replaced with real calculations
+            document.getElementById('detailTotalTrades').textContent = '20';
+            document.getElementById('detailWinningTrades').textContent = '13';
+            document.getElementById('detailLosingTrades').textContent = '7';
+            document.getElementById('detailWinRate').textContent = '65%';
+
+            document.getElementById('detailBestTrade').textContent = '+8.5%';
+            document.getElementById('detailWorstTrade').textContent = '-3.2%';
+            document.getElementById('detailAvgWin').textContent = '+4.2%';
+            document.getElementById('detailAvgLoss').textContent = '-2.1%';
+
+            document.getElementById('detailProfitFactor').textContent = '1.85';
+            document.getElementById('detailExpectedPayoff').textContent = '1.85%';
+            document.getElementById('detailSharpe').textContent = '1.42';
+            document.getElementById('detailRecovery').textContent = '2.15';
+        }
+
+        // Render charts
+        function renderCharts() {
+            // Equity Chart
+            const equityCtx = document.getElementById('equityChart').getContext('2d');
+            const pnlHistory = signalData.pnlHistory || generateMockPnL();
+
+            equityChart = new Chart(equityCtx, {
+                type: 'line',
+                data: {
+                    labels: pnlHistory.map((_, i) => i),
+                    datasets: [{
+                        label: 'Balance',
+                        data: pnlHistory.map(p => 100 + p),
+                        borderColor: '#4caf50',
+                        backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            callbacks: {
+                                label: (context) => `Balance: $${context.parsed.y.toFixed(2)}`
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            display: false
+                        },
+                        y: {
+                            grid: {
+                                color: '#2a3544'
+                            },
+                            ticks: {
+                                color: '#8b98a5',
+                                callback: (value) => `$${value}`
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Drawdown Chart
+            const drawdownCtx = document.getElementById('drawdownChart').getContext('2d');
+            const drawdownData = calculateDrawdown(pnlHistory);
+
+            drawdownChart = new Chart(drawdownCtx, {
+                type: 'line',
+                data: {
+                    labels: drawdownData.map((_, i) => i),
+                    datasets: [{
+                        label: 'Drawdown',
+                        data: drawdownData,
+                        borderColor: '#f44336',
+                        backgroundColor: 'rgba(244, 67, 54, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: (context) => `Drawdown: ${context.parsed.y.toFixed(2)}%`
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            display: false
+                        },
+                        y: {
+                            reverse: true,
+                            grid: {
+                                color: '#2a3544'
+                            },
+                            ticks: {
+                                color: '#8b98a5',
+                                callback: (value) => `${value}%`
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Calculate drawdown from PnL history
+        function calculateDrawdown(pnlHistory) {
+            const drawdown = [];
+            let peak = 0;
+
+            for (let i = 0; i < pnlHistory.length; i++) {
+                const value = pnlHistory[i];
+                if (value > peak) peak = value;
+
+                const dd = peak > 0 ? ((peak - value) / peak) * 100 : 0;
+                drawdown.push(dd);
+            }
+
+            return drawdown;
+        }
+
+        // Generate mock PnL data
+        function generateMockPnL() {
+            const points = 50;
+            const data = [0];
+
+            for (let i = 1; i < points; i++) {
+                const change = (Math.random() - 0.4) * 2;
+                data.push(data[i - 1] + change);
+            }
+
+            return data;
+        }
+
+        // Update signal PnL from WebSocket
+        function updateSignalPnL(updates) {
+            const update = updates.find(u => u.signalId === signalId);
+
+            if (update && signalData) {
+                signalData.currentPrice = update.currentPrice;
+                signalData.currentPnL = update.currentPnL;
+                signalData.status = update.status;
+
+                // Update header
+                document.getElementById('signalCurrent').textContent = formatPrice(update.currentPrice);
+
+                const pnlElement = document.getElementById('signalPnL');
+                pnlElement.textContent = `${update.currentPnL > 0 ? '+' : ''}${update.currentPnL.toFixed(2)}%`;
+                pnlElement.className = `pnl-value ${update.currentPnL > 0 ? 'positive' : update.currentPnL < 0 ? 'negative' : ''}`;
+            }
+        }
+
+        // Update signal status
+        function updateSignalStatus(status, finalPnL) {
+            const statusBadge = document.getElementById('signalStatus');
+            statusBadge.textContent = status;
+            statusBadge.className = `status-badge ${status.toLowerCase()}`;
+
+            if (finalPnL !== undefined) {
+                const pnlElement = document.getElementById('signalPnL');
+                pnlElement.textContent = `${finalPnL > 0 ? '+' : ''}${finalPnL.toFixed(2)}%`;
+                pnlElement.className = `pnl-value ${finalPnL > 0 ? 'positive' : finalPnL < 0 ? 'negative' : ''}`;
+            }
+        }
+
+        // Format price
+        function formatPrice(price) {
+            if (!price) return '-';
+            return parseFloat(price).toFixed(price < 1 ? 5 : 2);
+        }
+
+        // Format time
+        function formatTime(timestamp) {
+            const date = new Date(timestamp);
+            return date.toLocaleString();
+        }
+
+        // Format date
+        function formatDate(timestamp) {
+            const date = new Date(timestamp);
+            return date.toLocaleDateString();
+        }
+
+        // Initialize on page load
+        if (signalId) {
+            initWebSocket();
+        } else {
+            document.getElementById('loadingState').innerHTML =
+                '<div>No signal ID provided</div>';
+        }
+    </script>
+</body>
+</html>

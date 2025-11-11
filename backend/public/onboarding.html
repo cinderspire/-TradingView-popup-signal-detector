@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to AutomatedTradeBot - Get Started</title>
+    <meta name="description" content="Welcome to AutomatedTradeBot! Complete your account setup, connect exchange APIs, configure trading preferences. Step-by-step onboarding for new traders. Learn platform features and start automated trading.">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .onboarding-container {
+            background: white;
+            border-radius: 20px;
+            max-width: 800px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .onboarding-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .onboarding-header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .onboarding-header p {
+            opacity: 0.9;
+            font-size: 16px;
+        }
+
+        .progress-bar-container {
+            background: #f0f0f0;
+            height: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            height: 100%;
+            transition: width 0.5s ease;
+            width: 0%;
+        }
+
+        .progress-text {
+            padding: 15px 30px;
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .onboarding-content {
+            padding: 30px;
+        }
+
+        .steps-list {
+            list-style: none;
+        }
+
+        .step-item {
+            display: flex;
+            align-items: flex-start;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 12px;
+            border: 2px solid #e0e0e0;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .step-item:hover {
+            border-color: #667eea;
+            transform: translateX(5px);
+        }
+
+        .step-item.completed {
+            background: #f0fdf4;
+            border-color: #10b981;
+        }
+
+        .step-item.active {
+            background: #eff6ff;
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+        }
+
+        .step-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 20px;
+            flex-shrink: 0;
+            font-size: 24px;
+            background: #f0f0f0;
+            color: #666;
+        }
+
+        .step-item.completed .step-icon {
+            background: #10b981;
+            color: white;
+        }
+
+        .step-item.active .step-icon {
+            background: #667eea;
+            color: white;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a202c;
+            margin-bottom: 5px;
+        }
+
+        .step-description {
+            color: #718096;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .step-action {
+            margin-top: 10px;
+        }
+
+        .step-action button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .step-action button:hover {
+            background: #5568d3;
+        }
+
+        .step-action button:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+        }
+
+        .step-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-top: 8px;
+        }
+
+        .badge-required {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .badge-optional {
+            background: #e0e7ff;
+            color: #4f46e5;
+        }
+
+        .onboarding-footer {
+            padding: 20px 30px;
+            background: #f9fafb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: #718096;
+            border: 2px solid #e5e7eb;
+        }
+
+        .btn-secondary:hover {
+            background: #f9fafb;
+        }
+
+        .completion-screen {
+            text-align: center;
+            padding: 60px 30px;
+        }
+
+        .completion-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+
+        .completion-screen h2 {
+            font-size: 32px;
+            color: #1a202c;
+            margin-bottom: 15px;
+        }
+
+        .completion-screen p {
+            font-size: 18px;
+            color: #718096;
+            margin-bottom: 30px;
+        }
+
+        .next-steps {
+            background: #f9fafb;
+            padding: 30px;
+            border-radius: 12px;
+            margin-top: 30px;
+            text-align: left;
+        }
+
+        .next-steps h3 {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: #1a202c;
+        }
+
+        .next-steps ul {
+            list-style: none;
+        }
+
+        .next-steps li {
+            padding: 12px 0;
+            color: #4a5568;
+            font-size: 16px;
+        }
+
+        .next-steps li:before {
+            content: "→";
+            color: #667eea;
+            font-weight: bold;
+            margin-right: 12px;
+        }
+
+        @media (max-width: 600px) {
+            .onboarding-header h1 {
+                font-size: 24px;
+            }
+
+            .onboarding-content {
+                padding: 20px;
+            }
+
+            .step-item {
+                flex-direction: column;
+            }
+
+            .step-icon {
+                margin-right: 0;
+                margin-bottom: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="onboarding-container">
+        <div class="onboarding-header">
+            <h1>Welcome to AutomatedTradeBot! 🚀</h1>
+            <p>Let's get you set up in just a few minutes</p>
+        </div>
+
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        <div class="progress-text">
+            <span id="progressText">0% Complete</span>
+        </div>
+
+        <div class="onboarding-content" id="onboardingContent">
+            <ul class="steps-list" id="stepsList">
+                <!-- Steps will be populated by JavaScript -->
+            </ul>
+        </div>
+
+        <div class="onboarding-footer">
+            <button class="btn btn-secondary" id="skipBtn">Skip for now</button>
+            <button class="btn btn-primary" id="completeBtn" style="display:none;">Go to Dashboard</button>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const API_URL = '/api';
+
+        // State
+        let onboardingData = null;
+        let currentProgress = 0;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadOnboardingProgress();
+            setupEventListeners();
+        });
+
+        // Load onboarding progress
+        async function loadOnboardingProgress() {
+            try {
+                const token = localStorage.getItem('authToken');
+                if (!token) {
+                    window.location.href = '/login';
+                    return;
+                }
+
+                const response = await fetch(`${API_URL}/onboarding/progress`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success && data.data.onboarding) {
+                    onboardingData = data.data;
+                    renderSteps();
+                    updateProgress();
+                } else {
+                    // Initialize onboarding
+                    await initializeOnboarding();
+                }
+            } catch (error) {
+                console.error('Failed to load onboarding:', error);
+                showError('Failed to load onboarding progress');
+            }
+        }
+
+        // Initialize onboarding
+        async function initializeOnboarding() {
+            try {
+                const token = localStorage.getItem('authToken');
+                const response = await fetch(`${API_URL}/onboarding/initialize`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ userType: 'trader' })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    await loadOnboardingProgress();
+                }
+            } catch (error) {
+                console.error('Failed to initialize onboarding:', error);
+            }
+        }
+
+        // Render steps
+        function renderSteps() {
+            const stepsList = document.getElementById('stepsList');
+            stepsList.innerHTML = '';
+
+            if (!onboardingData || !onboardingData.steps) {
+                return;
+            }
+
+            onboardingData.steps.forEach(step => {
+                const li = document.createElement('li');
+                li.className = `step-item ${step.completed ? 'completed' : ''}`;
+
+                li.innerHTML = `
+                    <div class="step-icon">
+                        ${step.completed ? '✓' : (step.order)}
+                    </div>
+                    <div class="step-content">
+                        <div class="step-title">${step.title}</div>
+                        <div class="step-description">${step.description}</div>
+                        <div class="step-badge ${step.required ? 'badge-required' : 'badge-optional'}">
+                            ${step.required ? 'Required' : 'Optional'}
+                        </div>
+                        ${!step.completed ? `
+                            <div class="step-action">
+                                <button onclick="performAction('${step.id}', '${step.action}')">
+                                    ${getActionLabel(step.action)}
+                                </button>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+
+                stepsList.appendChild(li);
+            });
+
+            // Check if all completed
+            const allCompleted = onboardingData.onboarding.completed;
+            if (allCompleted) {
+                showCompletionScreen();
+            }
+        }
+
+        // Get action label
+        function getActionLabel(action) {
+            const labels = {
+                'watch_intro': 'Watch Introduction',
+                'verify_email': 'Verify Email',
+                'edit_profile': 'Complete Profile',
+                'browse_providers': 'Browse Providers',
+                'subscribe_provider': 'Subscribe Now',
+                'configure_copy_trading': 'Set Up Copy Trading',
+                'add_api_keys': 'Add Exchange Keys'
+            };
+            return labels[action] || 'Get Started';
+        }
+
+        // Perform action
+        async function performAction(stepId, action) {
+            const actions = {
+                'watch_intro': () => {
+                    window.open('https://youtube.com/watch?v=demo', '_blank');
+                    completeStep(stepId);
+                },
+                'verify_email': () => {
+                    alert('Please check your email for verification link');
+                    // Auto-complete if already verified
+                    completeStep(stepId);
+                },
+                'edit_profile': () => {
+                    window.location.href = '/profile';
+                },
+                'browse_providers': () => {
+                    window.location.href = '/providers';
+                },
+                'subscribe_provider': () => {
+                    window.location.href = '/providers';
+                },
+                'configure_copy_trading': () => {
+                    window.location.href = '/dashboard?tab=copytrading';
+                },
+                'add_api_keys': () => {
+                    window.location.href = '/dashboard?tab=apikeys';
+                }
+            };
+
+            if (actions[action]) {
+                actions[action]();
+            } else {
+                await completeStep(stepId);
+            }
+        }
+
+        // Complete step
+        async function completeStep(stepId) {
+            try {
+                const token = localStorage.getItem('authToken');
+                const response = await fetch(`${API_URL}/onboarding/step/${stepId}/complete`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    await loadOnboardingProgress();
+                }
+            } catch (error) {
+                console.error('Failed to complete step:', error);
+            }
+        }
+
+        // Update progress
+        function updateProgress() {
+            if (!onboardingData || !onboardingData.onboarding) {
+                return;
+            }
+
+            const progress = onboardingData.onboarding.progress || 0;
+            currentProgress = progress;
+
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+
+            progressBar.style.width = `${progress}%`;
+            progressText.textContent = `${Math.round(progress)}% Complete`;
+        }
+
+        // Show completion screen
+        function showCompletionScreen() {
+            const content = document.getElementById('onboardingContent');
+            content.innerHTML = `
+                <div class="completion-screen">
+                    <div class="completion-icon">🎉</div>
+                    <h2>Congratulations!</h2>
+                    <p>You've completed the onboarding process and are ready to start trading!</p>
+
+                    <div class="next-steps">
+                        <h3>What's Next?</h3>
+                        <ul>
+                            <li>Subscribe to top-performing signal providers</li>
+                            <li>Set up copy trading with your preferred risk settings</li>
+                            <li>Monitor your portfolio in real-time</li>
+                            <li>Explore new trading strategies and signals</li>
+                        </ul>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('skipBtn').style.display = 'none';
+            document.getElementById('completeBtn').style.display = 'block';
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            document.getElementById('skipBtn').addEventListener('click', skipOnboarding);
+            document.getElementById('completeBtn').addEventListener('click', goToDashboard);
+        }
+
+        // Skip onboarding
+        async function skipOnboarding() {
+            if (!confirm('Are you sure you want to skip the onboarding? You can always access it later from your dashboard.')) {
+                return;
+            }
+
+            try {
+                const token = localStorage.getItem('authToken');
+                await fetch(`${API_URL}/onboarding/skip`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                window.location.href = '/dashboard';
+            } catch (error) {
+                console.error('Failed to skip onboarding:', error);
+            }
+        }
+
+        // Go to dashboard
+        function goToDashboard() {
+            window.location.href = '/dashboard';
+        }
+
+        // Show error
+        function showError(message) {
+            alert(message);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Active Positions - AutomatedTradeBot</title>
+    <meta name="description" content="AutomatedTradeBot - Advanced cryptocurrency and forex trading platform. Automated strategies, professional signals, portfolio mirroring. AI-powered trading with verified performance metrics. Join professional traders worldwide.">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #5E72E4;
+            --secondary: #11CDEF;
+            --success: #2DCE89;
+            --danger: #F5365C;
+            --warning: #FB6340;
+            --dark: #0A0E26;
+            --card-bg: rgba(15, 20, 45, 0.8);
+            --border-color: rgba(94, 114, 228, 0.2);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #0A0E26 0%, #1A1F3A 100%);
+            color: #fff;
+            min-height: 100vh;
+        }
+
+        nav {
+            background: rgba(10, 14, 38, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: #fff;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .page-header {
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #fff, var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .live-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(45, 206, 137, 0.1);
+            border: 1px solid var(--success);
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .pulse {
+            width: 10px;
+            height: 10px;
+            background: var(--success);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+        }
+
+        .stat-label {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .stat-value.positive { color: var(--success); }
+        .stat-value.negative { color: var(--danger); }
+
+        .positions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .position-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .position-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(94, 114, 228, 0.3);
+        }
+
+        .position-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .position-pair {
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .badge-long {
+            background: rgba(45, 206, 137, 0.2);
+            color: var(--success);
+        }
+
+        .badge-short {
+            background: rgba(245, 54, 92, 0.2);
+            color: var(--danger);
+        }
+
+        .position-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .info-label {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .info-value {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .pnl-display {
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .pnl-label {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 0.5rem;
+        }
+
+        .pnl-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .position-age {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .filters {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-select {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 0.6rem 1rem;
+            color: #fff;
+            font-size: 0.9rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.3;
+        }
+
+        @media (max-width: 768px) {
+            .positions-grid {
+                grid-template-columns: 1fr;
+            }
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+<body data-page="active">
+    <nav>
+        <div class="nav-container">
+            <!-- Navigation populated by navigation.js -->
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">Active Positions</h1>
+                <p style="color: rgba(255,255,255,0.6); margin-top: 0.5rem;">Real-time monitoring of all open trading positions</p>
+            </div>
+            <div class="live-indicator">
+                <div class="pulse"></div>
+                <span>Live Updates</span>
+            </div>
+        </div>
+
+        <div class="stats-grid" id="statsGrid">
+            <div class="stat-card">
+                <div class="stat-label">Total Active</div>
+                <div class="stat-value" id="totalActive">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Long Positions</div>
+                <div class="stat-value positive" id="totalLong">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Short Positions</div>
+                <div class="stat-value negative" id="totalShort">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Total Unrealized PnL</div>
+                <div class="stat-value" id="totalPnL">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Average PnL</div>
+                <div class="stat-value" id="avgPnL">-</div>
+            </div>
+        </div>
+
+        <div class="filters">
+            <select id="strategyFilter" class="filter-select" onchange="applyFilters()">
+                <option value="">All Strategies</option>
+            </select>
+            <select id="directionFilter" class="filter-select" onchange="applyFilters()">
+                <option value="">All Directions</option>
+                <option value="LONG">Long Only</option>
+                <option value="SHORT">Short Only</option>
+            </select>
+            <select id="sortFilter" class="filter-select" onchange="applyFilters()">
+                <option value="pnl-desc">Highest PnL First</option>
+                <option value="pnl-asc">Lowest PnL First</option>
+                <option value="age-desc">Oldest First</option>
+                <option value="age-asc">Newest First</option>
+            </select>
+        </div>
+
+        <div class="positions-grid" id="positionsGrid">
+            <div class="empty-state">
+                <i class="fas fa-spinner fa-spin"></i>
+                <p>Loading active positions...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let allPositions = [];
+        let filteredPositions = [];
+        let ws = null;
+
+        // Connect to WebSocket
+        function connectWebSocket() {
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsUrl = `${protocol}//${window.location.host}/ws/signals`;
+
+            ws = new WebSocket(wsUrl);
+
+            ws.onopen = () => {
+                console.log('✅ Connected to real-time updates');
+            };
+
+            ws.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                handleWebSocketMessage(data);
+            };
+
+            ws.onerror = (error) => {
+                console.error('WebSocket error:', error);
+            };
+
+            ws.onclose = () => {
+                console.log('Disconnected. Reconnecting in 3s...');
+                setTimeout(connectWebSocket, 3000);
+            };
+        }
+
+        // Handle WebSocket messages
+        function handleWebSocketMessage(data) {
+            switch(data.type) {
+                case 'HISTORY':
+                case 'HISTORY_CHUNK':
+                    if (data.signals) {
+                        const activeSignals = data.signals.filter(s =>
+                            s.status === 'Active' || s.marketPosition === 'long' || s.marketPosition === 'short'
+                        );
+
+                        if (data.type === 'HISTORY') {
+                            allPositions = activeSignals;
+                        } else {
+                            allPositions = allPositions.concat(activeSignals);
+                        }
+
+                        if (data.chunkInfo && data.chunkInfo.isLast) {
+                            processPositions();
+                        } else if (!data.chunkInfo) {
+                            processPositions();
+                        }
+                    }
+                    break;
+
+                case 'SIGNAL':
+                    if (data.signal && (data.signal.status === 'Active' ||
+                        data.signal.marketPosition === 'long' ||
+                        data.signal.marketPosition === 'short')) {
+                        // Add or update position
+                        const existingIndex = allPositions.findIndex(p => p.id === data.signal.id);
+                        if (existingIndex >= 0) {
+                            allPositions[existingIndex] = data.signal;
+                        } else {
+                            allPositions.push(data.signal);
+                        }
+                        processPositions();
+                    }
+                    break;
+
+                case 'PNL_UPDATE':
+                    if (data.updates) {
+                        data.updates.forEach(update => {
+                            const pos = allPositions.find(p => p.id === update.signalId);
+                            if (pos) {
+                                pos.currentPnL = update.currentPnL;
+                                pos.currentPrice = update.currentPrice;
+                            }
+                        });
+                        processPositions();
+                    }
+                    break;
+            }
+        }
+
+        // Process and display positions
+        function processPositions() {
+            // Update stats
+            const totalActive = allPositions.length;
+            const longPos = allPositions.filter(p => p.direction === 'LONG').length;
+            const shortPos = allPositions.filter(p => p.direction === 'SHORT').length;
+
+            const totalPnL = allPositions.reduce((sum, p) => sum + (p.currentPnL || 0), 0);
+            const avgPnL = totalActive > 0 ? totalPnL / totalActive : 0;
+
+            document.getElementById('totalActive').textContent = totalActive;
+            document.getElementById('totalLong').textContent = longPos;
+            document.getElementById('totalShort').textContent = shortPos;
+
+            const totalPnLElem = document.getElementById('totalPnL');
+            totalPnLElem.textContent = `${totalPnL >= 0 ? '+' : ''}${totalPnL.toFixed(2)}%`;
+            totalPnLElem.className = `stat-value ${totalPnL >= 0 ? 'positive' : 'negative'}`;
+
+            const avgPnLElem = document.getElementById('avgPnL');
+            avgPnLElem.textContent = `${avgPnL >= 0 ? '+' : ''}${avgPnL.toFixed(2)}%`;
+            avgPnLElem.className = `stat-value ${avgPnL >= 0 ? 'positive' : 'negative'}`;
+
+            // Populate strategy filter
+            const strategies = [...new Set(allPositions.map(p => p.strategy))];
+            const strategyFilter = document.getElementById('strategyFilter');
+            const currentStrategy = strategyFilter.value;
+            strategyFilter.innerHTML = '<option value="">All Strategies</option>';
+            strategies.forEach(strategy => {
+                const option = document.createElement('option');
+                option.value = strategy;
+                option.textContent = strategy;
+                if (strategy === currentStrategy) option.selected = true;
+                strategyFilter.appendChild(option);
+            });
+
+            applyFilters();
+        }
+
+        // Apply filters
+        function applyFilters() {
+            const strategy = document.getElementById('strategyFilter').value;
+            const direction = document.getElementById('directionFilter').value;
+            const sort = document.getElementById('sortFilter').value;
+
+            filteredPositions = allPositions.filter(pos => {
+                if (strategy && pos.strategy !== strategy) return false;
+                if (direction && pos.direction !== direction) return false;
+                return true;
+            });
+
+            // Sort
+            filteredPositions.sort((a, b) => {
+                switch(sort) {
+                    case 'pnl-desc': return (b.currentPnL || 0) - (a.currentPnL || 0);
+                    case 'pnl-asc': return (a.currentPnL || 0) - (b.currentPnL || 0);
+                    case 'age-desc': return new Date(a.timestamp) - new Date(b.timestamp);
+                    case 'age-asc': return new Date(b.timestamp) - new Date(a.timestamp);
+                    default: return 0;
+                }
+            });
+
+            renderPositions();
+        }
+
+        // Render positions
+        function renderPositions() {
+            const grid = document.getElementById('positionsGrid');
+
+            if (filteredPositions.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-inbox"></i>
+                        <p>No active positions found</p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = filteredPositions.map(pos => {
+                const pnl = pos.currentPnL || 0;
+                const age = calculateAge(pos.timestamp || pos.createdAt);
+
+                return `
+                    <div class="position-card">
+                        <div class="position-header">
+                            <div class="position-pair">${pos.pair}</div>
+                            <span class="badge badge-${pos.direction.toLowerCase()}">${pos.direction}</span>
+                        </div>
+                        <div class="position-info">
+                            <div class="info-item">
+                                <span class="info-label">Strategy</span>
+                                <span class="info-value">${pos.strategy}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Entry Price</span>
+                                <span class="info-value">$${(pos.entry || pos.entryPrice || 0).toFixed(4)}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Current Price</span>
+                                <span class="info-value">$${(pos.currentPrice || pos.entry || 0).toFixed(4)}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Amount</span>
+                                <span class="info-value">${(pos.contracts || pos.positionSize || 0).toFixed(4)}</span>
+                            </div>
+                        </div>
+                        <div class="pnl-display">
+                            <div class="pnl-label">Unrealized PnL</div>
+                            <div class="pnl-value ${pnl >= 0 ? 'positive' : 'negative'}">
+                                ${pnl >= 0 ? '+' : ''}${pnl.toFixed(2)}%
+                            </div>
+                        </div>
+                        <div class="position-age">
+                            <i class="fas fa-clock"></i> Opened ${age}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Calculate position age
+        function calculateAge(timestamp) {
+            const now = Date.now();
+            const opened = new Date(timestamp).getTime();
+            const diffMs = now - opened;
+            const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+            const diffDays = Math.floor(diffHours / 24);
+
+            if (diffDays > 0) {
+                return `${diffDays}d ${diffHours % 24}h ago`;
+            } else {
+                return `${diffHours}h ago`;
+            }
+        }
+
+        // Initialize
+        connectWebSocket();
+    </script>
+    <script src="/js/navigation.js?v=6.0"></script>
+</body>
+</html>

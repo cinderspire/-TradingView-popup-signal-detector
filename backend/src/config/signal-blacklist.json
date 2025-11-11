@@ -1,0 +1,6 @@
+{
+  "blacklistedPairs": [],
+  "lastUpdated": "2025-11-07T20:02:00.000Z",
+  "reason": "Blacklist cleared - using top 147 pairs with subscription-based filtering instead",
+  "note": "Pair filtering is now handled by subscription matching logic with 147 carefully selected pairs"
+}

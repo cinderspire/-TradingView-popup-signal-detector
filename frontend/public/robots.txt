@@ -1,0 +1,55 @@
+# AutomatedTradeBot - Robots.txt
+# This file tells search engines which pages to crawl and which to avoid
+
+# Allow all search engines
+User-agent: *
+
+# Public Pages - Allow Crawling
+Allow: /
+Allow: /strategies
+Allow: /providers
+Allow: /leaderboard
+Allow: /marketplace
+Allow: /login
+Allow: /register
+
+# Private/Protected Pages - Disallow Crawling
+Disallow: /dashboard
+Disallow: /subscriptions
+Disallow: /positions
+Disallow: /signals
+Disallow: /analytics
+Disallow: /transactions
+Disallow: /risk-management
+Disallow: /profile
+Disallow: /settings
+Disallow: /backtests
+Disallow: /news-calendar
+Disallow: /notifications
+
+# Provider Pages - Disallow Crawling (Private)
+Disallow: /provider/
+
+# API Routes - Disallow Crawling
+Disallow: /api/
+
+# Static Assets - Allow Crawling
+Allow: /*.css$
+Allow: /*.js$
+Allow: /*.png$
+Allow: /*.jpg$
+Allow: /*.jpeg$
+Allow: /*.gif$
+Allow: /*.svg$
+Allow: /*.webp$
+Allow: /*.ico$
+
+# Sitemap Location
+Sitemap: https://automatedtradebot.com/sitemap.xml
+
+# Crawl Delay (optional - helps prevent server overload)
+# Crawl-delay: 1
+
+# Block specific bots (if needed)
+# User-agent: BadBot
+# Disallow: /

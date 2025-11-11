@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signal Dashboard - AutomatedTradeBot</title>
+    <meta name="description" content="Your AutomatedTradeBot trading dashboard. Monitor active strategies, track performance, manage subscriptions. Real-time portfolio analytics, profit/loss tracking, risk metrics. Control your automated trading operations.">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0f1e 0%, #1a1a2e 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            padding: 20px 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .header h1 {
+            font-size: 28px;
+            color: #00ff88;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ff4444;
+            animation: pulse 2s infinite;
+        }
+
+        .status-dot.connected {
+            background: #00ff88;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            padding: 25px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .stat-card h3 {
+            font-size: 14px;
+            color: #888;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stat-card .value {
+            font-size: 36px;
+            font-weight: bold;
+            color: #00ff88;
+        }
+
+        .signals-container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .signals-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .signals-header h2 {
+            font-size: 24px;
+            color: #00ff88;
+        }
+
+        .clear-btn {
+            background: rgba(255, 68, 68, 0.2);
+            border: 1px solid #ff4444;
+            color: #ff4444;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .clear-btn:hover {
+            background: rgba(255, 68, 68, 0.3);
+        }
+
+        .signals-list {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .signal-item {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border-left: 4px solid #00ff88;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .signal-item.short {
+            border-left-color: #ff4444;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .signal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .signal-pair {
+            font-size: 20px;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .signal-direction {
+            padding: 5px 15px;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .signal-direction.long {
+            background: rgba(0, 255, 136, 0.2);
+            color: #00ff88;
+        }
+
+        .signal-direction.short {
+            background: rgba(255, 68, 68, 0.2);
+            color: #ff4444;
+        }
+
+        .signal-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .signal-detail {
+            font-size: 14px;
+        }
+
+        .signal-detail span {
+            color: #888;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .signal-detail strong {
+            color: #fff;
+            font-size: 16px;
+        }
+
+        .timestamp {
+            font-size: 12px;
+            color: #666;
+            margin-top: 10px;
+        }
+
+        .no-signals {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+            font-size: 18px;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(0, 255, 136, 0.3);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 255, 136, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>
+                <span>📡</span>
+                Signal Dashboard
+            </h1>
+            <div class="status">
+                <div class="status-dot" id="statusDot"></div>
+                <span id="statusText">Connecting...</span>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total Signals</h3>
+                <div class="value" id="totalSignals">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Long Signals</h3>
+                <div class="value" style="color: #00ff88;" id="longSignals">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Short Signals</h3>
+                <div class="value" style="color: #ff4444;" id="shortSignals">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Uptime</h3>
+                <div class="value" style="font-size: 24px; color: #fff;" id="uptime">--</div>
+            </div>
+        </div>
+
+        <div class="signals-container">
+            <div class="signals-header">
+                <h2>📊 Live Signal Feed</h2>
+                <button class="clear-btn" onclick="clearSignals()">Clear All</button>
+            </div>
+            <div class="signals-list" id="signalsList">
+                <div class="no-signals">Waiting for signals...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let ws;
+        let signals = [];
+        let stats = { total: 0, long: 0, short: 0 };
+
+        function connect() {
+            const wsUrl = `ws://${window.location.hostname}:6864/ws/signals`;
+            ws = new WebSocket(wsUrl);
+
+            ws.onopen = () => {
+                console.log('✅ WebSocket connected');
+                document.getElementById('statusDot').classList.add('connected');
+                document.getElementById('statusText').textContent = 'Connected';
+            };
+
+            ws.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                console.log('📡 Signal received:', data);
+
+                if (data.type === 'SIGNAL') {
+                    addSignal(data.signal);
+                }
+            };
+
+            ws.onclose = () => {
+                console.log('❌ WebSocket disconnected');
+                document.getElementById('statusDot').classList.remove('connected');
+                document.getElementById('statusText').textContent = 'Disconnected';
+                setTimeout(connect, 3000);
+            };
+
+            ws.onerror = (error) => {
+                console.error('WebSocket error:', error);
+            };
+        }
+
+        function addSignal(signal) {
+            signals.unshift(signal);
+            if (signals.length > 50) signals.pop();
+
+            stats.total++;
+            if (signal.direction === 'LONG') stats.long++;
+            if (signal.direction === 'SHORT') stats.short++;
+
+            updateUI();
+            playSound();
+        }
+
+        function updateUI() {
+            document.getElementById('totalSignals').textContent = stats.total;
+            document.getElementById('longSignals').textContent = stats.long;
+            document.getElementById('shortSignals').textContent = stats.short;
+
+            const signalsList = document.getElementById('signalsList');
+            if (signals.length === 0) {
+                signalsList.innerHTML = '<div class="no-signals">Waiting for signals...</div>';
+                return;
+            }
+
+            signalsList.innerHTML = signals.map(signal => `
+                <div class="signal-item ${signal.direction.toLowerCase()}">
+                    <div class="signal-header">
+                        <div class="signal-pair">${signal.pair}</div>
+                        <div class="signal-direction ${signal.direction.toLowerCase()}">${signal.direction}</div>
+                    </div>
+                    <div class="signal-details">
+                        <div class="signal-detail">
+                            <span>Entry Price</span>
+                            <strong>$${signal.entry?.toFixed(2) || 'N/A'}</strong>
+                        </div>
+                        <div class="signal-detail">
+                            <span>Take Profit</span>
+                            <strong>${signal.takeProfit ? '$' + signal.takeProfit.toFixed(2) : 'N/A'}</strong>
+                        </div>
+                        <div class="signal-detail">
+                            <span>Stop Loss</span>
+                            <strong>${signal.stopLoss ? '$' + signal.stopLoss.toFixed(2) : 'N/A'}</strong>
+                        </div>
+                        <div class="signal-detail">
+                            <span>Source</span>
+                            <strong>${signal.source || 'Unknown'}</strong>
+                        </div>
+                    </div>
+                    <div class="timestamp">${new Date(signal.timestamp).toLocaleString()}</div>
+                </div>
+            `).join('');
+        }
+
+        function clearSignals() {
+            if (confirm('Clear all signals?')) {
+                signals = [];
+                stats = { total: 0, long: 0, short: 0 };
+                updateUI();
+            }
+        }
+
+        function playSound() {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+
+            oscillator.frequency.value = 800;
+            oscillator.type = 'sine';
+
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.1);
+        }
+
+        // Fetch uptime
+        setInterval(() => {
+            fetch('/api/status')
+                .then(r => r.json())
+                .then(data => {
+                    const uptime = Math.floor(data.uptime);
+                    const hours = Math.floor(uptime / 3600);
+                    const minutes = Math.floor((uptime % 3600) / 60);
+                    document.getElementById('uptime').textContent = `${hours}h ${minutes}m`;
+                })
+                .catch(console.error);
+        }, 5000);
+
+        // Connect on load
+        connect();
+    </script>
+</body>
+</html>

@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - AutomatedTradeBot</title>
+    <meta name="description" content="Manage your AutomatedTradeBot profile settings. Update account details, configure trading preferences, set risk parameters. Connect exchange APIs, manage subscriptions, view billing history.">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #5e72e4;
+            --secondary: #11cdef;
+            --success: #2dce89;
+            --danger: #f5365c;
+            --warning: #fb6340;
+            --info: #11cdef;
+            --dark: #0a0e27;
+            --light: #f7fafc;
+            --gray: #8898aa;
+            --gradient: linear-gradient(87deg, #5e72e4 0, #825ee4 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+            color: #e8eaf6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .page-header {
+            margin-bottom: 2rem;
+        }
+
+        .page-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .page-header p {
+            color: var(--gray);
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .card-header h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--gradient);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(94, 114, 228, 0.3);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--gray);
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #e8eaf6;
+            font-size: 1rem;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .api-key-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .api-key-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .api-key-info {
+            flex: 1;
+        }
+
+        .api-key-exchange {
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 0.25rem;
+        }
+
+        .api-key-meta {
+            font-size: 0.875rem;
+            color: var(--gray);
+        }
+
+        .api-key-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-active {
+            background: rgba(45, 206, 137, 0.2);
+            color: var(--success);
+        }
+
+        .status-inactive {
+            background: rgba(245, 54, 92, 0.2);
+            color: var(--danger);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #1a1f3a;
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-header h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 2rem;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: #e8eaf6;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--gray);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .profile-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .info-item {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 1rem;
+            border-radius: 8px;
+        }
+
+        .info-label {
+            color: var(--gray);
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .info-value {
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav style="background: rgba(10, 14, 38, 0.95); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(94, 114, 228, 0.2); padding: 1rem 2rem; position: sticky; top: 0; z-index: 1000;">
+        <div class="nav-container" style="display: flex; justify-content: space-between; align-items: center; max-width: 1400px; margin: 0 auto;">
+            <!-- Navigation will be injected by navigation.js -->
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <h1><i class="fas fa-user-circle"></i> My Profile</h1>
+            <p>Manage your account settings and exchange API keys</p>
+        </div>
+
+        <!-- Profile Information -->
+        <div class="card">
+            <div class="card-header">
+                <h2><i class="fas fa-user"></i> Profile Information</h2>
+                <button class="btn btn-primary" onclick="editProfile()">
+                    <i class="fas fa-edit"></i> Edit Profile
+                </button>
+            </div>
+
+            <div class="profile-info" id="profileInfo">
+                <div class="info-item">
+                    <div class="info-label">Email</div>
+                    <div class="info-value" id="userEmail">-</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Username</div>
+                    <div class="info-value" id="userUsername">-</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Role</div>
+                    <div class="info-value" id="userRole">-</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Member Since</div>
+                    <div class="info-value" id="userCreated">-</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- API Keys -->
+        <div class="card">
+            <div class="card-header">
+                <h2><i class="fas fa-key"></i> Exchange API Keys</h2>
+                <button class="btn btn-primary" onclick="showAddApiKeyModal()">
+                    <i class="fas fa-plus"></i> Add API Key
+                </button>
+            </div>
+
+            <div class="api-key-list" id="apiKeyList">
+                <div class="empty-state">
+                    <i class="fas fa-key"></i>
+                    <p>No API keys configured</p>
+                    <p style="font-size: 0.875rem;">Add your exchange API keys to enable automated trading</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add API Key Modal -->
+    <div class="modal" id="addApiKeyModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-key"></i> Add Exchange API Key</h3>
+            </div>
+
+            <form id="addApiKeyForm" onsubmit="addApiKey(event)">
+                <div class="form-group">
+                    <label>Exchange</label>
+                    <select id="apiExchange" required>
+                        <option value="">Select Exchange</option>
+                        <option value="binance">Binance</option>
+                        <option value="bybit">Bybit</option>
+                        <option value="okx">OKX</option>
+                        <option value="mexc">MEXC</option>
+                        <option value="bitget">Bitget</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>API Key</label>
+                    <input type="text" id="apiKey" placeholder="Enter your API Key" required>
+                </div>
+
+                <div class="form-group">
+                    <label>API Secret</label>
+                    <input type="password" id="apiSecret" placeholder="Enter your API Secret" required>
+                </div>
+
+                <div class="form-group">
+                    <label>API Passphrase (Optional)</label>
+                    <input type="password" id="apiPassphrase" placeholder="Required for OKX only">
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('addApiKeyModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Add Key
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <script src="/js/toast.js"></script>
+
+    <!-- Standardized Navigation -->
+    <script src="/js/navigation.js"></script>
+    <script>
+        renderNavigation('profile');
+    </script>
+
+    <script>
+        let currentUser = null;
+
+        // Load profile on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadProfile();
+        });
+
+        async function loadProfile() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                showToast('Please login to view your profile', 'warning');
+                setTimeout(() => window.location.href = '/login', 1500);
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/profile/me', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+
+                if (response.status === 401) {
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                    window.location.href = '/login';
+                    return;
+                }
+
+                const data = await response.json();
+
+                if (data.success) {
+                    currentUser = data.user;
+                    displayProfile(data.user);
+                    displayApiKeys(data.user.apiKeys || []);
+                } else {
+                    showToast('Failed to load profile', 'error');
+                }
+            } catch (error) {
+                console.error('Error loading profile:', error);
+                showToast('Failed to load profile', 'error');
+            }
+        }
+
+        function displayProfile(user) {
+            document.getElementById('userEmail').textContent = user.email;
+            document.getElementById('userUsername').textContent = user.username || '-';
+            document.getElementById('userRole').textContent = user.role || 'USER';
+            document.getElementById('userCreated').textContent = new Date(user.createdAt).toLocaleDateString();
+        }
+
+        function displayApiKeys(apiKeys) {
+            const container = document.getElementById('apiKeyList');
+
+            if (apiKeys.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-key"></i>
+                        <p>No API keys configured</p>
+                        <p style="font-size: 0.875rem;">Add your exchange API keys to enable automated trading</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = apiKeys.map(key => `
+                <div class="api-key-item">
+                    <div class="api-key-info">
+                        <div class="api-key-exchange">
+                            <i class="fas fa-exchange-alt"></i> ${key.exchange.toUpperCase()}
+                        </div>
+                        <div class="api-key-meta">
+                            <span class="status-badge status-${key.isActive ? 'active' : 'inactive'}">
+                                ${key.isActive ? 'Active' : 'Inactive'}
+                            </span>
+                            <span style="margin-left: 1rem;">Added ${new Date(key.createdAt).toLocaleDateString()}</span>
+                        </div>
+                    </div>
+                    <div class="api-key-actions">
+                        <button class="btn btn-success" onclick="testApiKey('${key.id}')" title="Test Connection">
+                            <i class="fas fa-plug"></i>
+                        </button>
+                        <button class="btn btn-danger" onclick="deleteApiKey('${key.id}')" title="Delete">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function showAddApiKeyModal() {
+            document.getElementById('addApiKeyModal').classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        async function addApiKey(event) {
+            event.preventDefault();
+
+            const token = localStorage.getItem('token');
+            const exchange = document.getElementById('apiExchange').value;
+            const apiKey = document.getElementById('apiKey').value;
+            const apiSecret = document.getElementById('apiSecret').value;
+            const apiPassphrase = document.getElementById('apiPassphrase').value;
+
+            try {
+                const response = await fetch('/api/profile/api-keys', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    },
+                    body: JSON.stringify({
+                        exchange,
+                        apiKey,
+                        apiSecret,
+                        apiPassphrase: apiPassphrase || null,
+                        permissions: ['spot', 'futures']
+                    })
+                });
+
+                if (response.status === 401) {
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                    window.location.href = '/login';
+                    return;
+                }
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showToast('API Key added successfully!', 'success');
+                    closeModal('addApiKeyModal');
+                    document.getElementById('addApiKeyForm').reset();
+                    loadProfile(); // Reload
+                } else {
+                    showToast(data.message || 'Failed to add API Key', 'error');
+                }
+            } catch (error) {
+                console.error('Error adding API key:', error);
+                showToast('Failed to add API Key', 'error');
+            }
+        }
+
+        async function deleteApiKey(id) {
+            if (!confirm('Are you sure you want to delete this API key?')) return;
+
+            const token = localStorage.getItem('token');
+
+            try {
+                const response = await fetch('/api/profile/api-keys/' + id, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+
+                if (response.status === 401) {
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                    window.location.href = '/login';
+                    return;
+                }
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showToast('API Key deleted', 'success');
+                    loadProfile(); // Reload
+                } else {
+                    showToast(data.message || 'Failed to delete API Key', 'error');
+                }
+            } catch (error) {
+                console.error('Error deleting API key:', error);
+                showToast('Failed to delete API Key', 'error');
+            }
+        }
+
+        async function testApiKey(id) {
+            const token = localStorage.getItem('token');
+
+            try {
+                showToast('Testing API Key...', 'info', 2000);
+
+                const response = await fetch('/api/profile/api-keys/' + id + '/test', {
+                    method: 'POST',
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+
+                if (response.status === 401) {
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                    window.location.href = '/login';
+                    return;
+                }
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showToast('API Key is valid!', 'success');
+                } else {
+                    showToast(data.message || 'API Key test failed', 'error');
+                }
+            } catch (error) {
+                console.error('Error testing API key:', error);
+                showToast('Failed to test API Key', 'error');
+            }
+        }
+
+        function editProfile() {
+            showToast('Profile editing coming soon!', 'info');
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.classList.remove('active');
+            }
+        }
+    </script>
+</body>
+</html>

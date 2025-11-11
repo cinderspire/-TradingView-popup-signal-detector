@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - AutomatedTradeBot</title>
+    <meta name="description" content="AutomatedTradeBot admin panel. Platform management, user administration, strategy verification. Monitor system performance, approve providers, manage marketplace. Administrative controls for platform operators.">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea, #764ba2);
+            --success-gradient: linear-gradient(135deg, #00ff88, #00d4ff);
+            --danger-gradient: linear-gradient(135deg, #ff3366, #ff0066);
+            --warning-gradient: linear-gradient(135deg, #ffaa00, #ff6600);
+            --bg-dark: #0a0e1a;
+            --bg-card: #1a1e2e;
+            --text-primary: #ffffff;
+            --text-secondary: #a0aec0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 260px;
+            height: 100vh;
+            background: var(--bg-card);
+            padding: 30px 20px;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            overflow-y: auto;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 800;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 40px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: var(--text-secondary);
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background: rgba(102, 126, 234, 0.1);
+            color: var(--text-primary);
+        }
+
+        .nav-item.active {
+            background: var(--primary-gradient);
+        }
+
+        .nav-item i {
+            width: 20px;
+            margin-right: 15px;
+            font-size: 18px;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 260px;
+            padding: 30px;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .page-title {
+            font-size: 32px;
+            font-weight: 700;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            color: white;
+        }
+
+        .btn-primary {
+            background: var(--primary-gradient);
+        }
+
+        .btn-success {
+            background: var(--success-gradient);
+            color: var(--bg-dark);
+        }
+
+        .btn-danger {
+            background: var(--danger-gradient);
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            padding: 25px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .stat-value {
+            font-size: 36px;
+            font-weight: 700;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-change {
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        .positive {
+            color: #00ff88;
+        }
+
+        .negative {
+            color: #ff3366;
+        }
+
+        /* Data Tables */
+        .data-section {
+            background: var(--bg-card);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            padding: 15px;
+            color: var(--text-secondary);
+            font-weight: 600;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        tr:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-active {
+            background: rgba(0, 255, 136, 0.2);
+            color: #00ff88;
+        }
+
+        .status-inactive {
+            background: rgba(255, 51, 102, 0.2);
+            color: #ff3366;
+        }
+
+        .status-pending {
+            background: rgba(255, 170, 0, 0.2);
+            color: #ffaa00;
+        }
+
+        /* Charts */
+        .chart-container {
+            background: var(--bg-card);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            height: 400px;
+        }
+
+        /* System Monitors */
+        .monitors-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .monitor-card {
+            background: var(--bg-card);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .monitor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .monitor-status {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .status-online {
+            background: #00ff88;
+        }
+
+        .status-offline {
+            background: #ff3366;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.5;
+                transform: scale(1.2);
+            }
+        }
+
+        .monitor-metrics {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .metric-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .metric-label {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .metric-value {
+            font-weight: 600;
+        }
+
+        /* Progress Bar */
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--success-gradient);
+            border-radius: 3px;
+            transition: width 0.3s;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-btn {
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .action-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+        }
+
+        /* Quick Actions Panel */
+        .quick-actions {
+            position: fixed;
+            right: 30px;
+            bottom: 30px;
+            z-index: 1000;
+        }
+
+        .fab {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--primary-gradient);
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+            transition: all 0.3s;
+        }
+
+        .fab:hover {
+            transform: scale(1.1);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Navigation -->
+    <nav style="background: rgba(10, 14, 38, 0.95); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(94, 114, 228, 0.2); padding: 1rem 2rem; position: sticky; top: 0; z-index: 10000;">
+        <div class="nav-container" style="display: flex; justify-content: space-between; align-items: center; max-width: 1400px; margin: 0 auto;">
+            <!-- Navigation will be injected by navigation.js -->
+        </div>
+    </nav>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="logo">📊 Admin Panel</div>
+
+        <div class="nav-item active" onclick="showSection('overview')">
+            <i>📈</i>
+            <span>Overview</span>
+        </div>
+
+        <div class="nav-item" onclick="showSection('users')">
+            <i>👥</i>
+            <span>Users</span>
+        </div>
+
+        <div class="nav-item" onclick="showSection('providers')">
+            <i>🎯</i>
+            <span>Providers</span>
+        </div>
+
+        <div class="nav-item" onclick="showSection('signals')">
+            <i>📡</i>
+            <span>Signals</span>
+        </div>
+
+        <div class="nav-item" onclick="showSection('subscriptions')">
+            <i>💳</i>
+            <span>Subscriptions</span>
+        </div>
+
+        <div class="nav-item" onclick="showSection('trades')">
+            <i>💹</i>
+            <span>Trades</span>
+        </div>
+
+        <div class="nav-item" onclick="showSection('revenue')">
+            <i>💰</i>
+            <span>Revenue</span>
+        </div>
+
+        <div class="nav-item" onclick="showSection('system')">
+            <i>⚙️</i>
+            <span>System</span>
+        </div>
+
+        <div class="nav-item" onclick="showSection('logs')">
+            <i>📝</i>
+            <span>Logs</span>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <div class="header">
+            <h1 class="page-title" id="pageTitle">System Overview</h1>
+            <div class="header-actions">
+                <button class="btn btn-success" onclick="exportData()">📊 Export Data</button>
+                <button class="btn btn-primary" onclick="refreshData()">🔄 Refresh</button>
+                <button class="btn btn-danger" onclick="emergencyStop()">🚨 Emergency Stop</button>
+            </div>
+        </div>
+
+        <!-- Overview Section -->
+        <div id="overview" class="content-section">
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Total Users</div>
+                    <div class="stat-value" id="totalUsers">12,543</div>
+                    <div class="stat-change positive">+12.5% this month</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-label">Active Providers</div>
+                    <div class="stat-value" id="activeProviders">847</div>
+                    <div class="stat-change positive">+8.3% this month</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-label">Live Signals</div>
+                    <div class="stat-value" id="liveSignals">3,421</div>
+                    <div class="stat-change positive">+24.7% today</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-label">Monthly Revenue</div>
+                    <div class="stat-value" id="monthlyRevenue">$45.8K</div>
+                    <div class="stat-change positive">+31.2% vs last month</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-label">System Uptime</div>
+                    <div class="stat-value">99.99%</div>
+                    <div class="stat-change positive">30 days stable</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-label">API Latency</div>
+                    <div class="stat-value" id="apiLatency">24ms</div>
+                    <div class="stat-change positive">Optimal</div>
+                </div>
+            </div>
+
+            <!-- System Monitors -->
+            <div class="monitors-grid">
+                <div class="monitor-card">
+                    <div class="monitor-header">
+                        <h3>Exchange Connections</h3>
+                        <div class="monitor-status status-online"></div>
+                    </div>
+                    <div class="monitor-metrics">
+                        <div class="metric-row">
+                            <span class="metric-label">Bybit</span>
+                            <span class="metric-value" style="color: #00ff88;">Connected</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">MEXC</span>
+                            <span class="metric-value" style="color: #00ff88;">Connected</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">Bitget</span>
+                            <span class="metric-value" style="color: #00ff88;">Connected</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">Binance</span>
+                            <span class="metric-value" style="color: #ffaa00;">API Key Needed</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="monitor-card">
+                    <div class="monitor-header">
+                        <h3>WebSocket Server</h3>
+                        <div class="monitor-status status-online"></div>
+                    </div>
+                    <div class="monitor-metrics">
+                        <div class="metric-row">
+                            <span class="metric-label">Connected Clients</span>
+                            <span class="metric-value">1,247</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">Messages/sec</span>
+                            <span class="metric-value">8,432</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">Memory Usage</span>
+                            <span class="metric-value">143 MB</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 28%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="monitor-card">
+                    <div class="monitor-header">
+                        <h3>Database Performance</h3>
+                        <div class="monitor-status status-online"></div>
+                    </div>
+                    <div class="monitor-metrics">
+                        <div class="metric-row">
+                            <span class="metric-label">Query Time</span>
+                            <span class="metric-value">12ms avg</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">Active Connections</span>
+                            <span class="metric-value">45/100</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">Storage Used</span>
+                            <span class="metric-value">2.4 GB</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 45%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Providers Table -->
+            <div class="data-section">
+                <div class="section-header">
+                    <h2 class="section-title">Top Performing Providers</h2>
+                    <button class="btn btn-primary" onclick="viewAllProviders()">View All</button>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Provider</th>
+                            <th>Win Rate</th>
+                            <th>Active Signals</th>
+                            <th>Followers</th>
+                            <th>Monthly Revenue</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="providersTable">
+                        <tr>
+                            <td><strong>CryptoMaster</strong></td>
+                            <td style="color: #00ff88;">78.4%</td>
+                            <td>24</td>
+                            <td>3,421</td>
+                            <td>$10,263</td>
+                            <td><span class="status-badge status-active">Active</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="action-btn">View</button>
+                                    <button class="action-btn">Edit</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>AlgoTrader Pro</strong></td>
+                            <td style="color: #00ff88;">72.1%</td>
+                            <td>18</td>
+                            <td>2,847</td>
+                            <td>$8,541</td>
+                            <td><span class="status-badge status-active">Active</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="action-btn">View</button>
+                                    <button class="action-btn">Edit</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>SmartSignals</strong></td>
+                            <td style="color: #00ff88;">69.8%</td>
+                            <td>31</td>
+                            <td>1,923</td>
+                            <td>$5,769</td>
+                            <td><span class="status-badge status-active">Active</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="action-btn">View</button>
+                                    <button class="action-btn">Edit</button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Recent Signals -->
+            <div class="data-section">
+                <div class="section-header">
+                    <h2 class="section-title">Recent Live Signals</h2>
+                    <button class="btn btn-primary" onclick="viewAllSignals()">View All</button>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>Provider</th>
+                            <th>Pair</th>
+                            <th>Side</th>
+                            <th>Entry Price</th>
+                            <th>Current P&L</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="signalsTable">
+                        <tr>
+                            <td>2 min ago</td>
+                            <td>CryptoMaster</td>
+                            <td>XRP/USDT</td>
+                            <td style="color: #00ff88;">BUY</td>
+                            <td>$3.24</td>
+                            <td class="positive">+2.4%</td>
+                            <td><span class="status-badge status-active">Active</span></td>
+                        </tr>
+                        <tr>
+                            <td>5 min ago</td>
+                            <td>AlgoTrader Pro</td>
+                            <td>SOL/USDT</td>
+                            <td style="color: #ff3366;">SELL</td>
+                            <td>$247.80</td>
+                            <td class="positive">+1.8%</td>
+                            <td><span class="status-badge status-active">Active</span></td>
+                        </tr>
+                        <tr>
+                            <td>12 min ago</td>
+                            <td>SmartSignals</td>
+                            <td>BTC/USDT</td>
+                            <td style="color: #00ff88;">BUY</td>
+                            <td>$109,245</td>
+                            <td class="negative">-0.3%</td>
+                            <td><span class="status-badge status-active">Active</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            <button class="fab" onclick="showQuickActions()">+</button>
+        </div>
+    </div>
+
+    <script>
+        // Initialize real-time data updates
+        let ws = null;
+
+        function initWebSocket() {
+            // Use wss for HTTPS, ws for HTTP - auto-detect protocol
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsUrl = `${protocol}//${window.location.host}/ws/signals`;
+
+            console.log('Connecting to WebSocket:', wsUrl);
+            ws = new WebSocket(wsUrl);
+
+            ws.onopen = () => {
+                console.log('Admin WebSocket connected to', wsUrl);
+
+                // Subscribe to admin channels
+                ws.send(JSON.stringify({
+                    type: 'subscribe',
+                    channel: 'admin:metrics'
+                }));
+            };
+
+            ws.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                updateDashboard(data);
+            };
+
+            ws.onerror = (error) => {
+                console.error('WebSocket error:', error);
+            };
+
+            ws.onclose = () => {
+                console.log('WebSocket disconnected, reconnecting...');
+                setTimeout(initWebSocket, 5000);
+            };
+        }
+
+        // Update dashboard with real-time data
+        function updateDashboard(data) {
+            if (data.type === 'metrics_update') {
+                // Update stats
+                if (data.users) {
+                    document.getElementById('totalUsers').textContent = data.users.total.toLocaleString();
+                }
+                if (data.providers) {
+                    document.getElementById('activeProviders').textContent = data.providers.active.toLocaleString();
+                }
+                if (data.signals) {
+                    document.getElementById('liveSignals').textContent = data.signals.active.toLocaleString();
+                }
+                if (data.revenue) {
+                    document.getElementById('monthlyRevenue').textContent = `$${(data.revenue.monthly / 1000).toFixed(1)}K`;
+                }
+                if (data.latency) {
+                    document.getElementById('apiLatency').textContent = `${data.latency}ms`;
+                }
+            }
+        }
+
+        // Navigation
+        function showSection(section) {
+            // Update active nav
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.target.closest('.nav-item').classList.add('active');
+
+            // Update page title
+            const titles = {
+                overview: 'System Overview',
+                users: 'User Management',
+                providers: 'Provider Management',
+                signals: 'Signal Management',
+                subscriptions: 'Subscriptions',
+                trades: 'Trade History',
+                revenue: 'Revenue Analytics',
+                system: 'System Configuration',
+                logs: 'System Logs'
+            };
+            document.getElementById('pageTitle').textContent = titles[section];
+
+            // Load section content
+            loadSectionContent(section);
+        }
+
+        // Load section content
+        async function loadSectionContent(section) {
+            try {
+                const response = await fetch(`/api/admin/${section}`);
+
+                if (response.status === 401) {
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                    window.location.href = '/login';
+                    return;
+                }
+
+                const data = await response.json();
+
+                // Update content based on section
+                console.log(`Loading ${section} data:`, data);
+            } catch (error) {
+                console.error('Error loading section:', error);
+            }
+        }
+
+        // Actions
+        function refreshData() {
+            location.reload();
+        }
+
+        function exportData() {
+            alert('Exporting data to CSV...');
+        }
+
+        function emergencyStop() {
+            if (confirm('Are you sure you want to initiate emergency stop? This will halt all trading operations.')) {
+                fetch('/api/admin/emergency-stop', { method: 'POST' })
+                    .then(res => res.json())
+                    .then(data => alert('Emergency stop initiated'));
+            }
+        }
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', () => {
+            initWebSocket();
+
+            // Update time every second
+            setInterval(() => {
+                const now = new Date();
+                // Update any time-based elements
+            }, 1000);
+
+            // Auto-refresh data every 30 seconds
+            setInterval(() => {
+                loadSectionContent('overview');
+            }, 30000);
+        });
+    </script>
+
+    <!-- Toast Notifications -->
+    <script src="/js/toast.js"></script>
+
+    <!-- Standardized Navigation -->
+    <script src="/js/navigation.js"></script>
+    <script>
+        renderNavigation('admin');
+    </script>
+</body>
+</html>

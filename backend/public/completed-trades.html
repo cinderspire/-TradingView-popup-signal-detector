@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Completed Trades - AutomatedTradeBot</title>
+    <meta name="description" content="Your trading history on AutomatedTradeBot. Detailed trade records, profit/loss analysis, performance metrics. Export trade data, tax reports, portfolio analytics. Complete transparency for all automated trades.">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #5E72E4;
+            --secondary: #11CDEF;
+            --success: #2DCE89;
+            --danger: #F5365C;
+            --warning: #FB6340;
+            --info: #11CDEF;
+            --dark: #0A0E26;
+            --darker: #050816;
+            --card-bg: rgba(15, 20, 45, 0.8);
+            --border-color: rgba(94, 114, 228, 0.2);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0A0E26 0%, #1A1F3A 100%);
+            color: #fff;
+            min-height: 100vh;
+        }
+
+        /* Navigation */
+        nav {
+            background: rgba(10, 14, 38, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: #fff;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Header */
+        .page-header {
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #fff, var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-subtitle {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 1.1rem;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+        }
+
+        .stat-label {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value.positive {
+            color: var(--success);
+        }
+
+        .stat-value.negative {
+            color: var(--danger);
+        }
+
+        .stat-change {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        /* Charts Section */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+
+        .chart-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+
+        /* Filters */
+        .filters {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .filter-label {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .filter-input, .filter-select {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 0.6rem 1rem;
+            color: #fff;
+            font-size: 0.9rem;
+        }
+
+        .filter-input:focus, .filter-select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .btn {
+            padding: 0.6rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(94, 114, 228, 0.4);
+        }
+
+        /* Table */
+        .table-container {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: rgba(94, 114, 228, 0.1);
+        }
+
+        th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.9);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(94, 114, 228, 0.1);
+        }
+
+        tr:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .badge-long {
+            background: rgba(45, 206, 137, 0.2);
+            color: var(--success);
+        }
+
+        .badge-short {
+            background: rgba(245, 54, 92, 0.2);
+            color: var(--danger);
+        }
+
+        .badge-win {
+            background: rgba(45, 206, 137, 0.2);
+            color: var(--success);
+        }
+
+        .badge-loss {
+            background: rgba(245, 54, 92, 0.2);
+            color: var(--danger);
+        }
+
+        .pnl-positive {
+            color: var(--success);
+            font-weight: 600;
+        }
+
+        .pnl-negative {
+            color: var(--danger);
+            font-weight: 600;
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 2rem;
+        }
+
+        .pagination button {
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .pagination button:hover:not(:disabled) {
+            background: rgba(94, 114, 228, 0.2);
+            border-color: var(--primary);
+        }
+
+        .pagination button.active {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-color: transparent;
+        }
+
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .spinner {
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 968px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filters {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            table {
+                font-size: 0.85rem;
+            }
+
+            th, td {
+                padding: 0.75rem 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body data-page="trades">
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <!-- Navigation populated by navigation.js -->
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Header -->
+        <div class="page-header">
+            <h1 class="page-title">Completed Trades</h1>
+            <p class="page-subtitle">Complete trade history with detailed analytics and performance metrics</p>
+        </div>
+
+        <!-- Statistics -->
+        <div class="stats-grid" id="statsGrid">
+            <div class="stat-card">
+                <div class="stat-label">Total Trades</div>
+                <div class="stat-value" id="totalTrades">-</div>
+                <div class="stat-change" id="tradesChange">Loading...</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Win Rate</div>
+                <div class="stat-value positive" id="winRate">-</div>
+                <div class="stat-change" id="winRateDetail">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Total PnL</div>
+                <div class="stat-value" id="totalPnL">-</div>
+                <div class="stat-change" id="avgPnL">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Profit Factor</div>
+                <div class="stat-value" id="profitFactor">-</div>
+                <div class="stat-change" id="profitFactorDetail">-</div>
+            </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="charts-grid">
+            <div class="chart-card">
+                <h3 class="chart-title">Equity Curve</h3>
+                <div class="chart-container">
+                    <canvas id="equityCurveChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-card">
+                <h3 class="chart-title">Win/Loss Distribution</h3>
+                <div class="chart-container">
+                    <canvas id="winLossChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-card">
+                <h3 class="chart-title">Monthly Performance</h3>
+                <div class="chart-container">
+                    <canvas id="monthlyChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Drawdown Chart -->
+        <div class="chart-card" style="margin-bottom: 2rem;">
+            <h3 class="chart-title">Drawdown Analysis</h3>
+            <div class="chart-container">
+                <canvas id="drawdownChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters">
+            <div class="filter-group">
+                <label class="filter-label">Strategy</label>
+                <select id="strategyFilter" class="filter-select">
+                    <option value="">All Strategies</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Trading Pair</label>
+                <input type="text" id="pairFilter" class="filter-input" placeholder="e.g. BTC/USDT">
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Result</label>
+                <select id="resultFilter" class="filter-select">
+                    <option value="">All</option>
+                    <option value="win">Wins Only</option>
+                    <option value="loss">Losses Only</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Min PnL %</label>
+                <input type="number" id="minPnlFilter" class="filter-input" placeholder="e.g. -5">
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Max PnL %</label>
+                <input type="number" id="maxPnlFilter" class="filter-input" placeholder="e.g. 10">
+            </div>
+            <div class="filter-group" style="margin-top: 1.5rem;">
+                <button class="btn btn-primary" onclick="applyFilters()">
+                    <i class="fas fa-filter"></i> Apply Filters
+                </button>
+            </div>
+            <div class="filter-group" style="margin-top: 1.5rem;">
+                <button class="btn btn-primary" onclick="exportToCSV()" style="background: linear-gradient(135deg, #11CDEF, #2DCE89);">
+                    <i class="fas fa-download"></i> Export CSV
+                </button>
+            </div>
+            <div class="filter-group" style="margin-top: 1.5rem;">
+                <button class="btn btn-primary" onclick="exportToJSON()" style="background: linear-gradient(135deg, #FB6340, #F5365C);">
+                    <i class="fas fa-file-code"></i> Export JSON
+                </button>
+            </div>
+        </div>
+
+        <!-- Trades Table -->
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Strategy</th>
+                        <th>Pair</th>
+                        <th>Direction</th>
+                        <th>Entry</th>
+                        <th>Exit</th>
+                        <th>PnL %</th>
+                        <th>Amount</th>
+                        <th>Holding Time</th>
+                        <th>Exit Time</th>
+                    </tr>
+                </thead>
+                <tbody id="tradesTableBody">
+                    <tr>
+                        <td colspan="10" class="loading">
+                            <div class="spinner"></div>
+                            Loading completed trades...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination" id="pagination"></div>
+    </div>
+
+    <script>
+        let allTrades = [];
+        let filteredTrades = [];
+        let currentPage = 1;
+        const tradesPerPage = 50;
+        let equityCurveChart, winLossChart, monthlyChart, drawdownChart;
+
+        // Initialize
+        async function init() {
+            await loadStatistics();
+            await loadTrades();
+            await loadStrategies();
+        }
+
+        // Load statistics
+        async function loadStatistics() {
+            try {
+                const response = await fetch('/api/trades/statistics');
+
+                if (response.status === 401) {
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                    window.location.href = '/login';
+                    return;
+                }
+
+                const data = await response.json();
+
+                if (data.success && data.stats) {
+                    const stats = data.stats;
+
+                    document.getElementById('totalTrades').textContent = stats.totalTrades;
+                    document.getElementById('tradesChange').textContent = `${stats.winningTrades} wins, ${stats.losingTrades} losses`;
+
+                    document.getElementById('winRate').textContent = `${stats.winRate}%`;
+                    document.getElementById('winRateDetail').textContent = `Avg Win: ${stats.avgWin}% | Avg Loss: ${stats.avgLoss}%`;
+
+                    const totalPnLElem = document.getElementById('totalPnL');
+                    totalPnLElem.textContent = `${stats.totalPnL >= 0 ? '+' : ''}${stats.totalPnL}%`;
+                    totalPnLElem.className = `stat-value ${stats.totalPnL >= 0 ? 'positive' : 'negative'}`;
+                    document.getElementById('avgPnL').textContent = `Avg: ${stats.avgPnL}% per trade`;
+
+                    document.getElementById('profitFactor').textContent = stats.profitFactor;
+                    document.getElementById('profitFactorDetail').textContent = `Best: ${stats.bestTrade}% | Worst: ${stats.worstTrade}%`;
+
+                    // Create equity curve chart
+                    createEquityCurveChart(stats.equityCurve);
+
+                    // Create win/loss chart
+                    createWinLossChart(parseInt(stats.winningTrades), parseInt(stats.losingTrades));
+
+                    // Create monthly performance chart
+                    createMonthlyChart(stats.monthlyStats);
+
+                    // Create drawdown chart
+                    createDrawdownChart(stats.equityCurve);
+                }
+            } catch (error) {
+                console.error('Error loading statistics:', error);
+            }
+        }
+
+        // Load trades
+        async function loadTrades() {
+            try {
+                const response = await fetch('/api/trades/completed?limit=1000');
+
+                if (response.status === 401) {
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                    window.location.href = '/login';
+                    return;
+                }
+
+                const data = await response.json();
+
+                if (data.success) {
+                    allTrades = data.trades;
+                    filteredTrades = allTrades;
+                    renderTrades();
+                }
+            } catch (error) {
+                console.error('Error loading trades:', error);
+                document.getElementById('tradesTableBody').innerHTML = `
+                    <tr>
+                        <td colspan="10" style="text-align: center; color: var(--danger);">
+                            Error loading trades: ${error.message}
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        // Load strategies for filter
+        async function loadStrategies() {
+            try {
+                const response = await fetch('/api/trades/strategies');
+
+                if (response.status === 401) {
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                    window.location.href = '/login';
+                    return;
+                }
+
+                const data = await response.json();
+
+                if (data.success) {
+                    const select = document.getElementById('strategyFilter');
+                    data.strategies.forEach(strategy => {
+                        const option = document.createElement('option');
+                        option.value = strategy.name;
+                        option.textContent = `${strategy.name} (${strategy.totalTrades} trades)`;
+                        select.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading strategies:', error);
+            }
+        }
+
+        // Apply filters
+        function applyFilters() {
+            const strategy = document.getElementById('strategyFilter').value;
+            const pair = document.getElementById('pairFilter').value.toUpperCase();
+            const result = document.getElementById('resultFilter').value;
+            const minPnl = document.getElementById('minPnlFilter').value;
+            const maxPnl = document.getElementById('maxPnlFilter').value;
+
+            filteredTrades = allTrades.filter(trade => {
+                if (strategy && trade.strategy !== strategy) return false;
+                if (pair && !trade.pair.includes(pair)) return false;
+                if (result === 'win' && trade.pnlPercent <= 0) return false;
+                if (result === 'loss' && trade.pnlPercent > 0) return false;
+                if (minPnl && trade.pnlPercent < parseFloat(minPnl)) return false;
+                if (maxPnl && trade.pnlPercent > parseFloat(maxPnl)) return false;
+                return true;
+            });
+
+            currentPage = 1;
+            renderTrades();
+        }
+
+        // Render trades table
+        function renderTrades() {
+            const tbody = document.getElementById('tradesTableBody');
+            const start = (currentPage - 1) * tradesPerPage;
+            const end = start + tradesPerPage;
+            const pageTrades = filteredTrades.slice(start, end);
+
+            if (pageTrades.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="10" style="text-align: center; padding: 2rem; color: rgba(255,255,255,0.5);">
+                            No trades found matching your filters
+                        </td>
+                    </tr>
+                `;
+                document.getElementById('pagination').innerHTML = '';
+                return;
+            }
+
+            tbody.innerHTML = pageTrades.map((trade, index) => {
+                const isWin = trade.pnlPercent > 0;
+                const exitTime = new Date(trade.exitTime);
+
+                return `
+                    <tr>
+                        <td>${start + index + 1}</td>
+                        <td><strong>${trade.strategy}</strong></td>
+                        <td>${trade.pair}</td>
+                        <td><span class="badge badge-${trade.direction.toLowerCase()}">${trade.direction}</span></td>
+                        <td>$${trade.entryPrice.toFixed(4)}</td>
+                        <td>$${trade.exitPrice.toFixed(4)}</td>
+                        <td class="pnl-${isWin ? 'positive' : 'negative'}">
+                            ${isWin ? '+' : ''}${trade.pnlPercent.toFixed(2)}%
+                        </td>
+                        <td>${trade.amount.toFixed(4)}</td>
+                        <td>${trade.holdingTime.text}</td>
+                        <td>${exitTime.toLocaleString()}</td>
+                    </tr>
+                `;
+            }).join('');
+
+            renderPagination();
+        }
+
+        // Render pagination
+        function renderPagination() {
+            const totalPages = Math.ceil(filteredTrades.length / tradesPerPage);
+            const pagination = document.getElementById('pagination');
+
+            let html = '';
+            html += `<button onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>Previous</button>`;
+
+            for (let i = 1; i <= Math.min(totalPages, 10); i++) {
+                html += `<button onclick="changePage(${i})" class="${i === currentPage ? 'active' : ''}">${i}</button>`;
+            }
+
+            if (totalPages > 10) {
+                html += `<button disabled>...</button>`;
+                html += `<button onclick="changePage(${totalPages})">${totalPages}</button>`;
+            }
+
+            html += `<button onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>Next</button>`;
+
+            pagination.innerHTML = html;
+        }
+
+        // Change page
+        function changePage(page) {
+            const totalPages = Math.ceil(filteredTrades.length / tradesPerPage);
+            if (page < 1 || page > totalPages) return;
+            currentPage = page;
+            renderTrades();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Create equity curve chart
+        function createEquityCurveChart(equityCurve) {
+            const ctx = document.getElementById('equityCurveChart');
+            if (equityCurveChart) equityCurveChart.destroy();
+
+            const labels = equityCurve.map((point, i) => i + 1);
+            const data = equityCurve.map(point => point.equity);
+
+            equityCurveChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels,
+                    datasets: [{
+                        label: 'Cumulative PnL %',
+                        data,
+                        borderColor: 'rgb(94, 114, 228)',
+                        backgroundColor: 'rgba(94, 114, 228, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                            ticks: { color: 'rgba(255, 255, 255, 0.7)' }
+                        },
+                        x: {
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                            ticks: { color: 'rgba(255, 255, 255, 0.7)' }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Create win/loss chart
+        function createWinLossChart(wins, losses) {
+            const ctx = document.getElementById('winLossChart');
+            if (winLossChart) winLossChart.destroy();
+
+            winLossChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Wins', 'Losses'],
+                    datasets: [{
+                        data: [wins, losses],
+                        backgroundColor: [
+                            'rgba(45, 206, 137, 0.8)',
+                            'rgba(245, 54, 92, 0.8)'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { color: 'rgba(255, 255, 255, 0.9)' }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Create monthly performance chart
+        function createMonthlyChart(monthlyStats) {
+            const ctx = document.getElementById('monthlyChart');
+            if (monthlyChart) monthlyChart.destroy();
+
+            // Sort months chronologically
+            const months = Object.keys(monthlyStats).sort();
+            const pnlData = months.map(month => monthlyStats[month].totalPnL.toFixed(2));
+
+            monthlyChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: months,
+                    datasets: [{
+                        label: 'Monthly PnL %',
+                        data: pnlData,
+                        backgroundColor: pnlData.map(val =>
+                            parseFloat(val) >= 0 ? 'rgba(45, 206, 137, 0.8)' : 'rgba(245, 54, 92, 0.8)'
+                        ),
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                            ticks: { color: 'rgba(255, 255, 255, 0.7)' }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: 'rgba(255, 255, 255, 0.7)' }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Export to CSV
+        function exportToCSV() {
+            const csv = [];
+            csv.push(['#', 'Strategy', 'Pair', 'Direction', 'Entry', 'Exit', 'PnL%', 'Amount', 'Holding Time', 'Exit Time'].join(','));
+
+            filteredTrades.forEach((trade, index) => {
+                const exitTime = new Date(trade.exitTime).toLocaleString();
+                csv.push([
+                    index + 1,
+                    trade.strategy,
+                    trade.pair,
+                    trade.direction,
+                    trade.entryPrice.toFixed(4),
+                    trade.exitPrice.toFixed(4),
+                    trade.pnlPercent.toFixed(2),
+                    trade.amount.toFixed(4),
+                    trade.holdingTime.text,
+                    exitTime
+                ].join(','));
+            });
+
+            const csvContent = csv.join('\n');
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `trades_${Date.now()}.csv`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+
+        // Export to JSON
+        function exportToJSON() {
+            const json = JSON.stringify(filteredTrades, null, 2);
+            const blob = new Blob([json], { type: 'application/json' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `trades_${Date.now()}.json`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+
+        // Create drawdown chart
+        function createDrawdownChart(equityCurve) {
+            const ctx = document.getElementById('drawdownChart');
+            if (drawdownChart) drawdownChart.destroy();
+
+            // Calculate drawdown at each point
+            const drawdownData = [];
+            let peak = 0;
+
+            equityCurve.forEach(point => {
+                if (point.equity > peak) {
+                    peak = point.equity;
+                }
+                const drawdown = peak - point.equity;
+                drawdownData.push(-drawdown); // Negative for visual clarity
+            });
+
+            const labels = equityCurve.map((_, i) => i + 1);
+
+            drawdownChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels,
+                    datasets: [{
+                        label: 'Drawdown %',
+                        data: drawdownData,
+                        borderColor: 'rgb(245, 54, 92)',
+                        backgroundColor: 'rgba(245, 54, 92, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                            ticks: { color: 'rgba(255, 255, 255, 0.7)' },
+                            reverse: false
+                        },
+                        x: {
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                            ticks: { color: 'rgba(255, 255, 255, 0.7)' }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Initialize on page load
+        init();
+    </script>
+    <script src="/js/navigation.js?v=6.0"></script>
+</body>
+</html>

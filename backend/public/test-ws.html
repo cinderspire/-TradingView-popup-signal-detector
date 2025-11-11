@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Strategies | AutomatedTradeBot Backtesting</title>
+    <meta name="description" content="Test and backtest trading strategies on AutomatedTradeBot. Historical performance analysis, paper trading, strategy optimization. Risk-free testing environment before live trading. Validate strategies with real market data.">
+    <style>
+        body { font-family: monospace; padding: 20px; background: #000; color: #0f0; }
+        #log { white-space: pre-wrap; }
+        .error { color: #f00; }
+        .success { color: #0f0; }
+        .info { color: #0ff; }
+    </style>
+</head>
+<body>
+    <h1>WebSocket Connection Test</h1>
+    <div id="log"></div>
+
+    <script>
+        const log = document.getElementById('log');
+
+        function addLog(message, className = 'info') {
+            const line = document.createElement('div');
+            line.className = className;
+            line.textContent = new Date().toISOString() + ' - ' + message;
+            log.appendChild(line);
+            console.log(message);
+        }
+
+        addLog('Starting WebSocket test...', 'info');
+
+        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        const wsUrl = `${protocol}//${window.location.host}/ws/signals`;
+        addLog('Connecting to: ' + wsUrl, 'info');
+
+        const ws = new WebSocket(wsUrl);
+
+        ws.onopen = () => {
+            addLog('✅ WebSocket CONNECTED!', 'success');
+        };
+
+        ws.onmessage = (event) => {
+            try {
+                const data = JSON.parse(event.data);
+                addLog(`📨 Message received: type=${data.type}`, 'success');
+
+                if (data.type === 'HISTORY') {
+                    addLog(`📊 HISTORY: ${data.signals?.length || 0} signals`, 'success');
+                    if (data.signals && data.signals.length > 0) {
+                        addLog(`   First signal: ${JSON.stringify(data.signals[0]).slice(0, 200)}`, 'info');
+                    }
+                } else if (data.type === 'CONNECTED') {
+                    addLog('📡 CONNECTED message received', 'success');
+                } else {
+                    addLog('   Data: ' + JSON.stringify(data).slice(0, 500), 'info');
+                }
+            } catch (err) {
+                addLog('❌ Parse error: ' + err.message, 'error');
+            }
+        };
+
+        ws.onerror = (error) => {
+            addLog('❌ WebSocket ERROR: ' + error, 'error');
+        };
+
+        ws.onclose = () => {
+            addLog('🔴 WebSocket CLOSED', 'error');
+        };
+    </script>
+</body>
+</html>

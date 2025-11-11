@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Status - AutomatedTradeBot</title>
+    <meta name="description" content="AutomatedTradeBot platform status. Real-time system health, API connectivity, exchange integrations. Service uptime, maintenance schedules, known issues. Stay informed about platform performance.">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: 600;
+            margin-top: 15px;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .status-operational {
+            background: #10b981;
+            color: white;
+        }
+
+        .status-degraded {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .status-offline {
+            background: #ef4444;
+            color: white;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: 1.1em;
+            color: #374151;
+            font-weight: 600;
+        }
+
+        .card-icon {
+            font-size: 1.5em;
+        }
+
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .metric:last-child {
+            border-bottom: none;
+        }
+
+        .metric-label {
+            color: #6b7280;
+            font-size: 0.95em;
+        }
+
+        .metric-value {
+            font-weight: 600;
+            color: #111827;
+            font-size: 1.1em;
+        }
+
+        .service-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .status-online {
+            background: #10b981;
+        }
+
+        .status-offline-dot {
+            background: #ef4444;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        .large-stat {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .large-stat-value {
+            font-size: 3em;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .large-stat-label {
+            color: #6b7280;
+            font-size: 1em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .refresh-info {
+            text-align: center;
+            color: white;
+            margin-top: 20px;
+            opacity: 0.8;
+            font-size: 0.9em;
+        }
+
+        .timestamp {
+            text-align: center;
+            color: white;
+            margin-top: 10px;
+            font-size: 0.85em;
+            opacity: 0.7;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: white;
+            font-size: 1.2em;
+        }
+
+        .error {
+            background: #fef2f2;
+            color: #991b1b;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #ef4444;
+        }
+
+        .version-info {
+            text-align: center;
+            color: white;
+            margin-top: 30px;
+            opacity: 0.7;
+            font-size: 0.85em;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+
+            .large-stat-value {
+                font-size: 2.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 AutomatedTradeBot</h1>
+            <p>System Status & Monitoring Dashboard</p>
+            <div id="status-badge" class="status-badge status-operational">● OPERATIONAL</div>
+        </div>
+
+        <div id="loading" class="loading">
+            Loading system status...
+        </div>
+
+        <div id="dashboard" class="dashboard" style="display: none;">
+            <!-- Uptime Card -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">⏱️ Uptime</div>
+                </div>
+                <div class="large-stat">
+                    <div class="large-stat-value" id="uptime-value">--</div>
+                    <div class="large-stat-label">Server Running</div>
+                </div>
+            </div>
+
+            <!-- Memory Card -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">💾 Memory Usage</div>
+                </div>
+                <div class="large-stat">
+                    <div class="large-stat-value" id="memory-value">--</div>
+                    <div class="large-stat-label">MB Used</div>
+                </div>
+            </div>
+
+            <!-- Users Card -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">👥 Total Users</div>
+                </div>
+                <div class="large-stat">
+                    <div class="large-stat-value" id="users-value">--</div>
+                    <div class="large-stat-label">Registered</div>
+                </div>
+            </div>
+
+            <!-- Services Status -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">🔧 Services</div>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">API Server</span>
+                    <span class="service-status">
+                        <span class="status-dot status-online"></span>
+                        <span class="metric-value" id="api-status">Online</span>
+                    </span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Database</span>
+                    <span class="service-status">
+                        <span class="status-dot" id="db-dot"></span>
+                        <span class="metric-value" id="db-status">Checking...</span>
+                    </span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">WebSocket</span>
+                    <span class="service-status">
+                        <span class="status-dot status-online"></span>
+                        <span class="metric-value" id="ws-status">Online</span>
+                    </span>
+                </div>
+            </div>
+
+            <!-- Platform Stats -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">📊 Platform Stats</div>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Strategies</span>
+                    <span class="metric-value" id="strategies-value">--</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Active Signals</span>
+                    <span class="metric-value" id="signals-value">--</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Open Positions</span>
+                    <span class="metric-value" id="positions-value">--</span>
+                </div>
+            </div>
+
+            <!-- System Info -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">ℹ️ System Info</div>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Version</span>
+                    <span class="metric-value" id="version-value">--</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Environment</span>
+                    <span class="metric-value" id="env-value">--</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">API Endpoints</span>
+                    <span class="metric-value">112</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="error-message" class="error" style="display: none;">
+            ⚠️ Unable to connect to the API server. Please check if the server is running.
+        </div>
+
+        <div class="refresh-info">
+            Auto-refreshing every 10 seconds
+        </div>
+
+        <div class="timestamp" id="timestamp">
+            Last updated: --
+        </div>
+
+        <div class="version-info">
+            Dashboard v1.0.0 | AutomatedTradeBot Platform
+        </div>
+    </div>
+
+    <script>
+        const API_URL = window.location.origin;
+
+        function formatUptime(seconds) {
+            const days = Math.floor(seconds / 86400);
+            const hours = Math.floor((seconds % 86400) / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+
+            if (days > 0) {
+                return `${days}d ${hours}h`;
+            } else if (hours > 0) {
+                return `${hours}h ${minutes}m`;
+            } else {
+                return `${minutes}m`;
+            }
+        }
+
+        async function fetchStatus() {
+            try {
+                const response = await fetch(`${API_URL}/api/status`);
+                const data = await response.json();
+
+                if (data.success) {
+                    // Update status badge
+                    const badge = document.getElementById('status-badge');
+                    badge.textContent = `● ${data.status.toUpperCase()}`;
+                    badge.className = `status-badge status-${data.status}`;
+
+                    // Update large stats
+                    document.getElementById('uptime-value').textContent = formatUptime(data.uptime);
+                    document.getElementById('memory-value').textContent = data.memory.used;
+                    document.getElementById('users-value').textContent = data.stats.users;
+
+                    // Update services
+                    document.getElementById('api-status').textContent = data.services.api === 'online' ? 'Online' : 'Offline';
+                    document.getElementById('db-status').textContent = data.services.database === 'online' ? 'Online' : 'Offline';
+                    document.getElementById('ws-status').textContent = data.services.websocket === 'online' ? 'Online' : 'Offline';
+
+                    // Update dots
+                    const dbDot = document.getElementById('db-dot');
+                    dbDot.className = data.services.database === 'online' ? 'status-dot status-online' : 'status-dot status-offline-dot';
+
+                    // Update platform stats
+                    document.getElementById('strategies-value').textContent = data.stats.strategies;
+                    document.getElementById('signals-value').textContent = data.stats.signals;
+                    document.getElementById('positions-value').textContent = data.stats.positions;
+
+                    // Update system info
+                    document.getElementById('version-value').textContent = data.version;
+                    document.getElementById('env-value').textContent = data.environment.toUpperCase();
+
+                    // Update timestamp
+                    const timestamp = new Date(data.timestamp);
+                    document.getElementById('timestamp').textContent = `Last updated: ${timestamp.toLocaleString()}`;
+
+                    // Hide loading, show dashboard
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('dashboard').style.display = 'grid';
+                    document.getElementById('error-message').style.display = 'none';
+                } else {
+                    throw new Error('Status check failed');
+                }
+            } catch (error) {
+                console.error('Error fetching status:', error);
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('error-message').style.display = 'block';
+
+                // Update status badge
+                const badge = document.getElementById('status-badge');
+                badge.textContent = '● OFFLINE';
+                badge.className = 'status-badge status-offline';
+            }
+        }
+
+        // Initial fetch
+        fetchStatus();
+
+        // Auto-refresh every 10 seconds
+        setInterval(fetchStatus, 10000);
+    </script>
+</body>
+</html>

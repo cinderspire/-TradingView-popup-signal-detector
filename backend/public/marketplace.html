@@ -1,0 +1,1457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Strategy Marketplace - AutomatedTradeBot</title>
+    <meta name="description" content="AutomatedTradeBot strategy marketplace. Discover, compare, and purchase verified trading algorithms. Browse by performance, risk level, asset class. Secure transactions, instant strategy deployment.">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #00d4ff;
+            --secondary: #ff00ff;
+            --success: #00ff88;
+            --danger: #ff3366;
+            --warning: #ffaa00;
+            --dark: #0a0e1a;
+            --darker: #060914;
+            --light: #ffffff;
+            --gray: #8892b0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--darker);
+            color: var(--light);
+            min-height: 100vh;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1rem 5%;
+            background: rgba(10, 14, 26, 0.95);
+            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0, 212, 255, 0.1);
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            cursor: pointer;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: var(--gray);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--primary);
+            background: rgba(0, 212, 255, 0.1);
+        }
+
+        .nav-auth {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.6rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            border: none;
+        }
+
+        .btn-login {
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-register {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1400px;
+            margin: 100px auto 50px;
+            padding: 0 5%;
+        }
+
+        /* Header */
+        .page-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .page-title {
+            font-size: 3rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--light), var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .page-subtitle {
+            color: var(--gray);
+            font-size: 1.2rem;
+        }
+
+        /* Filters & Sort */
+        .controls {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .filters {
+            flex: 0 0 300px;
+            background: rgba(0, 212, 255, 0.05);
+            border: 1px solid rgba(0, 212, 255, 0.1);
+            border-radius: 15px;
+            padding: 2rem;
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+        }
+
+        .filter-section {
+            margin-bottom: 2rem;
+        }
+
+        .filter-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .filter-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--light);
+        }
+
+        .filter-option {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0;
+            cursor: pointer;
+        }
+
+        .filter-option input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .filter-option label {
+            color: var(--gray);
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .filter-count {
+            color: var(--primary);
+            font-size: 0.9rem;
+        }
+
+        .filter-range {
+            margin-top: 1rem;
+        }
+
+        .filter-range input {
+            width: 100%;
+            margin-bottom: 0.5rem;
+        }
+
+        .filter-range-labels {
+            display: flex;
+            justify-content: space-between;
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+        }
+
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .results-count {
+            color: var(--gray);
+        }
+
+        .sort-dropdown {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .sort-dropdown select {
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            color: var(--light);
+            padding: 0.7rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95rem;
+        }
+
+        /* Strategy Grid */
+        .strategy-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .strategy-card {
+            background: rgba(0, 212, 255, 0.05);
+            border: 1px solid rgba(0, 212, 255, 0.1);
+            border-radius: 15px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .strategy-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.2);
+        }
+
+        .strategy-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: linear-gradient(135deg, var(--warning), var(--secondary));
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .strategy-header {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .strategy-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        .strategy-info {
+            flex: 1;
+        }
+
+        .strategy-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+            color: var(--light);
+        }
+
+        .strategy-provider {
+            color: var(--gray);
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .verified-badge {
+            color: var(--success);
+        }
+
+        /* Metrics Grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .metric {
+            text-align: center;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+        }
+
+        .metric-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .metric-value.positive {
+            color: var(--success);
+        }
+
+        .metric-value.negative {
+            color: var(--danger);
+        }
+
+        .metric-value.neutral {
+            color: var(--primary);
+        }
+
+        .metric-label {
+            color: var(--gray);
+            font-size: 0.85rem;
+        }
+
+        /* Strategy Footer */
+        .strategy-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(0, 212, 255, 0.1);
+        }
+
+        .strategy-price {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .strategy-rating {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .stars {
+            color: var(--warning);
+        }
+
+        .rating-count {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        /* Subscribe Button */
+        .btn-subscribe {
+            width: 100%;
+            padding: 0.8rem;
+            margin-top: 1rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--light);
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-subscribe:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 212, 255, 0.4);
+        }
+
+        .btn-subscribe:active {
+            transform: translateY(0);
+        }
+
+        /* Mini Chart */
+        .mini-chart {
+            height: 60px;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+
+        .mini-chart svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 3rem;
+        }
+
+        .pagination button {
+            padding: 0.7rem 1.2rem;
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            color: var(--light);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .pagination button:hover {
+            background: rgba(0, 212, 255, 0.2);
+            border-color: var(--primary);
+        }
+
+        .pagination button.active {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-color: transparent;
+        }
+
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Export Button */
+        .export-actions {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .btn-export {
+            padding: 0.8rem 2rem;
+            background: linear-gradient(135deg, var(--success), #059669);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+        }
+
+        .btn-export:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-export:active {
+            transform: translateY(0);
+        }
+
+        .btn-export i {
+            font-size: 1.1rem;
+        }
+
+        .btn-export.json {
+            background: linear-gradient(135deg, var(--primary), #0891b2);
+        }
+
+        .btn-export.json:hover {
+            box-shadow: 0 5px 20px rgba(0, 212, 255, 0.4);
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .controls {
+                flex-direction: column;
+            }
+
+            .filters {
+                flex: 1;
+                position: static;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .strategy-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .page-title {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body data-page="marketplace">
+
+    <!-- Navigation -->
+    <nav id="navbar">
+        <div class="nav-container">
+            <a href="/" class="logo">
+                <i class="fas fa-chart-line"></i>
+                AutomatedTradeBot
+            </a>
+            <ul class="nav-links">
+                <li><a href="/" data-page="home">Home</a></li>
+                <li><a href="/dashboard" data-page="dashboard">Dashboard</a></li>
+                <li><a href="/marketplace" data-page="marketplace" class="active">Marketplace</a></li>
+                <li><a href="/subscriptions" data-page="subscriptions">My Subscriptions</a></li>
+                <li><a href="/signals" data-page="signals">Signals</a></li>
+                <li><a href="/completed-trades" data-page="trades">Trades</a></li>
+                <li><a href="/active-positions" data-page="active">Active</a></li>
+            </ul>
+            <div class="nav-cta">
+                <a href="/profile" class="btn-nav profile">
+                    <i class="fas fa-user-circle"></i> Profile
+                </a>
+                <a href="#" class="btn-nav logout" onclick="logout(); return false;">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Header -->
+        <div class="page-header">
+            <h1 class="page-title">Strategy Marketplace</h1>
+            <p class="page-subtitle">Browse and purchase verified trading strategies with proven track records</p>
+
+            <!-- Export Actions -->
+            <div class="export-actions">
+                <button class="btn-export" onclick="exportSignalsCSV()">
+                    <i class="fas fa-file-csv"></i>
+                    Export All Signals (CSV)
+                </button>
+                <button class="btn-export json" onclick="exportSignalsJSON()">
+                    <i class="fas fa-file-code"></i>
+                    Export All Signals (JSON)
+                </button>
+            </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="controls">
+            <!-- Filters Sidebar -->
+            <aside class="filters">
+                <div class="filter-section">
+                    <h3 class="filter-title">Strategy Type</h3>
+                    <div class="filter-option">
+                        <input type="checkbox" id="type-dca">
+                        <label for="type-dca">DCA (Dollar Cost Averaging)</label>
+                        <span class="filter-count">45</span>
+                    </div>
+                    <div class="filter-option">
+                        <input type="checkbox" id="type-grid">
+                        <label for="type-grid">Grid Trading</label>
+                        <span class="filter-count">32</span>
+                    </div>
+                    <div class="filter-option">
+                        <input type="checkbox" id="type-scalping">
+                        <label for="type-scalping">Scalping</label>
+                        <span class="filter-count">28</span>
+                    </div>
+                    <div class="filter-option">
+                        <input type="checkbox" id="type-swing">
+                        <label for="type-swing">Swing Trading</label>
+                        <span class="filter-count">19</span>
+                    </div>
+                    <div class="filter-option">
+                        <input type="checkbox" id="type-momentum">
+                        <label for="type-momentum">Momentum</label>
+                        <span class="filter-count">15</span>
+                    </div>
+                </div>
+
+                <div class="filter-section">
+                    <h3 class="filter-title">Asset Class</h3>
+                    <div class="filter-option">
+                        <input type="checkbox" id="asset-crypto">
+                        <label for="asset-crypto">Cryptocurrency</label>
+                        <span class="filter-count">120</span>
+                    </div>
+                    <div class="filter-option">
+                        <input type="checkbox" id="asset-forex">
+                        <label for="asset-forex">Forex</label>
+                        <span class="filter-count">45</span>
+                    </div>
+                    <div class="filter-option">
+                        <input type="checkbox" id="asset-stocks">
+                        <label for="asset-stocks">Stocks</label>
+                        <span class="filter-count">18</span>
+                    </div>
+                </div>
+
+                <div class="filter-section">
+                    <h3 class="filter-title">
+                        <label for="roi-min">Total ROI</label>
+                    </h3>
+                    <div class="filter-range">
+                        <input type="range" id="roi-min" min="0" max="1000" value="0" aria-label="Minimum Total ROI" aria-valuenow="0" aria-valuemin="0" aria-valuemax="1000" title="Minimum Total ROI slider">
+                        <div class="filter-range-labels">
+                            <span id="roi-min-label">0%</span>
+                            <span id="roi-max-label">1000%+</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="filter-section">
+                    <h3 class="filter-title">
+                        <label for="dd-max">Max Drawdown</label>
+                    </h3>
+                    <div class="filter-range">
+                        <input type="range" id="dd-max" min="0" max="50" value="20" aria-label="Maximum Drawdown" aria-valuenow="20" aria-valuemin="0" aria-valuemax="50" title="Maximum Drawdown slider">
+                        <div class="filter-range-labels">
+                            <span>0%</span>
+                            <span id="dd-max-label">20%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="filter-section">
+                    <h3 class="filter-title">Status</h3>
+                    <div class="filter-option">
+                        <input type="checkbox" id="status-verified">
+                        <label for="status-verified">✓ Verified Only</label>
+                        <span class="filter-count">89</span>
+                    </div>
+                    <div class="filter-option">
+                        <input type="checkbox" id="status-active">
+                        <label for="status-active">🟢 Active Trading</label>
+                        <span class="filter-count">156</span>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="main-content">
+                <!-- Content Header -->
+                <div class="content-header">
+                    <div class="results-count">
+                        Showing <strong id="results-count">247</strong> strategies
+                    </div>
+                    <div class="sort-dropdown">
+                        <label for="sort">Sort by:</label>
+                        <select id="sort" onchange="sortStrategies(this.value)">
+                            <option value="roi_desc">🔥 Highest ROI</option>
+                            <option value="winrate_desc">🎯 Best Win Rate</option>
+                            <option value="sharpe_desc">⭐ Best Sharpe Ratio</option>
+                            <option value="trades_desc">📊 Most Trades</option>
+                            <option value="active_desc">📈 Most Active Signals</option>
+                            <option value="age_asc">⏱️ Newest Signals</option>
+                            <option value="age_desc">⌛ Oldest Signals</option>
+                            <option value="dd_asc">📉 Lowest Drawdown</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Strategy Grid -->
+                <div class="strategy-grid" id="strategy-grid">
+                    <!-- Strategies will be loaded here -->
+                </div>
+
+                <!-- Pagination -->
+                <div class="pagination" id="pagination">
+                    <button id="prev-page" aria-label="Previous page" title="Go to previous page"><i class="fas fa-chevron-left"></i></button>
+                    <button class="active" aria-label="Page 1" aria-current="page">1</button>
+                    <button aria-label="Page 2">2</button>
+                    <button aria-label="Page 3">3</button>
+                    <button disabled aria-label="More pages">...</button>
+                    <button aria-label="Page 10">10</button>
+                    <button id="next-page" aria-label="Next page" title="Go to next page"><i class="fas fa-chevron-right"></i></button>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // Real strategy data from backend
+        let strategies = [];
+        // WebSocket removed - using REST API instead
+
+        // Strategy icon helper
+        function getStrategyIcon(strategyName) {
+            const name = strategyName.toUpperCase();
+            if (name.includes('RSI')) return '📊';
+            if (name.includes('GRID')) return '🔲';
+            if (name.includes('MACD')) return '📈';
+            if (name.includes('DCA')) return '💰';
+            if (name.includes('SCAL')) return '⚡';
+            if (name.includes('TREND')) return '📉';
+            if (name.includes('BREAK')) return '💥';
+            if (name.includes('AJAY')) return '🎯';
+            if (name.includes('COW')) return '🐮';
+            if (name.includes('TURTLE')) return '🐢';
+            return '🤖'; // Default
+        }
+
+        // Detect strategy type
+        function detectStrategyType(strategyName) {
+            const name = strategyName.toUpperCase();
+            if (name.includes('RSI') || name.includes('MACD')) return 'Technical';
+            if (name.includes('GRID') || name.includes('DCA')) return 'Grid/DCA';
+            if (name.includes('SCAL')) return 'Scalping';
+            if (name.includes('TREND')) return 'Trend Following';
+            return 'Custom';
+        }
+
+        // Old signal processing code removed - using API now
+
+        // Sort strategies dynamically
+        function sortStrategies(sortBy) {
+            if (!strategies || strategies.length === 0) return;
+
+            switch(sortBy) {
+                case 'roi_desc':
+                    strategies.sort((a, b) => b.roi - a.roi);
+                    break;
+                case 'winrate_desc':
+                    strategies.sort((a, b) => b.winRate - a.winRate);
+                    break;
+                case 'sharpe_desc':
+                    strategies.sort((a, b) => b.sharpe - a.sharpe);
+                    break;
+                case 'trades_desc':
+                    strategies.sort((a, b) => b.totalTrades - a.totalTrades);
+                    break;
+                case 'active_desc':
+                    strategies.sort((a, b) => b.activeSignals - a.activeSignals);
+                    break;
+                case 'age_asc':
+                    // Sort by avg age (newest = lowest age hours)
+                    strategies.sort((a, b) => {
+                        const ageA = parseAge(a.avgSignalAge);
+                        const ageB = parseAge(b.avgSignalAge);
+                        return ageA - ageB;
+                    });
+                    break;
+                case 'age_desc':
+                    // Sort by oldest signal age
+                    strategies.sort((a, b) => {
+                        const ageA = parseAge(a.oldestSignalAge);
+                        const ageB = parseAge(b.oldestSignalAge);
+                        return ageB - ageA;
+                    });
+                    break;
+                case 'dd_asc':
+                    strategies.sort((a, b) => a.drawdown - b.drawdown);
+                    break;
+                default:
+                    strategies.sort((a, b) => b.roi - a.roi);
+            }
+
+            renderStrategies(strategies);
+        }
+
+        // Parse age string to hours for sorting
+        function parseAge(ageStr) {
+            if (!ageStr) return 0;
+            const match = ageStr.match(/(\d+)d\s*(\d+)h|(\d+)h/);
+            if (!match) return 0;
+            if (match[1]) { // Has days
+                return parseInt(match[1]) * 24 + parseInt(match[2] || 0);
+            }
+            return parseInt(match[3] || 0); // Only hours
+        }
+
+        // Detect strategy type from name
+        function detectStrategyType(name) {
+            const nameLower = name.toLowerCase();
+            if (nameLower.includes('rsi')) return 'rsi';
+            if (nameLower.includes('macd')) return 'macd';
+            if (nameLower.includes('grid')) return 'grid';
+            if (nameLower.includes('dca')) return 'dca';
+            if (nameLower.includes('scalp')) return 'scalping';
+            if (nameLower.includes('swing')) return 'swing';
+            if (nameLower.includes('momentum')) return 'momentum';
+            return 'other';
+        }
+
+        // Get strategy icon - FULLY AUTOMATIC
+        // Generates 4-character icon from any strategy name
+        function getStrategyIcon(name) {
+            if (!name) return '????';
+
+            const nameLower = name.toLowerCase().trim();
+            const nameUpper = name.toUpperCase().trim();
+
+            // Only handle RSI variants specially (they appear in pair names)
+            if (nameLower.includes('7rsi')) return '7RSI';
+            if (nameLower.includes('3rsi')) return '3RSI';
+            if (nameLower.includes('p3rsi')) return 'P3RS';
+
+            // For multi-word strategies, create acronym
+            const words = name.trim().split(/\s+/);
+            if (words.length > 1) {
+                // Multi-word: take first letter of each word (max 4)
+                let acronym = '';
+                for (let i = 0; i < Math.min(4, words.length); i++) {
+                    acronym += words[i].charAt(0).toUpperCase();
+                }
+                // If still less than 4 chars, add more from first word
+                if (acronym.length < 4 && words[0].length > 1) {
+                    acronym += words[0].substring(1, 4 - acronym.length + 1).toUpperCase();
+                }
+                return acronym.substring(0, 4);
+            }
+
+            // Single word: use first 4 characters
+            return nameUpper.substring(0, Math.min(4, nameUpper.length));
+        }
+
+        // Helper function to get PnL from signal with fallback calculation
+        function getSignalPnL(signal) {
+            // If we have finalPnL or currentPnL, use it
+            if (signal.finalPnL !== undefined && signal.finalPnL !== null) return signal.finalPnL;
+            if (signal.currentPnL !== undefined && signal.currentPnL !== null && signal.currentPnL !== 0) return signal.currentPnL;
+
+            // Otherwise calculate from entry and current/exit price
+            const entry = parseFloat(signal.entry || signal.entryPrice || 0);
+            const currentPrice = parseFloat(signal.currentPrice || signal.exitPrice || 0);
+            const direction = (signal.direction || 'LONG').toUpperCase();
+
+            if (!entry || !currentPrice) return 0;
+
+            // If currentPrice equals entry, price hasn't updated yet - skip this signal
+            if (Math.abs(currentPrice - entry) < 0.0001) return 0;
+
+            // Calculate percentage PnL
+            let pnl = 0;
+            if (direction === 'LONG') {
+                pnl = ((currentPrice - entry) / entry) * 100;
+            } else { // SHORT
+                pnl = ((entry - currentPrice) / entry) * 100;
+            }
+
+            return pnl;
+        }
+
+        // Calculate strategy statistics - ONLY for specific strategy signals
+        function calculateStrategyStats(signals) {
+            // Filter signals to ensure they all belong to the same strategy
+            // FIX: Check for closed status properly (case-insensitive, handle null/undefined)
+            const activeSignals = signals.filter(s => {
+                const status = (s.status || '').toString().toLowerCase();
+                return status === 'active' || status === '' || status === 'pending' || status === 'open';
+            });
+            const closedSignals = signals.filter(s => {
+                const status = (s.status || '').toString().toLowerCase();
+                return status === 'closed' || status === 'completed' || status === 'cancelled';
+            });
+
+            const totalSignals = signals.length;
+
+            // Win/Loss calculation - ONLY from closed signals
+            const wins = closedSignals.filter(s => getSignalPnL(s) > 0).length;
+            const losses = closedSignals.filter(s => getSignalPnL(s) <= 0).length;
+
+            // Win Rate - percentage of winning trades
+            const winRate = closedSignals.length > 0 ? (wins / closedSignals.length) * 100 : 0;
+
+            // Total Return - sum of all PnL (closed + active)
+            let totalReturn = 0;
+            for (const signal of signals) {
+                totalReturn += getSignalPnL(signal);
+            }
+
+            // Average Win/Loss
+            const winningTrades = closedSignals.filter(s => getSignalPnL(s) > 0);
+            const losingTrades = closedSignals.filter(s => getSignalPnL(s) <= 0);
+
+            const avgWin = winningTrades.length > 0
+                ? winningTrades.reduce((sum, s) => sum + getSignalPnL(s), 0) / winningTrades.length
+                : 0;
+
+            const avgLoss = losingTrades.length > 0
+                ? losingTrades.reduce((sum, s) => sum + getSignalPnL(s), 0) / losingTrades.length
+                : 0;
+
+            // Profit Factor
+            const totalProfit = winningTrades.reduce((sum, s) => sum + getSignalPnL(s), 0);
+            const totalLoss = Math.abs(losingTrades.reduce((sum, s) => sum + getSignalPnL(s), 0));
+            const profitFactor = totalLoss > 0 ? totalProfit / totalLoss : 0;
+
+            // Sharpe Ratio - ONLY from closed signals
+            let sharpeRatio = 0;
+            if (closedSignals.length >= 2) {
+                const returns = closedSignals.map(s => getSignalPnL(s));
+                const avgReturn = returns.reduce((a, b) => a + b, 0) / returns.length;
+                const variance = returns.reduce((sum, r) => sum + Math.pow(r - avgReturn, 2), 0) / returns.length;
+                const stdDev = Math.sqrt(variance);
+                sharpeRatio = stdDev > 0 ? avgReturn / stdDev : 0;
+            }
+
+            // Max Drawdown & Avg Drawdown - cumulative PnL analysis
+            let maxDD = 0;
+            let peak = 0;
+            let cumulative = 0;
+            let totalDD = 0;
+            let ddCount = 0;
+
+            // Sort signals by timestamp
+            const sortedSignals = [...signals].sort((a, b) => {
+                const timeA = new Date(a.timestamp).getTime();
+                const timeB = new Date(b.timestamp).getTime();
+                return timeA - timeB;
+            });
+
+            // Build equity curve for charting
+            const equityCurve = [];
+            for (const signal of sortedSignals) {
+                cumulative += getSignalPnL(signal);
+                equityCurve.push(cumulative);
+
+                if (cumulative > peak) {
+                    peak = cumulative;
+                }
+
+                const drawdown = peak - cumulative;
+                if (drawdown > 0) {
+                    totalDD += drawdown;
+                    ddCount++;
+                }
+                if (drawdown > maxDD) {
+                    maxDD = drawdown;
+                }
+            }
+
+            const avgDD = ddCount > 0 ? totalDD / ddCount : 0;
+
+            // Calculate signal ages for active signals
+            const now = new Date();
+            let totalAgeHours = 0;
+            let maxAgeHours = 0;
+
+            for (const signal of activeSignals) {
+                // Use ageHours from V2 system if available
+                const ageHours = signal.ageHours ||
+                    Math.floor((now - new Date(signal.createdAt || signal.timestamp)) / (1000 * 60 * 60));
+
+                totalAgeHours += ageHours;
+                if (ageHours > maxAgeHours) {
+                    maxAgeHours = ageHours;
+                }
+            }
+
+            const avgAgeHours = activeSignals.length > 0 ? totalAgeHours / activeSignals.length : 0;
+            const avgAgeDays = Math.floor(avgAgeHours / 24);
+            const maxAgeDays = Math.floor(maxAgeHours / 24);
+
+            return {
+                totalTrades: closedSignals.length,
+                totalSignals,
+                activeSignals: activeSignals.length,
+                winningTrades: wins,
+                losingTrades: losses,
+                winRate,
+                avgWin,
+                avgLoss,
+                profitFactor,
+                totalReturn,
+                sharpeRatio,
+                maxDrawdown: -maxDD,
+                avgDrawdown: -avgDD,
+                bestTrade: closedSignals.length > 0 ? Math.max(...closedSignals.map(s => getSignalPnL(s))) : 0,
+                worstTrade: closedSignals.length > 0 ? Math.min(...closedSignals.map(s => getSignalPnL(s))) : 0,
+                avgSignalAge: avgAgeDays > 0 ? `${avgAgeDays}d ${Math.floor(avgAgeHours % 24)}h` : `${Math.floor(avgAgeHours)}h`,
+                oldestSignalAge: maxAgeDays > 0 ? `${maxAgeDays}d ${Math.floor(maxAgeHours % 24)}h` : `${Math.floor(maxAgeHours)}h`,
+                equityCurve: equityCurve // Add equity curve for charting
+            };
+        }
+
+        // Load strategies from API
+        async function loadStrategiesFromAPI() {
+            try {
+                console.log('📊 [Marketplace] Loading strategies from API...');
+                const response = await fetch('/api/marketplace/strategies');
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+
+                const result = await response.json();
+                console.log('✅ [Marketplace] API Response:', result);
+
+                if (result.success && result.data && result.data.strategies) {
+                    const apiStrategies = result.data.strategies;
+                    console.log(`📊 [Marketplace] Loaded ${apiStrategies.length} strategies from API`);
+
+                    // Convert API format to marketplace format
+                    strategies = apiStrategies.map(s => ({
+                        id: s.id,
+                        name: s.name,
+                        provider: s.providerUsername || 'TradingView Signals',
+                        verified: true,
+                        badge: s.winRate === 100 ? '🏆 Perfect' : s.winRate >= 80 ? '⭐ Top' : null,
+                        type: s.category || 'Technical',
+                        category: 'crypto',
+                        icon: getStrategyIcon(s.name),
+                        price: s.subscriptionPrice || 0,
+                        rating: s.rating || 0,
+                        reviews: s.subscriberCount || 0,
+                        downloads: s.subscriberCount || 0,
+                        description: s.description || `Live trading strategy: ${s.name}`,
+                        roi: s.totalReturn,
+                        openPnL: s.openPnL || 0,
+                        sharpe: s.sharpeRatio,
+                        winRate: s.winRate,
+                        drawdown: s.maxDrawdown,
+                        avgDrawdown: s.avgDD,
+                        totalTrades: s.closedTrades,
+                        activeSignals: s.activeTrades,
+                        avgSignalAge: s.avgSignalAge,
+                        oldestSignalAge: s.oldestSignalAge,
+                        signals: [], // Not needed for display
+                        equityCurve: [] // Not available from API - will show empty chart
+                    }));
+
+                    console.log('✅ [Marketplace] Strategies converted:', strategies.length);
+                    console.log('📊 Performance:', result.performance);
+
+                    // Update results count
+                    document.getElementById('results-count').textContent = strategies.length;
+
+                    // Sort by total ROI (default)
+                    strategies.sort((a, b) => b.roi - a.roi);
+                    console.log('📊 [Marketplace] Sorted strategies by Total ROI (descending)');
+
+                    // Render strategies
+                    renderStrategies(strategies);
+                } else {
+                    throw new Error('Invalid API response format');
+                }
+            } catch (error) {
+                console.error('❌ [Marketplace] Failed to load strategies:', error);
+                showToast('Failed to load strategies. Please refresh the page.', 'error');
+            }
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🚀 [Marketplace] DOM loaded - Starting initialization...');
+
+            // Force all filter checkboxes to be unchecked (prevent browser cache issues)
+            document.querySelectorAll('.filter-option input[type="checkbox"]').forEach(cb => {
+                cb.checked = false;
+            });
+            console.log('✅ [Marketplace] All filters reset to unchecked');
+
+            // Load strategies from new API instead of WebSocket
+            loadStrategiesFromAPI();
+        });
+
+        // Render strategies
+        function renderStrategies(data) {
+            const grid = document.getElementById('strategy-grid');
+            grid.innerHTML = '';
+
+            data.forEach(strategy => {
+                const card = document.createElement('div');
+                card.className = 'strategy-card';
+                // Redirect to signals page with strategy filter
+                card.onclick = () => {
+                    // Store strategy name in localStorage for signals page to filter
+                    localStorage.setItem('filterStrategy', strategy.name);
+                    window.location.href = `/signals?strategy=${encodeURIComponent(strategy.name)}`;
+                };
+
+                card.innerHTML = `
+                    ${strategy.badge ? `<span class="strategy-badge">${strategy.badge}</span>` : ''}
+
+                    <div class="strategy-header">
+                        <div class="strategy-icon">${strategy.icon}</div>
+                        <div class="strategy-info">
+                            <div class="strategy-name">${strategy.name}</div>
+                            <div class="strategy-provider">
+                                by ${strategy.provider}
+                                ${strategy.verified ? '<i class="fas fa-check-circle verified-badge"></i>' : ''}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mini-chart">
+                        <svg viewBox="0 0 300 60">
+                            <polyline
+                                fill="none"
+                                stroke="url(#gradient-${strategy.name.replace(/[^a-zA-Z0-9]/g, '')})"
+                                stroke-width="2"
+                                points="${generateSparklinePoints(strategy.equityCurve)}"
+                            />
+                            <defs>
+                                <linearGradient id="gradient-${strategy.name.replace(/[^a-zA-Z0-9]/g, '')}" x1="0%" y1="0%" x2="0%" y2="100%">
+                                    <stop offset="0%" style="stop-color:${strategy.roi >= 0 ? '#00d4ff' : '#ff4444'};stop-opacity:1" />
+                                    <stop offset="100%" style="stop-color:${strategy.roi >= 0 ? '#00ff88' : '#ff0066'};stop-opacity:1" />
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                    </div>
+
+                    <div class="metrics-grid">
+                        <div class="metric">
+                            <div class="metric-value positive">${strategy.roi >= 0 ? '+' : ''}${strategy.roi.toFixed(2)}%</div>
+                            <div class="metric-label">Total ROI</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value ${strategy.openPnL >= 0 ? 'positive' : 'negative'}">${strategy.openPnL >= 0 ? '+' : ''}${strategy.openPnL.toFixed(2)}%</div>
+                            <div class="metric-label">Open ROI</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value positive">${strategy.winRate.toFixed(2)}%</div>
+                            <div class="metric-label">Win Rate</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value neutral">${strategy.totalTrades}</div>
+                            <div class="metric-label">Closed Trades</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value neutral">${strategy.activeSignals}</div>
+                            <div class="metric-label">Active Signals</div>
+                        </div>
+                    </div>
+
+                    <div class="metrics-grid" style="margin-top: 10px;">
+                        <div class="metric">
+                            <div class="metric-value neutral" style="font-size: 0.9em;">${strategy.avgSignalAge || 'N/A'}</div>
+                            <div class="metric-label">Avg Signal Age</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value neutral" style="font-size: 0.9em;">${strategy.oldestSignalAge || 'N/A'}</div>
+                            <div class="metric-label">Oldest Signal</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value neutral">${strategy.sharpe.toFixed(2)}</div>
+                            <div class="metric-label">Sharpe Ratio</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value negative">${strategy.avgDrawdown.toFixed(2)}%</div>
+                            <div class="metric-label">Avg DD</div>
+                        </div>
+                    </div>
+
+                    <div class="metrics-grid" style="margin-top: 10px;">
+                        <div class="metric">
+                            <div class="metric-value negative">${strategy.drawdown.toFixed(2)}%</div>
+                            <div class="metric-label">Max DD</div>
+                        </div>
+                    </div>
+
+                    <div class="strategy-footer">
+                        <div class="strategy-price">${strategy.price > 0 ? '$' + strategy.price : 'FREE'}</div>
+                        <div class="strategy-rating">
+                            <div class="stars" style="color: var(--primary); font-size: 0.9rem;">${strategy.totalTrades || 0} Trades</div>
+                            <div class="rating-count" style="color: var(--success);">${strategy.activeSignals || 0} Active</div>
+                        </div>
+                    </div>
+
+                    <button class="btn-subscribe" onclick="event.stopPropagation(); subscribeToStrategy('${strategy.name}')">
+                        <i class="fas fa-bell"></i> Subscribe
+                    </button>
+                `;
+
+                grid.appendChild(card);
+            });
+
+            document.getElementById('results-count').textContent = data.length;
+        }
+
+        // Generate random sparkline points
+        function generateSparklinePoints(equityCurve) {
+            // If no equity curve data, return flat line
+            if (!equityCurve || equityCurve.length === 0) {
+                return '0,30 300,30';
+            }
+
+            const points = [];
+            const width = 300;
+            const height = 60;
+            const padding = 5;
+
+            // Find min/max for scaling
+            const minValue = Math.min(...equityCurve);
+            const maxValue = Math.max(...equityCurve);
+            const range = maxValue - minValue || 1; // Avoid division by zero
+
+            // Sample equity curve to fit chart width
+            const sampleSize = Math.min(equityCurve.length, 50); // Max 50 points for smooth chart
+            const step = Math.max(1, Math.floor(equityCurve.length / sampleSize));
+
+            for (let i = 0; i < equityCurve.length; i += step) {
+                const value = equityCurve[i];
+                const x = (i / (equityCurve.length - 1 || 1)) * width;
+                // Invert Y (SVG coordinates start from top)
+                const normalizedValue = (value - minValue) / range;
+                const y = height - (normalizedValue * (height - 2 * padding)) - padding;
+                points.push(`${x.toFixed(1)},${y.toFixed(1)}`);
+            }
+
+            // Always add the last point
+            if (equityCurve.length > 1) {
+                const lastValue = equityCurve[equityCurve.length - 1];
+                const normalizedValue = (lastValue - minValue) / range;
+                const y = height - (normalizedValue * (height - 2 * padding)) - padding;
+                points.push(`${width},${y.toFixed(1)}`);
+            }
+
+            return points.join(' ');
+        }
+
+        // Initial render - REMOVED: Strategies will render after WebSocket loads data
+        // renderStrategies(strategies);
+
+        // Sort functionality
+        document.getElementById('sort').addEventListener('change', (e) => {
+            const sortBy = e.target.value;
+            let sorted = [...strategies];
+
+            switch (sortBy) {
+                case 'roi_desc':
+                    sorted.sort((a, b) => b.roi - a.roi);
+                    break;
+                case 'sharpe_desc':
+                    sorted.sort((a, b) => b.sharpe - a.sharpe);
+                    break;
+                case 'dd_asc':
+                    sorted.sort((a, b) => a.drawdown - b.drawdown);
+                    break;
+                case 'winrate_desc':
+                    sorted.sort((a, b) => b.winRate - a.winRate);
+                    break;
+                case 'downloads_desc':
+                    sorted.sort((a, b) => b.downloads - a.downloads);
+                    break;
+                case 'rating_desc':
+                    sorted.sort((a, b) => b.rating - a.rating);
+                    break;
+                case 'price_asc':
+                    sorted.sort((a, b) => a.price - b.price);
+                    break;
+            }
+
+            renderStrategies(sorted);
+        });
+
+        // Range sliders
+        document.getElementById('roi-min').addEventListener('input', (e) => {
+            document.getElementById('roi-min-label').textContent = e.target.value + '%';
+        });
+
+        document.getElementById('dd-max').addEventListener('input', (e) => {
+            document.getElementById('dd-max-label').textContent = e.target.value + '%';
+        });
+
+        // Filter checkboxes (placeholder - will implement full filtering later)
+        // Apply filters function
+        function applyFilters() {
+            if (!strategies || strategies.length === 0) {
+                console.log('[Marketplace] No strategies to filter');
+                return;
+            }
+
+            let filtered = [...strategies];
+
+            // Get checked filters
+            const typeFilters = Array.from(document.querySelectorAll('[id^="type-"]:checked')).map(cb => cb.id.replace('type-', ''));
+            const assetFilters = Array.from(document.querySelectorAll('[id^="asset-"]:checked')).map(cb => cb.id.replace('asset-', ''));
+            const statusFilters = {
+                verified: document.getElementById('status-verified')?.checked,
+                active: document.getElementById('status-active')?.checked
+            };
+
+            console.log('[Marketplace] FILTER DEBUG:', {
+                totalStrategies: strategies.length,
+                typeFilters,
+                assetFilters,
+                statusFilters,
+                filteredBefore: filtered.length
+            });
+
+            // Apply type filters (if any checked, filter by those types)
+            if (typeFilters.length > 0) {
+                filtered = filtered.filter(s => typeFilters.some(type =>
+                    s.type && s.type.toLowerCase().includes(type.toLowerCase())
+                ));
+            }
+
+            // Apply asset filters (crypto, forex, etc.)
+            if (assetFilters.length > 0) {
+                filtered = filtered.filter(s => assetFilters.some(asset =>
+                    s.category && s.category.toLowerCase().includes(asset.toLowerCase())
+                ));
+            }
+
+            // Apply status filters
+            if (statusFilters.verified && statusFilters.active) {
+                // Both checked: Must be verified AND have active signals
+                filtered = filtered.filter(s => s.verified === true && s.activeSignals > 0);
+            } else if (statusFilters.verified && !statusFilters.active) {
+                // Only verified checked
+                filtered = filtered.filter(s => s.verified === true);
+            } else if (statusFilters.active && !statusFilters.verified) {
+                // Only active checked
+                filtered = filtered.filter(s => s.activeSignals > 0);
+            }
+            // If both unchecked, show all (no filter applied)
+
+            console.log('[Marketplace] FILTER RESULT:', {
+                originalCount: strategies.length,
+                filteredCount: filtered.length,
+                typeFiltersApplied: typeFilters.length > 0,
+                assetFiltersApplied: assetFilters.length > 0,
+                statusFiltersApplied: statusFilters.verified || statusFilters.active
+            });
+
+            // Update count
+            document.getElementById('results-count').textContent = filtered.length;
+
+            renderStrategies(filtered);
+        }
+
+        // Attach filter listeners
+        document.querySelectorAll('.filter-option input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', () => {
+                console.log('[Marketplace] Filter changed:', checkbox.id, checkbox.checked);
+                applyFilters();
+            });
+        });
+
+        // Subscribe to Strategy
+        async function subscribeToStrategy(strategyName) {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                showToast('Please login to subscribe to strategies', 'warning');
+                setTimeout(function() {
+                    window.location.href = '/login';
+                }, 1500);
+                return;
+            }
+
+            try {
+                showToast('Subscribing to ' + strategyName + '...', 'info', 2000);
+
+                const response = await fetch('/api/subscriptions/subscribe', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    },
+                    body: JSON.stringify({
+                        strategyName: strategyName,
+                        allPairs: true,
+                        exchanges: ['binance'],
+                        activeExchange: 'binance'
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showToast('Successfully subscribed to ' + strategyName + '!', 'success', 3000);
+                    setTimeout(function() {
+                        showToast('Visit "My Subscriptions" to manage settings', 'info', 3000);
+                    }, 500);
+                } else {
+                    showToast(data.message || 'Failed to subscribe', 'error');
+                }
+            } catch (error) {
+                console.error('Error subscribing:', error);
+                showToast('Failed to subscribe to strategy', 'error');
+            }
+        }
+
+        // Export Signals to CSV
+        async function exportSignalsCSV() {
+            try {
+                console.log('📥 Starting CSV export...');
+                showToast('Preparing CSV export...', 'info', 2000);
+
+                // Call API endpoint
+                window.location.href = '/api/export/signals-csv';
+
+                setTimeout(() => {
+                    showToast('CSV download started!', 'success', 3000);
+                }, 500);
+
+            } catch (error) {
+                console.error('❌ CSV export error:', error);
+                showToast('Failed to export CSV', 'error');
+            }
+        }
+
+        // Export Signals to JSON
+        async function exportSignalsJSON() {
+            try {
+                console.log('📥 Starting JSON export...');
+                showToast('Preparing JSON export...', 'info', 2000);
+
+                // Call API endpoint
+                window.location.href = '/api/export/signals-json';
+
+                setTimeout(() => {
+                    showToast('JSON download started!', 'success', 3000);
+                }, 500);
+
+            } catch (error) {
+                console.error('❌ JSON export error:', error);
+                showToast('Failed to export JSON', 'error');
+            }
+        }
+    </script>
+
+    <!-- Toast Notifications -->
+    <script src="/js/toast.js"></script>
+
+    <!-- Standardized Navigation -->
+    <script src="/js/navigation.js?v=9.0"></script>
+</body>
+</html>

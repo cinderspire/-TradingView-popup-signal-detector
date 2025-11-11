@@ -1,0 +1,35 @@
+<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="primaryGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1e3a8a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#3b82f6;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0ea5e9;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#06b6d4;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Hexagonal shield background -->
+  <path d="M24 4 L38 12 L38 28 L24 36 L10 28 L10 12 Z" fill="url(#primaryGrad)" opacity="0.15"/>
+
+  <!-- Bold hexagonal outline -->
+  <path d="M24 4 L38 12 L38 28 L24 36 L10 28 L10 12 Z"
+        stroke="url(#primaryGrad)"
+        stroke-width="2"
+        fill="none"/>
+
+  <!-- Trading chart bars (ascending) -->
+  <rect x="14" y="26" width="3" height="6" fill="#1e3a8a" rx="1"/>
+  <rect x="19" y="22" width="3" height="10" fill="#2563eb" rx="1"/>
+  <rect x="24" y="18" width="3" height="14" fill="#3b82f6" rx="1"/>
+  <rect x="29" y="14" width="3" height="18" fill="url(#accentGrad)" rx="1"/>
+
+  <!-- Upward trend arrow -->
+  <path d="M32 14 L36 10 L36 14 M32 10 L36 10"
+        stroke="#0ea5e9"
+        stroke-width="2.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        fill="none"/>
+</svg>

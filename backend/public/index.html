@@ -1,0 +1,1295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutomatedTradeBot - Professional Strategy Marketplace & Signal Platform</title>
+    <meta name="description" content="The industry's most advanced trading platform. Buy verified strategies, copy signals, mirror fund manager portfolios. AI-powered risk management with real pe...">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #00d4ff;
+            --secondary: #ff00ff;
+            --success: #00ff88;
+            --danger: #ff3366;
+            --warning: #ffaa00;
+            --dark: #0a0e1a;
+            --darker: #060914;
+            --light: #ffffff;
+            --gray: #8892b0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--darker);
+            color: var(--light);
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1rem 5%;
+            background: rgba(10, 14, 26, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0, 212, 255, 0.1);
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        nav.scrolled {
+            padding: 0.5rem 5%;
+            background: rgba(10, 14, 26, 0.95);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--gray);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+            font-weight: 500;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .nav-cta {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn-nav {
+            padding: 0.6rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-nav.login {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--light);
+        }
+
+        .btn-nav.login:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: var(--primary);
+        }
+
+        .btn-nav.signup {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+        }
+
+        .btn-nav.signup:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 30px rgba(0, 212, 255, 0.5);
+        }
+
+        /* Hero Section */
+        .hero {
+            margin-top: 80px;
+            padding: 100px 5% 80px;
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.05) 0%, rgba(255, 0, 255, 0.05) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(0, 212, 255, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) translateX(0); }
+            50% { transform: translateY(-50px) translateX(-50px); }
+        }
+
+        .hero-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            padding: 0.5rem 1.5rem;
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid var(--success);
+            border-radius: 50px;
+            color: var(--success);
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            animation: pulse-badge 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-badge {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .hero-title {
+            font-size: 4rem;
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--light) 0%, var(--primary) 50%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-subtitle {
+            font-size: 1.3rem;
+            color: var(--gray);
+            max-width: 800px;
+            margin: 0 auto 3rem;
+            line-height: 1.6;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            margin-bottom: 4rem;
+        }
+
+        .btn {
+            padding: 1rem 2.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.7rem;
+            font-size: 1.05rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(0, 212, 255, 0.5);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary);
+            color: var(--darker);
+        }
+
+        /* Hero Stats */
+        .hero-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .stat-box {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 2rem 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-box:hover {
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateY(-5px);
+            border-color: var(--primary);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        /* Platform Features Grid */
+        .platform-features {
+            padding: 100px 5%;
+            background: var(--darker);
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-label {
+            color: var(--primary);
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 1rem;
+        }
+
+        .section-title {
+            font-size: 3rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--light), var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .section-desc {
+            color: var(--gray);
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .features-grid {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2.5rem;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 2.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transform: translateX(-100%);
+            transition: transform 0.5s ease;
+        }
+
+        .feature-card:hover::before {
+            transform: translateX(0);
+        }
+
+        .feature-card:hover {
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 212, 255, 0.2);
+            border-color: rgba(0, 212, 255, 0.3);
+        }
+
+        .feature-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--light);
+        }
+
+        .feature-desc {
+            color: var(--gray);
+            line-height: 1.7;
+            margin-bottom: 1.5rem;
+            font-size: 1rem;
+        }
+
+        .feature-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .feature-link:hover {
+            gap: 0.8rem;
+        }
+
+        /* Pricing Preview Section */
+        .pricing-preview {
+            padding: 100px 5%;
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.03) 0%, rgba(255, 0, 255, 0.03) 100%);
+        }
+
+        .pricing-grid {
+            max-width: 1200px;
+            margin: 3rem auto 0;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+        }
+
+        .pricing-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 2.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .pricing-card.featured {
+            background: rgba(0, 212, 255, 0.05);
+            border-color: var(--primary);
+            transform: scale(1.05);
+            box-shadow: 0 20px 60px rgba(0, 212, 255, 0.3);
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            border-color: var(--primary);
+        }
+
+        .pricing-card.featured:hover {
+            transform: translateY(-10px) scale(1.07);
+        }
+
+        .popular-badge {
+            display: inline-block;
+            padding: 0.4rem 1rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+
+        .plan-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--light);
+        }
+
+        .plan-price {
+            font-size: 3rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .plan-period {
+            color: var(--gray);
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+        }
+
+        .plan-features {
+            list-style: none;
+            text-align: left;
+            margin-bottom: 2rem;
+        }
+
+        .plan-features li {
+            padding: 0.7rem 0;
+            color: var(--gray);
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+        }
+
+        .plan-features li i {
+            color: var(--success);
+            font-size: 0.9rem;
+        }
+
+        .plan-cta {
+            width: 100%;
+            padding: 1rem;
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .plan-cta:hover {
+            background: var(--primary);
+            color: var(--darker);
+        }
+
+        .pricing-card.featured .plan-cta {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            color: white;
+        }
+
+        .pricing-card.featured .plan-cta:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.4);
+        }
+
+        /* Why Choose Us Section */
+        .why-choose {
+            padding: 100px 5%;
+            background: var(--darker);
+        }
+
+        .why-grid {
+            max-width: 1400px;
+            margin: 3rem auto 0;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 3rem;
+        }
+
+        .why-item {
+            text-align: center;
+        }
+
+        .why-icon {
+            width: 80px;
+            height: 80px;
+            background: rgba(0, 212, 255, 0.1);
+            border: 2px solid var(--primary);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: var(--primary);
+            margin: 0 auto 1.5rem;
+        }
+
+        .why-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--light);
+        }
+
+        .why-desc {
+            color: var(--gray);
+            line-height: 1.7;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            padding: 100px 5%;
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.1) 0%, rgba(255, 0, 255, 0.1) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(0, 212, 255, 0.1) 0%, transparent 70%);
+            animation: rotate 30s linear infinite;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .cta-content {
+            max-width: 900px;
+            margin: 0 auto;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .cta-title {
+            font-size: 3.5rem;
+            font-weight: 900;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--light), var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .cta-desc {
+            font-size: 1.3rem;
+            color: var(--gray);
+            margin-bottom: 3rem;
+            line-height: 1.6;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--darker);
+            border-top: 1px solid rgba(0, 212, 255, 0.1);
+            padding: 60px 5% 30px;
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        .footer-brand h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .footer-brand p {
+            color: var(--gray);
+            line-height: 1.7;
+            margin-bottom: 1.5rem;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .social-link {
+            width: 45px;
+            height: 45px;
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .social-link:hover {
+            background: var(--primary);
+            color: var(--darker);
+            transform: translateY(-3px);
+        }
+
+        .footer-column h4 {
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+            color: var(--light);
+        }
+
+        .footer-links {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .footer-links a {
+            color: var(--gray);
+            text-decoration: none;
+            transition: color 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary);
+        }
+
+        .footer-bottom {
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            text-align: center;
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .hero-title {
+                font-size: 3rem;
+            }
+
+            .hero-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .features-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .pricing-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .pricing-card.featured {
+                transform: scale(1);
+            }
+
+            .why-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .hero-title {
+                font-size: 2.5rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1.1rem;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+            }
+
+            .hero-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .section-title {
+                font-size: 2.2rem;
+            }
+
+            .cta-title {
+                font-size: 2.5rem;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav id="navbar">
+        <div class="nav-container">
+            <a href="/" class="logo">
+                <i class="fas fa-chart-line"></i>
+                AutomatedTradeBot
+            </a>
+            <ul class="nav-links">
+                <li><a href="/marketplace">Marketplace</a></li>
+                <li><a href="/signals">Signals</a></li>
+                <li><a href="/fund-managers">Funds</a></li>
+                <li><a href="/pricing">Pricing</a></li>
+                <li><a href="#features">Features</a></li>
+            </ul>
+            <div class="nav-cta">
+                <a href="/login" class="btn-nav login">Login</a>
+                <a href="/register" class="btn-nav signup">Sign Up Free</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-badge">
+                <i class="fas fa-star"></i> #1 Professional Trading Platform
+            </div>
+
+            <h1 class="hero-title">
+                Trade Smarter with<br>Verified Strategies & Signals
+            </h1>
+
+            <p class="hero-subtitle">
+                The industry's most advanced marketplace for trading strategies, signal subscriptions, and portfolio copying.
+                Rich analytics, AI-powered risk management, and proven results from verified providers.
+            </p>
+
+            <div class="hero-buttons">
+                <a href="/register" class="btn btn-primary">
+                    <i class="fas fa-rocket"></i>
+                    Start Free Trial
+                </a>
+                <a href="/marketplace" class="btn btn-secondary">
+                    <i class="fas fa-store"></i>
+                    Browse Marketplace
+                </a>
+            </div>
+
+            <div class="hero-stats">
+                <div class="stat-box">
+                    <div class="stat-number">2,500+</div>
+                    <div class="stat-label">Verified Strategies</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number">+312%</div>
+                    <div class="stat-label">Average ROI</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number">15,000+</div>
+                    <div class="stat-label">Active Traders</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number">$80M+</div>
+                    <div class="stat-label">Monthly Volume</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Platform Features -->
+    <section class="platform-features" id="features">
+        <div class="section-header">
+            <div class="section-label">Our Platform</div>
+            <h2 class="section-title">Three Ways to Trade Successfully</h2>
+            <p class="section-desc">
+                Choose from our professional marketplace, copy expert signals, or mirror entire portfolios from fund managers
+            </p>
+        </div>
+
+        <div class="features-grid">
+            <!-- Strategy Marketplace -->
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-store"></i>
+                </div>
+                <h3 class="feature-title">Strategy Marketplace</h3>
+                <p class="feature-desc">
+                    Buy and download verified trading strategies (DCA, Grid, Scalping, Swing, Momentum).
+                    Rich performance graphs, detailed metrics, and backtested results with real historical data.
+                </p>
+                <a href="/marketplace" class="feature-link">
+                    Browse Strategies <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+
+            <!-- Signal Platform -->
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-signal"></i>
+                </div>
+                <h3 class="feature-title">Signal Subscription</h3>
+                <p class="feature-desc">
+                    Subscribe to professional signal providers and automatically copy their trades in real-time.
+                    Ultra-low latency, complete transparency, and verified performance tracking.
+                </p>
+                <a href="/signals" class="feature-link">
+                    View Signal Providers <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+
+            <!-- Portfolio Copy -->
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-briefcase"></i>
+                </div>
+                <h3 class="feature-title">Portfolio Copy</h3>
+                <p class="feature-desc">
+                    Mirror entire portfolios from expert fund managers. Get diversified strategy allocation,
+                    professional risk management, and automatic rebalancing. $15/mo per manager.
+                </p>
+                <a href="/fund-managers" class="feature-link">
+                    Explore Funds <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+
+            <!-- AI Risk Manager -->
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <h3 class="feature-title">AI Risk Manager</h3>
+                <p class="feature-desc">
+                    Advanced AI analyzes your trading patterns, portfolio allocation, and risk tolerance.
+                    Get personalized strategy recommendations and automatic position sizing. $10/month.
+                </p>
+                <a href="/pricing" class="feature-link">
+                    Learn More <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+
+            <!-- Server Account -->
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-server"></i>
+                </div>
+                <h3 class="feature-title">24/7 Server Account</h3>
+                <p class="feature-desc">
+                    Never miss a trade. Cloud-hosted execution for crypto exchanges and MT4/MT5.
+                    99.9% uptime, <100ms latency, automatic failover protection. $25/month.
+                </p>
+                <a href="/pricing" class="feature-link">
+                    Get Started <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+
+            <!-- News Sentiment -->
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-newspaper"></i>
+                </div>
+                <h3 class="feature-title">News Sentiment Monitor</h3>
+                <p class="feature-desc">
+                    AI-powered news analysis with optional auto-pause trading during high-impact events.
+                    Real-time sentiment scores, economic calendar, and emergency controls. $5/month.
+                </p>
+                <a href="/news-sentiment" class="feature-link">
+                    View Live Feed <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+
+            <!-- Adaptive TP/SL -->
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h3 class="feature-title">Adaptive TP/SL</h3>
+                <p class="feature-desc">
+                    Dynamic take-profit and stop-loss adjustment based on market volatility and momentum.
+                    Maximize profits and minimize losses with intelligent automation. $5/month.
+                </p>
+                <a href="/pricing" class="feature-link">
+                    See How It Works <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+
+            <!-- Pair Analyzer -->
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-search"></i>
+                </div>
+                <h3 class="feature-title">Pair Analyzer</h3>
+                <p class="feature-desc">
+                    Real-time analysis of trading pair performance across multiple strategies.
+                    Identify the best opportunities with comprehensive technical and fundamental metrics.
+                </p>
+                <a href="/tools/pair-analyzer" class="feature-link">
+                    Analyze Now <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+
+            <!-- AI Chatbot -->
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <h3 class="feature-title">AI Trading Assistant</h3>
+                <p class="feature-desc">
+                    Get personalized portfolio recommendations, strategy suggestions, and risk assessments
+                    from our AI chatbot powered by OpenAI. Available 24/7.
+                </p>
+                <a href="/chat" class="feature-link">
+                    Chat Now <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Preview -->
+    <section class="pricing-preview">
+        <div class="section-header">
+            <div class="section-label">Pricing Plans</div>
+            <h2 class="section-title">Choose Your Trading Edge</h2>
+            <p class="section-desc">
+                Flexible pricing for every trader. Start free, upgrade anytime with premium features
+            </p>
+        </div>
+
+        <div class="pricing-grid">
+            <!-- Free Plan -->
+            <div class="pricing-card">
+                <div class="plan-name">Free</div>
+                <div class="plan-price">$0</div>
+                <div class="plan-period">Forever free</div>
+
+                <ul class="plan-features">
+                    <li><i class="fas fa-check"></i> Browse marketplace</li>
+                    <li><i class="fas fa-check"></i> View strategy details</li>
+                    <li><i class="fas fa-check"></i> Basic analytics</li>
+                    <li><i class="fas fa-check"></i> Community access</li>
+                    <li><i class="fas fa-check"></i> Paper trading</li>
+                </ul>
+
+                <a href="/register" class="plan-cta">Get Started Free</a>
+            </div>
+
+            <!-- Full Package (Most Popular) -->
+            <div class="pricing-card featured">
+                <span class="popular-badge">Most Popular</span>
+                <div class="plan-name">Full Package</div>
+                <div class="plan-price">$40</div>
+                <div class="plan-period">per month (save 20%)</div>
+
+                <ul class="plan-features">
+                    <li><i class="fas fa-check"></i> AI Risk Manager ($10 value)</li>
+                    <li><i class="fas fa-check"></i> 24/7 Server Account ($25 value)</li>
+                    <li><i class="fas fa-check"></i> News Sentiment ($5 value)</li>
+                    <li><i class="fas fa-check"></i> Adaptive TP/SL ($5 value)</li>
+                    <li><i class="fas fa-check"></i> All premium features</li>
+                    <li><i class="fas fa-check"></i> Priority support</li>
+                </ul>
+
+                <a href="/register?plan=full" class="plan-cta">Start Free Trial</a>
+            </div>
+
+            <!-- À La Carte -->
+            <div class="pricing-card">
+                <div class="plan-name">À La Carte</div>
+                <div class="plan-price">$5-25</div>
+                <div class="plan-period">per feature/month</div>
+
+                <ul class="plan-features">
+                    <li><i class="fas fa-check"></i> Pick individual features</li>
+                    <li><i class="fas fa-check"></i> Flexible monthly billing</li>
+                    <li><i class="fas fa-check"></i> Cancel anytime</li>
+                    <li><i class="fas fa-check"></i> Add/remove features</li>
+                    <li><i class="fas fa-check"></i> No long-term commitment</li>
+                </ul>
+
+                <a href="/pricing" class="plan-cta">View All Features</a>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 3rem;">
+            <p style="color: var(--gray); font-size: 1rem;">
+                Strategy purchases and fund manager subscriptions are separate from platform features.
+                <a href="/pricing" style="color: var(--primary); text-decoration: none; font-weight: 600;">View detailed pricing →</a>
+            </p>
+        </div>
+    </section>
+
+    <!-- Why Choose Us -->
+    <section class="why-choose">
+        <div class="section-header">
+            <div class="section-label">Why Choose Us</div>
+            <h2 class="section-title">The Professional Trading Advantage</h2>
+            <p class="section-desc">
+                Industry-leading features that set us apart from other platforms
+            </p>
+        </div>
+
+        <div class="why-grid">
+            <div class="why-item">
+                <div class="why-icon">
+                    <i class="fas fa-chart-area"></i>
+                </div>
+                <h3 class="why-title">Graphic Richness</h3>
+                <p class="why-desc">
+                    Comprehensive charts and visualizations: equity curves, drawdown analysis, monthly heatmaps,
+                    win/loss distribution, and real-time performance metrics. More detailed than any competitor.
+                </p>
+            </div>
+
+            <div class="why-item">
+                <div class="why-icon">
+                    <i class="fas fa-shield-check"></i>
+                </div>
+                <h3 class="why-title">Verified Results</h3>
+                <p class="why-desc">
+                    All strategies and signal providers undergo rigorous verification. Real historical data,
+                    transparent performance tracking, and honest metrics. No fake promises or manipulated stats.
+                </p>
+            </div>
+
+            <div class="why-item">
+                <div class="why-icon">
+                    <i class="fas fa-award"></i>
+                </div>
+                <h3 class="why-title">Professional Quality</h3>
+                <p class="why-desc">
+                    Institutional-grade platform built for serious traders. Bank-level security, 99.9% uptime,
+                    professional support, and enterprise-quality infrastructure you can trust.
+                </p>
+            </div>
+
+            <div class="why-item">
+                <div class="why-icon">
+                    <i class="fas fa-bolt"></i>
+                </div>
+                <h3 class="why-title">Ultra-Low Latency</h3>
+                <p class="why-desc">
+                    Signal execution in under 100ms. Direct integration with exchanges, optimized infrastructure,
+                    and real-time WebSocket connections ensure you never miss an opportunity.
+                </p>
+            </div>
+
+            <div class="why-item">
+                <div class="why-icon">
+                    <i class="fas fa-globe"></i>
+                </div>
+                <h3 class="why-title">Multi-Platform Support</h3>
+                <p class="why-desc">
+                    Trade on crypto exchanges (Bybit, Binance, MEXC, Bitget, and more) plus MT4/MT5 for forex.
+                    All supported through CCXT and MetaAPI integration.
+                </p>
+            </div>
+
+            <div class="why-item">
+                <div class="why-icon">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <h3 class="why-title">AI-Powered Intelligence</h3>
+                <p class="why-desc">
+                    Advanced machine learning for risk management, portfolio optimization, news sentiment analysis,
+                    and adaptive trading parameters. Technology that gives you an edge.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Final CTA -->
+    <section class="cta-section">
+        <div class="cta-content">
+            <h2 class="cta-title">Ready to Trade Like a Pro?</h2>
+            <p class="cta-desc">
+                Join 15,000+ traders using the most advanced strategy marketplace and signal platform.
+                Start with our free plan, no credit card required.
+            </p>
+
+            <div class="hero-buttons">
+                <a href="/register" class="btn btn-primary">
+                    <i class="fas fa-rocket"></i>
+                    Start Free Trial
+                </a>
+                <a href="/marketplace" class="btn btn-secondary">
+                    <i class="fas fa-store"></i>
+                    Browse Marketplace
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-brand">
+                <h3>AutomatedTradeBot</h3>
+                <p>
+                    The industry's most advanced platform for trading strategies, signal subscriptions,
+                    and portfolio copying. Trusted by professional traders worldwide.
+                </p>
+                <div class="social-links">
+                    <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-telegram"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-discord"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+
+            <div class="footer-column">
+                <h4>Platform</h4>
+                <div class="footer-links">
+                    <a href="/marketplace">Marketplace</a>
+                    <a href="/signals">Signals</a>
+                    <a href="/fund-managers">Funds</a>
+                    <a href="/pricing">Pricing</a>
+                    <a href="/news-sentiment">News Sentiment</a>
+                </div>
+            </div>
+
+            <div class="footer-column">
+                <h4>Features</h4>
+                <div class="footer-links">
+                    <a href="/features/ai-risk">AI Risk Manager</a>
+                    <a href="/features/server-account">Server Account</a>
+                    <a href="/features/adaptive-tpsl">Adaptive TP/SL</a>
+                    <a href="/tools/pair-analyzer">Pair Analyzer</a>
+                    <a href="/chat">AI Assistant</a>
+                </div>
+            </div>
+
+            <div class="footer-column">
+                <h4>Resources</h4>
+                <div class="footer-links">
+                    <a href="/docs">Documentation</a>
+                    <a href="/api">API Reference</a>
+                    <a href="/blog">Blog</a>
+                    <a href="/tutorials">Tutorials</a>
+                    <a href="/support">Support Center</a>
+                </div>
+            </div>
+
+            <div class="footer-column">
+                <h4>Company</h4>
+                <div class="footer-links">
+                    <a href="/about">About Us</a>
+                    <a href="/contact">Contact</a>
+                    <a href="/careers">Careers</a>
+                    <a href="/terms">Terms of Service</a>
+                    <a href="/privacy">Privacy Policy</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>
+                &copy; 2025 AutomatedTradeBot. All rights reserved. |
+                Trading involves risk. Past performance is not indicative of future results. |
+                Always do your own research before investing.
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // Navbar scroll effect
+        window.addEventListener('scroll', () => {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // Animate numbers on scroll (Intersection Observer)
+        const observerOptions = {
+            threshold: 0.5,
+            rootMargin: '0px 0px -100px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const statBoxes = entry.target.querySelectorAll('.stat-box');
+                    statBoxes.forEach((box, index) => {
+                        setTimeout(() => {
+                            box.style.opacity = '0';
+                            box.style.transform = 'translateY(20px)';
+                            setTimeout(() => {
+                                box.style.transition = 'all 0.5s ease';
+                                box.style.opacity = '1';
+                                box.style.transform = 'translateY(0)';
+                            }, 50);
+                        }, index * 100);
+                    });
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        const heroStats = document.querySelector('.hero-stats');
+        if (heroStats) {
+            observer.observe(heroStats);
+        }
+    </script>
+</body>
+</html>
