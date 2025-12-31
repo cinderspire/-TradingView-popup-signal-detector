@@ -154,7 +154,7 @@ Raw Text:                    Parsed Object:
        │
        ↓ Alert Popup Appears
 
-┌──────────────┐  10ms    ┌──────────────┐  Parse   ┌──────────────┐
+┌──────────────┐  10ms     ┌──────────────┐  Parse   ┌──────────────┐
 │ TradingView  │─detection→│  Puppeteer   │─Signal──→│   Signal     │
 │  Web Chart   │           │  Browser Bot │          │ Coordinator  │
 │   (Popup)    │           │  +Tesseract  │          │              │
