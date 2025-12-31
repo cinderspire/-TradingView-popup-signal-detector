@@ -13,19 +13,19 @@ The Puppeteer bot connects to your TradingView chart and monitors for strategy a
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│              Puppeteer Browser Automation                │
+│              Puppeteer Browser Automation               │
 ├─────────────────────────────────────────────────────────┤
-│                                                           │
+│                                                         │
 │  📊 TradingView Chart - LIVE MONITORING                 │
-│  ├─ Session: Authenticated via cookies                   │
+│  ├─ Session: Authenticated via cookies                  │
 │  ├─ Strategy: 7RSI Multi-Timeframe                      │
 │  ├─ Detection: MutationObserver (10ms polling)          │
 │  └─ Status: 🟢 Active                                   │
-│                                                           │
-│  Last Signal Captured: 45 seconds ago                    │
-│  Total Signals Today: 23                                 │
-│  Success Rate: 100%                                      │
-│                                                           │
+│                                                         │
+│  Last Signal Captured: 45 seconds ago                   │
+│  Total Signals Today: 23                                │
+│  Success Rate: 100%                                     │
+│                                                         │
 └─────────────────────────────────────────────────────────┘
 ```
 
@@ -46,17 +46,17 @@ When your TradingView strategy triggers an alert, Puppeteer instantly detects an
 ┌────────────────────────────────────┐
 │  🔔 TradingView Alert Popup       │
 │  ──────────────────────────────   │
-│                                    │
+│                                   │
 │  Symbol: BTC/USDT                 │
 │  Signal: LONG                     │
 │  Entry: $45,000                   │
 │  Take Profit: $46,500             │
 │  Stop Loss: $44,200               │
-│                                    │
+│                                   │
 │  Strategy: 7RSI Multi-TF          │
 │  Time: 20:15:32                   │
-│                                    │
-│  [ OK ]                           │
+│                                    
+│  [ OK ]                            │
 └────────────────────────────────────┘
          ↓
     10ms detection
@@ -159,8 +159,8 @@ Raw Text:                    Parsed Object:
 │  Web Chart   │           │  Browser Bot │          │ Coordinator  │
 │   (Popup)    │           │  +Tesseract  │          │              │
 └──────────────┘           └──────────────┘          └──────┬───────┘
-                                                             │
-                           Distribute                        │
+                                                            │
+                           Distribute                       │
                     ┌──────────┼──────────┐                │
                     ↓          ↓          ↓                 │
               ┌──────────┐ ┌──────────┐ ┌──────────┐      │
@@ -168,9 +168,9 @@ Raw Text:                    Parsed Object:
               │ Database │ │ (Real-   │ │   Bot    │      │
               │          │ │  time)   │ │          │      │
               └──────────┘ └────┬─────┘ └──────────┘      │
-                                │                          │
+                                │                         │
                     ┌───────────┼───────────┐             │
-                    ↓           ↓           ↓              │
+                    ↓           ↓           ↓             │
               ┌──────────┐ ┌──────────┐ ┌──────────┐     │
               │  Paper   │ │   Real   │ │ Signal   │     │
               │ Trading  │ │ Trading  │ │Analytics │     │
